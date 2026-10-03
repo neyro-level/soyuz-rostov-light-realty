@@ -4,3 +4,4 @@ export {
   parsePublicInventoryDto,
   parseSnapshotManifest,
 } from "./hub";
+export { applyLocalSnapshot, loadCurrentSnapshot } from "./snapshot";

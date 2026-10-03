@@ -12,7 +12,8 @@
     "lint": "biome check",
     "format": "biome format --write",
     "verify:layers": "node scripts/verify-layers.mjs && depcruise src --config .dependency-cruiser.mjs",
-    "verify:contracts": "tsx scripts/verify-contracts.ts"
+    "verify:contracts": "tsx scripts/verify-contracts.ts",
+    "verify:snapshot": "tsx scripts/verify-snapshot.ts"
   },
   "dependencies": {
     "next": "16.3.8",
