@@ -407,6 +407,44 @@ check(
   stale.status === "rejected" ? stale.reason : "",
 );
 
+const fixtureDir = join(process.cwd(), "fixtures", "fixture-sz-rostov");
+const fixtureTrust = JSON.parse(
+  readFileSync(join(fixtureDir, "trust.json"), "utf8"),
+) as { keyId: string; publicKeySpkiBase64: string };
+const fixtureStore = mkdtempSync(join(tmpdir(), "sz-fixture-"));
+const fixtureKeys = new TrustSet();
+fixtureKeys.add({
+  keyId: fixtureTrust.keyId,
+  publicKeyDer: Buffer.from(fixtureTrust.publicKeySpkiBase64, "base64"),
+});
+const fixtureApply = applyLocalSnapshot({
+  storeRoot: fixtureStore,
+  candidateDir: fixtureDir,
+  trust: fixtureKeys,
+  expectedProjectId: "fixture-sz-rostov",
+});
+check(
+  "fixture-apply",
+  fixtureApply.status === "activated",
+  fixtureApply.status === "rejected" ? fixtureApply.reason : "",
+);
+const fixtureGeo = JSON.parse(
+  readFileSync(join(fixtureDir, "geo.json"), "utf8"),
+) as unknown[];
+const fixtureDevelopers = JSON.parse(
+  readFileSync(join(fixtureDir, "developers.json"), "utf8"),
+) as unknown[];
+const fixtureInventory = JSON.parse(
+  readFileSync(join(fixtureDir, "inventory.json"), "utf8"),
+) as unknown[];
+check(
+  "fixture-counts",
+  fixtureGeo.length === 10 &&
+    fixtureDevelopers.length === 20 &&
+    fixtureInventory.length === 300,
+  `geo=${fixtureGeo.length} developers=${fixtureDevelopers.length} inventory=${fixtureInventory.length}`,
+);
+
 if (failed) {
   process.exit(1);
 }
