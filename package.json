@@ -15,6 +15,7 @@
     "verify:seo-contracts": "tsx scripts/verify-seo-contracts.ts",
     "verify:journal": "tsx scripts/verify-journal.ts",
     "verify:ui-core": "tsx scripts/verify-ui-core.ts",
+    "verify:routes": "tsx scripts/verify-routes.ts",
     "verify:contracts": "tsx scripts/verify-contracts.ts",
     "verify:snapshot": "tsx scripts/verify-snapshot.ts"
   },

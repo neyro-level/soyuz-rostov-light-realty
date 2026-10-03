@@ -1,7 +1,5 @@
+import { SitePage } from "./site-page";
+
 export default function Home() {
-  return (
-    <main>
-      <h1>Realty Lite</h1>
-    </main>
-  );
+  return <SitePage pageKey="home" />;
 }
