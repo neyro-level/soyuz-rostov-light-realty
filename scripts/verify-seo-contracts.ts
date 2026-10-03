@@ -1,0 +1,120 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  evaluateDevelopmentTextGate,
+  evaluatePriceFreshness,
+  fillSeoTemplate,
+  parseSeoRegistryCsv,
+} from "../src/platform/seo";
+import { grammar } from "../src/project/grammar.config";
+import { seo } from "../src/project/seo.config";
+import { site } from "../src/project/site.config";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+let failed = 0;
+
+function check(name: string, ok: boolean, detail = "") {
+  if (ok) {
+    console.log(`PASS ${name}`);
+    return;
+  }
+  failed += 1;
+  console.error(`FAIL ${name}${detail ? `: ${detail}` : ""}`);
+}
+
+const csv = readFileSync(join(root, seo.registryPath), "utf8");
+const rows = parseSeoRegistryCsv(csv);
+const byKey = new Map(rows.map((row) => [row.pageKey, row]));
+
+for (const route of grammar.routes) {
+  check(`pageKey-present:${route.pageKey}`, byKey.has(route.pageKey));
+}
+check("pageKey-present:notFound", byKey.has("notFound"));
+
+const forbiddenKeys = ["stroitelstvo", "otzyvy", "reviews", "blog"];
+for (const key of forbiddenKeys) {
+  check(`d14-absent:${key}`, !byKey.has(key));
+}
+
+const titles = new Set<string>();
+const descriptions = new Set<string>();
+for (const row of rows) {
+  check(`unique-title:${row.pageKey}`, !titles.has(row.title), row.title);
+  titles.add(row.title);
+  check(
+    `unique-description:${row.pageKey}`,
+    !descriptions.has(row.description),
+  );
+  descriptions.add(row.description);
+  if (!row.title.includes("{")) {
+    const len = [...row.title].length;
+    check(
+      `title-length:${row.pageKey}`,
+      len >= seo.titleMin && len <= seo.titleMax,
+      String(len),
+    );
+  }
+  if (!row.description.includes("{")) {
+    const len = [...row.description].length;
+    check(
+      `description-length:${row.pageKey}`,
+      len >= seo.descriptionMin && len <= seo.descriptionMax,
+      String(len),
+    );
+  }
+  if (seo.brandInTitlePageKeys.includes(row.pageKey as never)) {
+    check(`brand-in-title:${row.pageKey}`, row.title.includes(site.brand));
+  }
+  if (seo.catalogPageKeys.includes(row.pageKey as never)) {
+    check(`catalog-no-brand:${row.pageKey}`, !row.title.includes(site.brand));
+  }
+}
+
+const thresholds = {
+  hideAfterDays: seo.priceHideAfterDays,
+  failAfterDays: seo.priceGateFailAfterDays,
+  developmentTextFailAfterDays: seo.developmentTextFailAfterDays,
+};
+const now = new Date("2026-10-03T00:00:00Z");
+const daysAgo = (days: number) =>
+  new Date(now.getTime() - days * 86_400_000).toISOString();
+
+check(
+  "d4-show-at-45",
+  evaluatePriceFreshness(daysAgo(45), now, thresholds).hidePrice === false &&
+    evaluatePriceFreshness(daysAgo(45), now, thresholds).gate === "PASS",
+);
+check(
+  "d4-hide-at-46",
+  evaluatePriceFreshness(daysAgo(46), now, thresholds).hidePrice === true &&
+    evaluatePriceFreshness(daysAgo(46), now, thresholds).gate === "PASS",
+);
+check(
+  "d4-fail-at-120",
+  evaluatePriceFreshness(daysAgo(120), now, thresholds).gate === "FAIL",
+);
+check(
+  "d4-text-pass-at-180",
+  evaluateDevelopmentTextGate(daysAgo(180), now, thresholds) === "PASS",
+);
+check(
+  "d4-text-fail-at-181",
+  evaluateDevelopmentTextGate(daysAgo(181), now, thresholds) === "FAIL",
+);
+
+const propertyTitle = byKey.get("property")?.title ?? "";
+const hidden = fillSeoTemplate(
+  propertyTitle,
+  { N: "2", S: "54", "ЖК|район": "ЖК Река", price: "8500000" },
+  { hidePrice: true },
+);
+check(
+  "hidden-price-not-in-title",
+  !hidden.includes("8500000") && !hidden.includes("₽"),
+);
+
+if (failed) {
+  process.exit(1);
+}
+console.log("verify:seo-contracts PASS");
