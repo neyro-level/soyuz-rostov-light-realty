@@ -16,6 +16,7 @@
     "verify:journal": "tsx scripts/verify-journal.ts",
     "verify:ui-core": "tsx scripts/verify-ui-core.ts",
     "verify:routes": "tsx scripts/verify-routes.ts",
+    "test:e2e": "playwright test",
     "verify:contracts": "tsx scripts/verify-contracts.ts",
     "verify:snapshot": "tsx scripts/verify-snapshot.ts"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.2",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
