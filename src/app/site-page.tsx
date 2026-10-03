@@ -9,6 +9,7 @@ import { fillSeoTemplate, parseSeoRegistryCsv } from "@/platform/seo";
 import {
   CatalogGrid,
   DevelopmentCard,
+  LeadForm,
   PageBlock,
   PropertyCard,
 } from "@/platform/ui";
@@ -48,9 +49,23 @@ export function SitePage({
   };
   const heading = fillSeoTemplate(row.h1, vars);
   const body = fillSeoTemplate(row.description, vars);
+  const consentHref = buildHref(grammar, features, "consent") ?? "/";
+  const thanksUrl = buildHref(grammar, features, "thanks") ?? "/";
   return (
     <PageBlock body={body} heading={heading}>
       <CatalogSlot pageKey={pageKey} />
+      {pageKey === "contacts" ? (
+        <LeadForm
+          actionUrl="/api/public/leads/"
+          consentHref={consentHref}
+          consentLabel="Согласен на обработку"
+          nameLabel="Имя"
+          pageKey={pageKey}
+          phoneLabel="Телефон"
+          submitLabel="Отправить"
+          thanksUrl={thanksUrl}
+        />
+      ) : null}
     </PageBlock>
   );
 }
