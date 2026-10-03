@@ -2,12 +2,21 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  buildBreadcrumbListJsonLd,
+  buildRealEstateAgentJsonLd,
+  buildRobotsTxt,
   evaluateDevelopmentTextGate,
   evaluatePriceFreshness,
   fillSeoTemplate,
+  jsonLdHasForbiddenType,
+  legacyLocation,
+  matchLegacy,
   parseSeoRegistryCsv,
+  sitemapAllowed,
 } from "../src/platform/seo";
+import { features } from "../src/project/features.config";
 import { grammar } from "../src/project/grammar.config";
+import { legacyRules } from "../src/project/redirects/legacy";
 import { seo } from "../src/project/seo.config";
 import { site } from "../src/project/site.config";
 
@@ -113,6 +122,45 @@ check(
   "hidden-price-not-in-title",
   !hidden.includes("8500000") && !hidden.includes("₽"),
 );
+
+const exampleEnv = readFileSync(join(root, ".env.example"), "utf8");
+const envSource = readFileSync(join(root, "src/platform/env.ts"), "utf8");
+check(
+  "INDEXING_MODE=staging",
+  exampleEnv.includes("INDEXING_MODE=staging") &&
+    envSource.includes('.default("staging")'),
+);
+
+const agent = buildRealEstateAgentJsonLd({
+  name: site.brand,
+  url: site.siteUrl,
+  telephone: site.phoneTel,
+  email: site.email,
+  address: site.address,
+  openingHours: site.hoursSchema,
+});
+check("d12-agent-type", agent["@type"] === "RealEstateAgent");
+check("d12-no-forbidden-types", jsonLdHasForbiddenType(agent) === false);
+
+const crumbs = buildBreadcrumbListJsonLd([
+  { name: site.brand, item: `${site.siteUrl}/` },
+]);
+check("d12-breadcrumb-type", crumbs["@type"] === "BreadcrumbList");
+check("d12-breadcrumb-clean", jsonLdHasForbiddenType(crumbs) === false);
+
+const gone = matchLegacy("/blog/old-post/", legacyRules);
+check("legacy-410-blog", gone?.status === 410);
+const moved = matchLegacy("/novostroyki-rostova/", legacyRules);
+check(
+  "legacy-301-novostroyki",
+  moved?.status === 301 &&
+    legacyLocation(moved, grammar, features) === "/rostov-na-donu/novostroyki/",
+);
+check(
+  "robots-staging-disallow",
+  buildRobotsTxt("staging").includes("Disallow: /"),
+);
+check("sitemap-staging-empty", sitemapAllowed("staging") === false);
 
 if (failed) {
   process.exit(1);

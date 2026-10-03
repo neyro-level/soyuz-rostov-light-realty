@@ -5,9 +5,12 @@ export {
   parseSnapshotManifest,
 } from "./hub";
 export {
+  buildRealEstateAgentJsonLd,
+  buildRobotsTxt,
   evaluateDevelopmentTextGate,
   evaluatePriceFreshness,
   fillSeoTemplate,
+  matchLegacy,
   parseSeoRegistryCsv,
 } from "./seo";
 export { applyLocalSnapshot, loadCurrentSnapshot } from "./snapshot";
