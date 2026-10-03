@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "verify:layers": "node scripts/verify-layers.mjs && depcruise src --config .dependency-cruiser.mjs"
   },
   "dependencies": {
     "next": "16.3.8",
@@ -24,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dependency-cruiser": "^18.5.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
