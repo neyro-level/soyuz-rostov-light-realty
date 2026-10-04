@@ -7,6 +7,7 @@ const envSchema = z.object({
   APP_ENV: z.enum(["local", "staging", "production"]).default("local"),
   INDEXING_MODE: z.enum(["staging", "live"]).default("staging"),
   DATA_MODE: z.enum(["hub", "local"]).default("local"),
+  LEADS_MODE: z.enum(["direct", "hub"]).default("direct"),
   MEDIA_ORIGIN: z.string().url().optional(),
   ANALYTICS_METRIKA_ID: z.string().min(1).optional(),
 });

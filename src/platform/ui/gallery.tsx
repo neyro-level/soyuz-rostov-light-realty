@@ -14,6 +14,7 @@ export function Gallery({
               alt={item.alt}
               className="h-full w-full object-cover"
               height={720}
+              loading="lazy"
               src={item.src}
               width={960}
             />

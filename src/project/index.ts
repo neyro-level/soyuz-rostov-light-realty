@@ -5,6 +5,7 @@ export { grammar } from "./grammar.config";
 export { lead } from "./lead.config";
 export { media } from "./media.config";
 export { navigation } from "./navigation.config";
+export { performance } from "./performance.config";
 export { legacyRules } from "./redirects/legacy";
 export { seo } from "./seo.config";
 export { site } from "./site.config";

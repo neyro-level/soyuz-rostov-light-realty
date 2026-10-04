@@ -19,6 +19,9 @@
     "verify:leads": "tsx scripts/verify-leads.ts",
     "verify:media": "tsx scripts/verify-media.ts",
     "verify:security": "tsx scripts/verify-security.ts",
+    "verify:exit-mode": "tsx scripts/verify-exit-mode.ts",
+    "verify:performance": "tsx scripts/verify-performance.ts",
+    "template:check": "tsx scripts/template-check.ts",
     "test:e2e": "playwright test",
     "verify:contracts": "tsx scripts/verify-contracts.ts",
     "verify:snapshot": "tsx scripts/verify-snapshot.ts"
