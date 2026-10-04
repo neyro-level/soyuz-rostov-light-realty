@@ -1,3 +1,4 @@
+export { analytics } from "./analytics.config";
 export { data } from "./data.config";
 export { features } from "./features.config";
 export { grammar } from "./grammar.config";
