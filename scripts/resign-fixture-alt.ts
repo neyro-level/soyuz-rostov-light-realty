@@ -27,7 +27,10 @@ type Manifest = {
 };
 
 function toLf(bytes: Buffer): Buffer {
-  return Buffer.from(bytes.toString("binary").replaceAll("\r\n", "\n"), "binary");
+  return Buffer.from(
+    bytes.toString("binary").replaceAll("\r\n", "\n"),
+    "binary",
+  );
 }
 
 function resign(name: string) {
