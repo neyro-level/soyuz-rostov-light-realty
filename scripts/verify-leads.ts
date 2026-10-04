@@ -1,5 +1,6 @@
 import {
   MemoryLeadSink,
+  SmtpLeadSink,
   submitLead,
   WindowRateLimiter,
 } from "../src/platform/leads";
@@ -17,64 +18,77 @@ function check(name: string, ok: boolean, detail = "") {
 }
 
 async function main() {
-  const sink = new MemoryLeadSink();
   const limiter = new WindowRateLimiter(
     lead.rateLimitMax,
     lead.rateLimitWindowMs,
   );
-  const ctx = {
-    ip: "test-ip",
-    now: new Date("2026-10-03T12:00:00.000Z"),
-    destinationEmail: lead.destinationEmail,
-    mode: lead.mode,
-    sink,
-    limiter,
-  };
-
-  const captured = await submitLead(
+  const noneSink = new MemoryLeadSink();
+  const none = await submitLead(
     {
-      name: "Тест",
+      name: "Test",
       phone: "+79885552027",
       consent: true,
       pageKey: "contacts",
     },
-    ctx,
-  );
-  check(
-    "test-lead-captured-in-sink",
-    captured.ok && captured.captured === true && sink.deliveries.length === 1,
-  );
-  check(
-    "sink-destination-from-site-config",
-    sink.deliveries[0]?.to === lead.destinationEmail,
-  );
-  check("leads-mode-direct", lead.mode === "direct");
-  check("mock-sink-no-production-mailbox", lead.sinkKind === "mock");
-
-  const noConsent = await submitLead(
-    { name: "Тест", phone: "+79885552027", consent: false },
-    ctx,
-  );
-  check(
-    "consent-required",
-    !noConsent.ok &&
-      noConsent.code === "consent" &&
-      sink.deliveries.length === 1,
-  );
-
-  const honeypot = await submitLead(
     {
-      name: "Тест",
+      ip: "test-ip",
+      now: new Date("2026-10-03T12:00:00.000Z"),
+      destinationEmail: lead.destinationEmail,
+      mode: lead.mode,
+      transport: "none",
+      sink: noneSink,
+      limiter,
+    },
+  );
+  check(
+    "none-returns-503-code",
+    !none.ok && none.code === "lead_transport_disabled",
+  );
+  check("none-does-not-store", noneSink.deliveries.length === 0);
+
+  const smtpSink = SmtpLeadSink.jsonTransport("noreply@example.com");
+  const smtp = await submitLead(
+    {
+      name: "Test",
       phone: "+79885552027",
       consent: true,
-      website: "http://spam.example",
+      pageKey: "contacts",
     },
-    ctx,
+    {
+      ip: "test-ip",
+      now: new Date("2026-10-03T12:00:00.000Z"),
+      destinationEmail: lead.destinationEmail,
+      mode: lead.mode,
+      transport: "smtp",
+      sink: smtpSink,
+      limiter,
+    },
   );
-  check(
-    "honeypot-not-captured",
-    honeypot.ok && honeypot.captured === false && sink.deliveries.length === 1,
+  const raw =
+    smtpSink.lastResult &&
+    typeof smtpSink.lastResult === "object" &&
+    "message" in smtpSink.lastResult
+      ? String((smtpSink.lastResult as { message: string }).message)
+      : "";
+  check("smtp-captured", smtp.ok && smtp.captured === true);
+  check("smtp-to-config-email", raw.includes(lead.destinationEmail));
+  check("smtp-has-pageKey", raw.includes("pageKey=contacts"));
+  check("smtp-has-consent", raw.includes("consent=true"));
+  check("leads-mode-direct", lead.mode === "direct");
+
+  const noConsent = await submitLead(
+    { name: "Test", phone: "+79885552027", consent: false },
+    {
+      ip: "test-ip",
+      now: new Date("2026-10-03T12:00:00.000Z"),
+      destinationEmail: lead.destinationEmail,
+      mode: lead.mode,
+      transport: "none",
+      sink: noneSink,
+      limiter,
+    },
   );
+  check("consent-required", !noConsent.ok && noConsent.code === "consent");
 
   if (failed) {
     process.exit(1);

@@ -1,42 +1,22 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { OptInAnalytics } from "@/platform/analytics";
-import { env } from "@/platform/env";
 import { buildHref } from "@/platform/grammar";
 import { resolveNavGroup } from "@/platform/nav";
-import {
-  buildRealEstateAgentJsonLd,
-  parseSeoRegistryCsv,
-} from "@/platform/seo";
+import { buildRealEstateAgentJsonLd } from "@/platform/seo";
 import { JsonLdScript } from "@/platform/seo/json-ld-script";
 import { Footer, Header } from "@/platform/ui";
+import { manrope } from "@/platform/ui/fonts";
 import { analytics } from "@/project/analytics.config";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
 import { navigation } from "@/project/navigation.config";
-import { seo } from "@/project/seo.config";
+import { loadRegistry } from "@/project/runtime";
 import { site } from "@/project/site.config";
+import { copyrightLine, legalLine, uiText } from "@/project/ui-text.config";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Realty Lite",
-  description: "Lite catalog foundation",
-  robots:
-    env.INDEXING_MODE === "staging"
-      ? { index: false, follow: false }
-      : { index: true, follow: true },
+  metadataBase: new URL(site.siteUrl),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -48,9 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     address: site.address,
     openingHours: site.hoursSchema,
   });
-  const registry = parseSeoRegistryCsv(
-    readFileSync(join(process.cwd(), seo.registryPath), "utf8"),
-  );
+  const registry = loadRegistry();
   const headerGroups = navigation.header
     .map((group) =>
       resolveNavGroup(group, grammar, features, registry, navigation.labels),
@@ -66,11 +44,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     buildHref(grammar, features, "home") ??
     "/";
   return (
-    <html
-      lang="ru"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">
+    <html lang="ru" className={`${manrope.variable} h-full antialiased`}>
+      <body className={`${manrope.className} min-h-full flex flex-col`}>
         <JsonLdScript data={agentJsonLd} />
         <Header
           brand={site.brand}
@@ -82,14 +57,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <Footer
           columns={footerColumns}
-          copyright={`© ${new Date().getFullYear()} ${site.brand}`}
-          legal={`${site.legalName}, ИНН ${site.inn}, ${site.address}, ${site.phoneDisplay}, ${site.email}, ${site.hoursDisplay}`}
+          copyright={copyrightLine(new Date().getFullYear())}
+          legal={legalLine()}
         />
         <OptInAnalytics
-          acceptLabel="Разрешить"
+          acceptLabel={uiText.analytics.acceptLabel}
           counterId={analytics.counterId}
-          declineLabel="Отклонить"
-          prompt="Сбор статистики только после согласия."
+          declineLabel={uiText.analytics.declineLabel}
+          prompt={uiText.analytics.prompt}
         />
       </body>
     </html>

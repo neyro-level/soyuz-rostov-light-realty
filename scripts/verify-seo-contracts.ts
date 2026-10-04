@@ -1,10 +1,13 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadCatalogSnapshot } from "../src/platform/catalog/entities";
+import { buildHref } from "../src/platform/grammar";
 import {
   buildBreadcrumbListJsonLd,
   buildRealEstateAgentJsonLd,
   buildRobotsTxt,
+  buildSitemapEntries,
   evaluateDevelopmentTextGate,
   evaluatePriceFreshness,
   fillSeoTemplate,
@@ -12,11 +15,13 @@ import {
   legacyLocation,
   matchLegacy,
   parseSeoRegistryCsv,
+  resolvePageMetadata,
   sitemapAllowed,
 } from "../src/platform/seo";
 import { features } from "../src/project/features.config";
 import { grammar } from "../src/project/grammar.config";
 import { legacyRules } from "../src/project/redirects/legacy";
+import { metadataContext } from "../src/project/runtime";
 import { seo } from "../src/project/seo.config";
 import { site } from "../src/project/site.config";
 
@@ -151,16 +156,78 @@ check("d12-breadcrumb-clean", jsonLdHasForbiddenType(crumbs) === false);
 const gone = matchLegacy("/blog/old-post/", legacyRules);
 check("legacy-410-blog", gone?.status === 410);
 const moved = matchLegacy("/novostroyki-rostova/", legacyRules);
+const novostroykiHref = buildHref(grammar, features, "catNovostroyki");
 check(
   "legacy-301-novostroyki",
   moved?.status === 301 &&
-    legacyLocation(moved, grammar, features) === "/rostov-na-donu/novostroyki/",
+    Boolean(novostroykiHref) &&
+    legacyLocation(moved, grammar, features) === novostroykiHref,
 );
 check(
   "robots-staging-disallow",
   buildRobotsTxt("staging").includes("Disallow: /"),
 );
 check("sitemap-staging-empty", sitemapAllowed("staging") === false);
+
+const snapshot = loadCatalogSnapshot(root, "fixtures/fixture-sz-rostov");
+const context = metadataContext();
+let missingThrows = false;
+try {
+  resolvePageMetadata("missing-page-key", {}, snapshot, context);
+} catch {
+  missingThrows = true;
+}
+check("missing-registry-row-throws", missingThrows);
+
+const homeMeta = resolvePageMetadata("home", {}, snapshot, context);
+check(
+  "resolver-title-from-registry",
+  homeMeta.title === fillSeoTemplate(byKey.get("home")?.title ?? "", {}),
+);
+check(
+  "home-title-not-placeholder",
+  homeMeta.title !== "Realty Lite" && homeMeta.title.length >= seo.titleMin,
+);
+
+const listing = snapshot.inventory[0];
+if (listing) {
+  const propertyMeta = resolvePageMetadata(
+    "property",
+    {
+      semantic: `${"rooms" in listing.facts ? listing.facts.rooms : 1}k`,
+      id: listing.publicUrlId,
+    },
+    snapshot,
+    context,
+  );
+  const pLen = [...propertyMeta.title].length;
+  check(
+    "filled-property-title-length",
+    pLen >= seo.titleMin && pLen <= seo.titleMax,
+    String(pLen),
+  );
+  const dLen = [...propertyMeta.description].length;
+  check(
+    "filled-property-description-length",
+    dLen >= seo.descriptionMin && dLen <= seo.descriptionMax,
+    String(dLen),
+  );
+}
+
+const liveEntries = buildSitemapEntries(snapshot, {
+  ...context,
+  indexingMode: "live",
+});
+check("sitemap-live-not-empty", liveEntries.length > 0);
+check(
+  "sitemap-live-no-noindex-thanks",
+  liveEntries.every((item) => !String(item.url).includes("/spasibo/")),
+);
+const stagingEntries = buildSitemapEntries(snapshot, {
+  ...context,
+  indexingMode: "staging",
+});
+check("sitemap-staging-entries-empty", stagingEntries.length === 0);
 
 if (failed) {
   process.exit(1);

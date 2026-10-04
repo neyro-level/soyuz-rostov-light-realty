@@ -1,18 +1,26 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { fillSeoTemplate, parseSeoRegistryCsv } from "@/platform/seo";
+import type { Metadata } from "next";
+import { resolvePageMetadata, toNextMetadata } from "@/platform/seo";
 import { PageBlock } from "@/platform/ui";
-import { seo } from "@/project/seo.config";
+import { loadSnapshot, metadataContext } from "@/project/runtime";
+import { uiText } from "@/project/ui-text.config";
+
+export function generateMetadata(): Metadata {
+  return toNextMetadata(
+    resolvePageMetadata("notFound", {}, loadSnapshot(), metadataContext()),
+  );
+}
 
 export default function NotFound() {
-  const rows = parseSeoRegistryCsv(
-    readFileSync(join(process.cwd(), seo.registryPath), "utf8"),
+  const resolved = resolvePageMetadata(
+    "notFound",
+    {},
+    loadSnapshot(),
+    metadataContext(),
   );
-  const row = rows.find((item) => item.pageKey === "notFound");
   return (
     <PageBlock
-      body={fillSeoTemplate(row?.description ?? "", {})}
-      heading={fillSeoTemplate(row?.h1 ?? "Not found", {})}
+      body={resolved.description}
+      heading={resolved.h1 || uiText.notFoundFallback}
     />
   );
 }

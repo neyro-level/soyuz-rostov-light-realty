@@ -21,6 +21,9 @@ export function resolveNavGroup(
 ): { title: string; items: NavItem[] } {
   const items: NavItem[] = [];
   for (const pageKey of group.pageKeys) {
+    if (!grammar.routes.some((route) => route.pageKey === pageKey)) {
+      continue;
+    }
     const href = buildHref(grammar, flags, pageKey);
     if (!href) {
       continue;

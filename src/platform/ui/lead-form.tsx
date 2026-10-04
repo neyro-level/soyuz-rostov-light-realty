@@ -9,7 +9,10 @@ export function LeadForm({
   nameLabel,
   phoneLabel,
   consentLabel,
+  consentLinkLabel,
   submitLabel,
+  retryMessage,
+  transportDisabledMessage,
   pageKey,
 }: {
   actionUrl: string;
@@ -18,7 +21,10 @@ export function LeadForm({
   nameLabel: string;
   phoneLabel: string;
   consentLabel: string;
+  consentLinkLabel: string;
   submitLabel: string;
+  retryMessage: string;
+  transportDisabledMessage: string;
   pageKey: string;
 }) {
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +47,15 @@ export function LeadForm({
             pageKey,
           }),
         });
+        if (response.status === 503) {
+          const payload = (await response.json().catch(() => null)) as {
+            code?: string;
+          } | null;
+          if (payload?.code === "lead_transport_disabled") {
+            setError("transport");
+            return;
+          }
+        }
         if (!response.ok) {
           setError("retry");
           return;
@@ -78,13 +93,14 @@ export function LeadForm({
         <span>
           {consentLabel}{" "}
           <a className="text-fg underline" href={consentHref}>
-            ПДн
+            {consentLinkLabel}
           </a>
         </span>
       </label>
-      {error ? (
-        <p className="text-muted">Не удалось отправить. Повторите.</p>
+      {error === "transport" ? (
+        <p className="text-muted">{transportDisabledMessage}</p>
       ) : null}
+      {error === "retry" ? <p className="text-muted">{retryMessage}</p> : null}
       <button
         className="rounded-sm bg-accent px-md py-sm text-accent-fg"
         type="submit"

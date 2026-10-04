@@ -1,10 +1,7 @@
 import type { MetadataRoute } from "next";
-import { env } from "@/platform/env";
-import { sitemapAllowed } from "@/platform/seo";
+import { buildSitemapEntries } from "@/platform/seo";
+import { loadSnapshot, metadataContext } from "@/project/runtime";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  if (!sitemapAllowed(env.INDEXING_MODE)) {
-    return [];
-  }
-  return [];
+  return buildSitemapEntries(loadSnapshot(), metadataContext());
 }

@@ -42,7 +42,7 @@ export function buildHref(
 ): string | null {
   const route = config.routes.find((item) => item.pageKey === pageKey);
   if (!route) {
-    throw new Error(`unknown pageKey ${pageKey}`);
+    return null;
   }
   if (!isFeatureEnabled(flags, route.feature)) {
     return null;

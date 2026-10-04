@@ -1,0 +1,181 @@
+import type { Metadata } from "next";
+import type { CatalogSnapshot } from "../catalog/entities";
+import {
+  findDevelopment,
+  findProperty,
+  listingCheckedAt,
+} from "../catalog/entities";
+import { buildHref, type FeatureFlags, type GrammarConfig } from "../grammar";
+import {
+  evaluateDevelopmentTextGate,
+  evaluatePriceFreshness,
+  type PriceGateThresholds,
+} from "./content-gate";
+import type { SeoRegistryRow } from "./csv";
+import {
+  absoluteCanonical,
+  fillSeoTemplate,
+  parseRobotsDirective,
+} from "./metadata";
+import type { IndexingMode } from "./robots";
+
+export type PageMetadataContext = {
+  siteUrl: string;
+  indexingMode: IndexingMode;
+  grammar: GrammarConfig;
+  features: FeatureFlags;
+  registry: SeoRegistryRow[];
+  thresholds: PriceGateThresholds;
+  mapVars: (
+    pageKey: string,
+    params: Record<string, string>,
+    snapshot: CatalogSnapshot,
+  ) => Record<string, string | undefined>;
+  now?: Date;
+};
+
+export type ResolvedPageMetadata = {
+  title: string;
+  description: string;
+  h1: string;
+  canonical: string;
+  robots: { index: boolean; follow: boolean };
+  gate: "PASS" | "FAIL";
+  hidePrice: boolean;
+  vars: Record<string, string | undefined>;
+  href: string;
+};
+
+function rowOrThrow(
+  registry: SeoRegistryRow[],
+  pageKey: string,
+): SeoRegistryRow {
+  const row = registry.find((item) => item.pageKey === pageKey);
+  if (!row) {
+    throw new Error(`SEO registry missing pageKey ${pageKey}`);
+  }
+  return row;
+}
+
+export function evaluatePageGate(
+  pageKey: string,
+  snapshot: CatalogSnapshot,
+  params: Record<string, string>,
+  thresholds: PriceGateThresholds,
+  now: Date,
+): { gate: "PASS" | "FAIL"; hidePrice: boolean; checkedAt?: string } {
+  const gated =
+    pageKey === "property" ||
+    pageKey === "development" ||
+    pageKey === "facetVtorichka" ||
+    pageKey.startsWith("dist");
+  if (!gated) {
+    return { gate: "PASS", hidePrice: false };
+  }
+  if (pageKey === "property") {
+    const listing = findProperty(snapshot, params.id);
+    const checkedAt = listing ? listingCheckedAt(snapshot, listing) : undefined;
+    const price = evaluatePriceFreshness(checkedAt, now, thresholds);
+    return {
+      gate: price.gate,
+      hidePrice: price.hidePrice,
+      checkedAt,
+    };
+  }
+  if (pageKey === "development") {
+    const development = findDevelopment(snapshot, params.slug);
+    const textGate = evaluateDevelopmentTextGate(
+      development?.checkedAt,
+      now,
+      thresholds,
+    );
+    const price = evaluatePriceFreshness(
+      development?.checkedAt,
+      now,
+      thresholds,
+    );
+    return {
+      gate: textGate === "FAIL" || price.gate === "FAIL" ? "FAIL" : "PASS",
+      hidePrice: price.hidePrice,
+      checkedAt: development?.checkedAt,
+    };
+  }
+  const dates = snapshot.developments.map((item) => item.checkedAt);
+  const results = dates.map((checkedAt) =>
+    evaluatePriceFreshness(checkedAt, now, thresholds),
+  );
+  const hidePrice =
+    results.length === 0 || results.every((item) => item.hidePrice);
+  const gate =
+    results.length > 0 && results.some((item) => item.gate === "PASS")
+      ? "PASS"
+      : "FAIL";
+  return { gate, hidePrice };
+}
+
+export function resolveHref(
+  context: PageMetadataContext,
+  pageKey: string,
+  params: Record<string, string>,
+): string {
+  if (pageKey === "notFound") {
+    return "/404/";
+  }
+  return buildHref(context.grammar, context.features, pageKey, params) ?? "/";
+}
+
+export function resolvePageMetadata(
+  pageKey: string,
+  params: Record<string, string>,
+  snapshot: CatalogSnapshot,
+  context: PageMetadataContext,
+): ResolvedPageMetadata {
+  const row = rowOrThrow(context.registry, pageKey);
+  const now = context.now ?? new Date();
+  const { gate, hidePrice } = evaluatePageGate(
+    pageKey,
+    snapshot,
+    params,
+    context.thresholds,
+    now,
+  );
+  const vars = context.mapVars(pageKey, params, snapshot);
+  const title = fillSeoTemplate(row.title, vars, { hidePrice });
+  const description = fillSeoTemplate(row.description, vars, { hidePrice });
+  const h1 = fillSeoTemplate(row.h1, vars, { hidePrice });
+  const href = resolveHref(context, pageKey, params);
+  const canonical = absoluteCanonical(context.siteUrl, href);
+  let robots = parseRobotsDirective(row.robotsDefault);
+  if (context.indexingMode === "staging") {
+    robots = { index: false, follow: false };
+  } else if (gate === "FAIL") {
+    robots = { index: false, follow: robots.follow };
+  }
+  return {
+    title,
+    description,
+    h1,
+    canonical,
+    robots,
+    gate,
+    hidePrice,
+    vars,
+    href,
+  };
+}
+
+export function toNextMetadata(resolved: ResolvedPageMetadata): Metadata {
+  return {
+    title: resolved.title,
+    description: resolved.description,
+    alternates: { canonical: resolved.canonical },
+    robots: {
+      index: resolved.robots.index,
+      follow: resolved.robots.follow,
+    },
+  };
+}
+
+export function isSitemapUrl(resolved: ResolvedPageMetadata): boolean {
+  return resolved.robots.index === true && resolved.gate === "PASS";
+}

@@ -78,17 +78,19 @@ check(
   "nav-hides-disabled-yurist",
   yuristOff.items.every((item) => item.label !== navigation.labels.yurist),
 );
-const docs = resolveNavGroup(
-  navigation.footer[3],
-  grammar,
-  features,
-  registry,
-  navigation.labels,
-);
-check(
-  "footer-documents-privacy",
-  docs.items.some((item) => item.label === navigation.labels.privacy),
-);
+if (grammar.routes.some((route) => route.pageKey === "privacy")) {
+  const docs = resolveNavGroup(
+    navigation.footer[3],
+    grammar,
+    features,
+    registry,
+    navigation.labels,
+  );
+  check(
+    "footer-documents-privacy",
+    docs.items.some((item) => item.label === navigation.labels.privacy),
+  );
+}
 
 if (failed) {
   process.exit(1);

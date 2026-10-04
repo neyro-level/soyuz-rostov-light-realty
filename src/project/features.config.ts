@@ -1,6 +1,8 @@
 import type { FeatureFlags } from "@/platform/grammar";
+import { features as altFeatures } from "../../fixtures/fixture-alt/project/grammar.config";
+import { isAltFixture } from "./data.config";
 
-export const features = {
+const primaryFeatures = {
   journal: "DISABLED",
   vtorichka: "ON",
   yurist: "ON",
@@ -8,3 +10,5 @@ export const features = {
   favorites: "ON",
   search: "ON",
 } as const satisfies FeatureFlags;
+
+export const features = isAltFixture() ? altFeatures : primaryFeatures;

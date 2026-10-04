@@ -1,0 +1,22 @@
+export const seo = {
+  registryPath: "fixtures/fixture-alt/project/SEO_REGISTRY_SEED.csv",
+  titleMin: 30,
+  titleMax: 65,
+  descriptionMin: 70,
+  descriptionMax: 170,
+  priceHideAfterDays: 45,
+  priceGateFailAfterDays: 120,
+  developmentTextFailAfterDays: 180,
+  brandInTitlePageKeys: [] as string[],
+  catalogPageKeys: [
+    "geoHub",
+    "catNovostroyki",
+    "distTsentralnyy",
+    "distZapadnyy",
+    "distPrikubanskiy",
+    "developers",
+    "developer",
+    "development",
+    "property",
+  ],
+} as const;

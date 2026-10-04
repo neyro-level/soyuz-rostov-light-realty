@@ -19,5 +19,17 @@ export {
   legacyLocation,
   matchLegacy,
 } from "./legacy";
-export { fillSeoTemplate } from "./metadata";
+export {
+  absoluteCanonical,
+  fillSeoTemplate,
+  parseRobotsDirective,
+} from "./metadata";
+export {
+  isSitemapUrl,
+  type PageMetadataContext,
+  type ResolvedPageMetadata,
+  resolvePageMetadata,
+  toNextMetadata,
+} from "./resolve-page-metadata";
 export { buildRobotsTxt, type IndexingMode, sitemapAllowed } from "./robots";
+export { buildSitemapEntries } from "./sitemap";

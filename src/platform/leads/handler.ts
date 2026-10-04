@@ -22,6 +22,9 @@ export async function submitLead(
   if (!context.limiter.allow(context.ip, context.now)) {
     return { ok: false, code: "rate_limit" };
   }
+  if (context.transport === "none") {
+    return { ok: false, code: "lead_transport_disabled" };
+  }
   const capturedAt = context.now.toISOString();
   try {
     await context.sink.deliver({
