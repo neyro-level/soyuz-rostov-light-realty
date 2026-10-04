@@ -48,13 +48,8 @@
       "depends_on": [],
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "plan"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "plan"],
       "stop_conditions": [
         "production",
         "new secret",
@@ -63,9 +58,7 @@
         "merge without owner command"
       ],
       "priority": 1,
-      "labels": [
-        "wave:foundation"
-      ]
+      "labels": ["wave:foundation"]
     },
     {
       "key": "TASK-01-01",
@@ -87,21 +80,10 @@
         "files exist at documented paths",
         "AGENTS.md points to this master plan"
       ],
-      "required_checks": [
-        "file exists",
-        "plan path referenced"
-      ],
+      "required_checks": ["file exists", "plan path referenced"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -133,23 +115,10 @@
         "env schema has no DATABASE_URL",
         "no payload/prisma/pg in package.json"
       ],
-      "required_checks": [
-        "pnpm build",
-        "package.json audit"
-      ],
-      "depends_on": [
-        "TASK-01-01"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["pnpm build", "package.json audit"],
+      "depends_on": ["TASK-01-01"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -177,22 +146,10 @@
       "acceptance_criteria": [
         "verify:layers is wired and green on empty/foundation code"
       ],
-      "required_checks": [
-        "pnpm verify:layers or equivalent"
-      ],
-      "depends_on": [
-        "TASK-01-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["pnpm verify:layers or equivalent"],
+      "depends_on": ["TASK-01-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -212,28 +169,14 @@
       "parent_key": "EPIC-01",
       "source_anchor": "EPIC-01",
       "goal": "SourceCraft config has no push/PR CI; only manual gates remain possible.",
-      "scope": [
-        ".sourcecraft/ci.yaml"
-      ],
+      "scope": [".sourcecraft/ci.yaml"],
       "acceptance_criteria": [
         "no on.push or on.pull_request validation workflows"
       ],
-      "required_checks": [
-        "inspect .sourcecraft/ci.yaml"
-      ],
-      "depends_on": [
-        "TASK-01-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["inspect .sourcecraft/ci.yaml"],
+      "depends_on": ["TASK-01-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -253,41 +196,15 @@
       "parent_key": "EPIC-01",
       "source_anchor": "EPIC-01",
       "goal": "L0 is delivered as a PR into main without merge.",
-      "scope": [
-        "PR source epic/L0-foundation",
-        "target main"
-      ],
-      "acceptance_criteria": [
-        "PR exists",
-        "source/target/head SHA recorded"
-      ],
-      "required_checks": [
-        "PR URL and head SHA"
-      ],
-      "depends_on": [
-        "TASK-01-01",
-        "TASK-01-02",
-        "TASK-01-03",
-        "TASK-01-04"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "commit",
-        "push",
-        "create_pr"
-      ],
-      "stop_conditions": [
-        "merge",
-        "production"
-      ],
+      "scope": ["PR source epic/L0-foundation", "target main"],
+      "acceptance_criteria": ["PR exists", "source/target/head SHA recorded"],
+      "required_checks": ["PR URL and head SHA"],
+      "depends_on": ["TASK-01-01", "TASK-01-02", "TASK-01-03", "TASK-01-04"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "commit", "push", "create_pr"],
+      "stop_conditions": ["merge", "production"],
       "priority": 1,
-      "labels": [
-        "work:delivery",
-        "delivery:pr-only"
-      ]
+      "labels": ["work:delivery", "delivery:pr-only"]
     },
     {
       "key": "EPIC-02",
@@ -308,18 +225,11 @@
         "verify:contracts green",
         "DATA_MODE=local"
       ],
-      "depends_on": [
-        "EPIC-01"
-      ],
+      "depends_on": ["EPIC-01"],
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "plan"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "plan"],
       "stop_conditions": [
         "production",
         "new secret",
@@ -328,9 +238,7 @@
         "merge without owner command"
       ],
       "priority": 2,
-      "labels": [
-        "wave:data"
-      ]
+      "labels": ["wave:data"]
     },
     {
       "key": "TASK-02-01",
@@ -342,27 +250,12 @@
       "parent_key": "EPIC-02",
       "source_anchor": "EPIC-02",
       "goal": "Hub 3.1.2 contracts and DTO types exist in platform.",
-      "scope": [
-        "docs/standards Hub contract",
-        "platform DTO"
-      ],
-      "acceptance_criteria": [
-        "verify:contracts can run against types"
-      ],
-      "required_checks": [
-        "typecheck or verify:contracts"
-      ],
+      "scope": ["docs/standards Hub contract", "platform DTO"],
+      "acceptance_criteria": ["verify:contracts can run against types"],
+      "required_checks": ["typecheck or verify:contracts"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -382,32 +275,15 @@
       "parent_key": "EPIC-02",
       "source_anchor": "EPIC-02",
       "goal": "Signed snapshot is stored and quarantined locally without PostgreSQL.",
-      "scope": [
-        "storage",
-        "quarantine",
-        "sync worker",
-        "DATA_MODE=local"
-      ],
+      "scope": ["storage", "quarantine", "sync worker", "DATA_MODE=local"],
       "acceptance_criteria": [
         "no database client",
         "hash/signature checks exist"
       ],
-      "required_checks": [
-        "verify:snapshot"
-      ],
-      "depends_on": [
-        "TASK-02-01"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["verify:snapshot"],
+      "depends_on": ["TASK-02-01"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -427,30 +303,15 @@
       "parent_key": "EPIC-02",
       "source_anchor": "EPIC-02",
       "goal": "Local fixture covers about 10 districts, 20 developers, 300 flats.",
-      "scope": [
-        "fixtures/fixture-sz-rostov"
-      ],
+      "scope": ["fixtures/fixture-sz-rostov"],
       "acceptance_criteria": [
         "fixture counts in stated range",
         "tests pass on fixture"
       ],
-      "required_checks": [
-        "verify:snapshot",
-        "verify:contracts"
-      ],
-      "depends_on": [
-        "TASK-02-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["verify:snapshot", "verify:contracts"],
+      "depends_on": ["TASK-02-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -470,38 +331,15 @@
       "parent_key": "EPIC-02",
       "source_anchor": "EPIC-02",
       "goal": "L1 is delivered as a PR into main without merge.",
-      "scope": [
-        "PR"
-      ],
-      "acceptance_criteria": [
-        "PR exists with exact head SHA"
-      ],
-      "required_checks": [
-        "PR URL and head SHA"
-      ],
-      "depends_on": [
-        "TASK-02-01",
-        "TASK-02-02",
-        "TASK-02-03"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "commit",
-        "push",
-        "create_pr"
-      ],
-      "stop_conditions": [
-        "merge",
-        "production"
-      ],
+      "scope": ["PR"],
+      "acceptance_criteria": ["PR exists with exact head SHA"],
+      "required_checks": ["PR URL and head SHA"],
+      "depends_on": ["TASK-02-01", "TASK-02-02", "TASK-02-03"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "commit", "push", "create_pr"],
+      "stop_conditions": ["merge", "production"],
       "priority": 2,
-      "labels": [
-        "work:delivery",
-        "delivery:pr-only"
-      ]
+      "labels": ["work:delivery", "delivery:pr-only"]
     },
     {
       "key": "EPIC-03",
@@ -522,18 +360,11 @@
         "verify:journal green for DISABLED",
         "each pageKey has Title Description H1"
       ],
-      "depends_on": [
-        "EPIC-02"
-      ],
+      "depends_on": ["EPIC-02"],
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "plan"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "plan"],
       "stop_conditions": [
         "production",
         "new secret",
@@ -542,9 +373,7 @@
         "merge without owner command"
       ],
       "priority": 3,
-      "labels": [
-        "wave:seo"
-      ]
+      "labels": ["wave:seo"]
     },
     {
       "key": "TASK-03-01",
@@ -556,28 +385,12 @@
       "parent_key": "EPIC-03",
       "source_anchor": "EPIC-03",
       "goal": "URLs are built only from grammar.config and feature flags.",
-      "scope": [
-        "grammar.config.ts",
-        "features.config.ts",
-        "collision guards"
-      ],
-      "acceptance_criteria": [
-        "no literal hrefs in new routes"
-      ],
-      "required_checks": [
-        "verify:layers"
-      ],
+      "scope": ["grammar.config.ts", "features.config.ts", "collision guards"],
+      "acceptance_criteria": ["no literal hrefs in new routes"],
+      "required_checks": ["verify:layers"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -607,22 +420,10 @@
         "all §7 pageKeys present",
         "unique titles/descriptions"
       ],
-      "required_checks": [
-        "verify:seo-contracts"
-      ],
-      "depends_on": [
-        "TASK-03-01"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["verify:seo-contracts"],
+      "depends_on": ["TASK-03-01"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -642,34 +443,16 @@
       "parent_key": "EPIC-03",
       "source_anchor": "EPIC-03",
       "goal": "Indexing mode staging, JSON-LD D12, 301/410 legacy map exist.",
-      "scope": [
-        "robots",
-        "sitemap",
-        "JSON-LD",
-        "legacy.ts"
-      ],
+      "scope": ["robots", "sitemap", "JSON-LD", "legacy.ts"],
       "acceptance_criteria": [
         "INDEXING_MODE=staging",
         "D12 types only",
         "legacy 301/410"
       ],
-      "required_checks": [
-        "verify:seo-contracts",
-        "verify:journal"
-      ],
-      "depends_on": [
-        "TASK-03-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["verify:seo-contracts", "verify:journal"],
+      "depends_on": ["TASK-03-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -689,38 +472,15 @@
       "parent_key": "EPIC-03",
       "source_anchor": "EPIC-03",
       "goal": "L2 is delivered as a PR into main without merge.",
-      "scope": [
-        "PR"
-      ],
-      "acceptance_criteria": [
-        "PR exists with exact head SHA"
-      ],
-      "required_checks": [
-        "PR URL and head SHA"
-      ],
-      "depends_on": [
-        "TASK-03-01",
-        "TASK-03-02",
-        "TASK-03-03"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "commit",
-        "push",
-        "create_pr"
-      ],
-      "stop_conditions": [
-        "merge",
-        "production"
-      ],
+      "scope": ["PR"],
+      "acceptance_criteria": ["PR exists with exact head SHA"],
+      "required_checks": ["PR URL and head SHA"],
+      "depends_on": ["TASK-03-01", "TASK-03-02", "TASK-03-03"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "commit", "push", "create_pr"],
+      "stop_conditions": ["merge", "production"],
       "priority": 3,
-      "labels": [
-        "work:delivery",
-        "delivery:pr-only"
-      ]
+      "labels": ["work:delivery", "delivery:pr-only"]
     },
     {
       "key": "EPIC-04",
@@ -740,18 +500,11 @@
         "no raw colors in components",
         "disabled sections absent from nav"
       ],
-      "depends_on": [
-        "EPIC-03"
-      ],
+      "depends_on": ["EPIC-03"],
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "plan"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "plan"],
       "stop_conditions": [
         "production",
         "new secret",
@@ -760,9 +513,7 @@
         "merge without owner command"
       ],
       "priority": 4,
-      "labels": [
-        "wave:ui"
-      ]
+      "labels": ["wave:ui"]
     },
     {
       "key": "TASK-04-01",
@@ -774,27 +525,12 @@
       "parent_key": "EPIC-04",
       "source_anchor": "EPIC-04",
       "goal": "Header footer breadcrumbs cards filters pagination gallery lead form use tokens only.",
-      "scope": [
-        "theme.css",
-        "components listed in L3"
-      ],
-      "acceptance_criteria": [
-        "verify:ui-core can inspect token usage"
-      ],
-      "required_checks": [
-        "verify:ui-core"
-      ],
+      "scope": ["theme.css", "components listed in L3"],
+      "acceptance_criteria": ["verify:ui-core can inspect token usage"],
+      "required_checks": ["verify:ui-core"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -814,30 +550,15 @@
       "parent_key": "EPIC-04",
       "source_anchor": "EPIC-04",
       "goal": "Each mapped page renders H1 plus one content block from configs.",
-      "scope": [
-        "pages from §7",
-        "navigation.config.ts"
-      ],
+      "scope": ["pages from §7", "navigation.config.ts"],
       "acceptance_criteria": [
         "routes exist",
         "nav hides disabled/noindex items"
       ],
-      "required_checks": [
-        "route list vs §7"
-      ],
-      "depends_on": [
-        "TASK-04-01"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["route list vs §7"],
+      "depends_on": ["TASK-04-01"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -857,28 +578,12 @@
       "parent_key": "EPIC-04",
       "source_anchor": "EPIC-04",
       "goal": "Smoke covers representative §7 routes.",
-      "scope": [
-        "Playwright smoke"
-      ],
-      "acceptance_criteria": [
-        "smoke passes on listed routes"
-      ],
-      "required_checks": [
-        "Playwright"
-      ],
-      "depends_on": [
-        "TASK-04-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "scope": ["Playwright smoke"],
+      "acceptance_criteria": ["smoke passes on listed routes"],
+      "required_checks": ["Playwright"],
+      "depends_on": ["TASK-04-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -898,38 +603,15 @@
       "parent_key": "EPIC-04",
       "source_anchor": "EPIC-04",
       "goal": "L3 is delivered as a PR into main without merge.",
-      "scope": [
-        "PR"
-      ],
-      "acceptance_criteria": [
-        "PR exists with exact head SHA"
-      ],
-      "required_checks": [
-        "PR URL and head SHA"
-      ],
-      "depends_on": [
-        "TASK-04-01",
-        "TASK-04-02",
-        "TASK-04-03"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "commit",
-        "push",
-        "create_pr"
-      ],
-      "stop_conditions": [
-        "merge",
-        "production"
-      ],
+      "scope": ["PR"],
+      "acceptance_criteria": ["PR exists with exact head SHA"],
+      "required_checks": ["PR URL and head SHA"],
+      "depends_on": ["TASK-04-01", "TASK-04-02", "TASK-04-03"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "commit", "push", "create_pr"],
+      "stop_conditions": ["merge", "production"],
       "priority": 4,
-      "labels": [
-        "work:delivery",
-        "delivery:pr-only"
-      ]
+      "labels": ["work:delivery", "delivery:pr-only"]
     },
     {
       "key": "EPIC-05",
@@ -949,18 +631,11 @@
         "verify:security green",
         "lead test reaches sink not production mailbox"
       ],
-      "depends_on": [
-        "EPIC-04"
-      ],
+      "depends_on": ["EPIC-04"],
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "plan"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "plan"],
       "stop_conditions": [
         "production",
         "new secret",
@@ -969,9 +644,7 @@
         "merge without owner command"
       ],
       "priority": 4,
-      "labels": [
-        "wave:leads"
-      ]
+      "labels": ["wave:leads"]
     },
     {
       "key": "TASK-05-01",
@@ -983,29 +656,15 @@
       "parent_key": "EPIC-05",
       "source_anchor": "EPIC-05",
       "goal": "Direct lead posts to email from site.config using a testable sink.",
-      "scope": [
-        "Lead API",
-        "consent",
-        "LEADS_MODE=direct"
-      ],
+      "scope": ["Lead API", "consent", "LEADS_MODE=direct"],
       "acceptance_criteria": [
         "test lead captured in sink",
         "no production mailbox required"
       ],
-      "required_checks": [
-        "lead test"
-      ],
+      "required_checks": ["lead test"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -1025,27 +684,12 @@
       "parent_key": "EPIC-05",
       "source_anchor": "EPIC-05",
       "goal": "Images go through project loader and MEDIA_ORIGIN.",
-      "scope": [
-        "image loader",
-        "MEDIA_ORIGIN"
-      ],
-      "acceptance_criteria": [
-        "no wildcard remotePatterns"
-      ],
-      "required_checks": [
-        "next.config inspect"
-      ],
+      "scope": ["image loader", "MEDIA_ORIGIN"],
+      "acceptance_criteria": ["no wildcard remotePatterns"],
+      "required_checks": ["next.config inspect"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -1065,32 +709,12 @@
       "parent_key": "EPIC-05",
       "source_anchor": "EPIC-05",
       "goal": "Security headers and health endpoint exist; metrika only after consent.",
-      "scope": [
-        "CSP",
-        "headers",
-        "health endpoint",
-        "metrika opt-in"
-      ],
-      "acceptance_criteria": [
-        "verify:security green"
-      ],
-      "required_checks": [
-        "verify:security"
-      ],
-      "depends_on": [
-        "TASK-05-01",
-        "TASK-05-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "scope": ["CSP", "headers", "health endpoint", "metrika opt-in"],
+      "acceptance_criteria": ["verify:security green"],
+      "required_checks": ["verify:security"],
+      "depends_on": ["TASK-05-01", "TASK-05-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -1110,38 +734,15 @@
       "parent_key": "EPIC-05",
       "source_anchor": "EPIC-05",
       "goal": "L4 is delivered as a PR into main without merge.",
-      "scope": [
-        "PR"
-      ],
-      "acceptance_criteria": [
-        "PR exists with exact head SHA"
-      ],
-      "required_checks": [
-        "PR URL and head SHA"
-      ],
-      "depends_on": [
-        "TASK-05-01",
-        "TASK-05-02",
-        "TASK-05-03"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "commit",
-        "push",
-        "create_pr"
-      ],
-      "stop_conditions": [
-        "merge",
-        "production"
-      ],
+      "scope": ["PR"],
+      "acceptance_criteria": ["PR exists with exact head SHA"],
+      "required_checks": ["PR URL and head SHA"],
+      "depends_on": ["TASK-05-01", "TASK-05-02", "TASK-05-03"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "commit", "push", "create_pr"],
+      "stop_conditions": ["merge", "production"],
       "priority": 4,
-      "labels": [
-        "work:delivery",
-        "delivery:pr-only"
-      ]
+      "labels": ["work:delivery", "delivery:pr-only"]
     },
     {
       "key": "EPIC-06",
@@ -1164,18 +765,11 @@
         "template:check",
         "full pnpm verify"
       ],
-      "depends_on": [
-        "EPIC-05"
-      ],
+      "depends_on": ["EPIC-05"],
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "plan"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "plan"],
       "stop_conditions": [
         "production",
         "new secret",
@@ -1184,9 +778,7 @@
         "merge without owner command"
       ],
       "priority": 4,
-      "labels": [
-        "wave:template-ready"
-      ]
+      "labels": ["wave:template-ready"]
     },
     {
       "key": "TASK-06-01",
@@ -1198,31 +790,12 @@
       "parent_key": "EPIC-06",
       "source_anchor": "EPIC-06",
       "goal": "Minimal Docker files and exit-mode plus LCP/CLS budgets exist.",
-      "scope": [
-        "Dockerfile",
-        "compose",
-        "exit-mode",
-        "LCP<=2.5s CLS<=0.1"
-      ],
-      "acceptance_criteria": [
-        "verify:exit-mode",
-        "verify:performance"
-      ],
-      "required_checks": [
-        "verify:exit-mode",
-        "verify:performance"
-      ],
+      "scope": ["Dockerfile", "compose", "exit-mode", "LCP<=2.5s CLS<=0.1"],
+      "acceptance_criteria": ["verify:exit-mode", "verify:performance"],
+      "required_checks": ["verify:exit-mode", "verify:performance"],
       "depends_on": [],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -1242,30 +815,12 @@
       "parent_key": "EPIC-06",
       "source_anchor": "EPIC-06",
       "goal": "Second fixture proves platform reuse without platform edits.",
-      "scope": [
-        "fixture-alt",
-        "template:check",
-        "docs/NEW_PROJECT.md"
-      ],
-      "acceptance_criteria": [
-        "template:check green"
-      ],
-      "required_checks": [
-        "template:check"
-      ],
-      "depends_on": [
-        "TASK-06-01"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "scope": ["fixture-alt", "template:check", "docs/NEW_PROJECT.md"],
+      "acceptance_criteria": ["template:check green"],
+      "required_checks": ["template:check"],
+      "depends_on": ["TASK-06-01"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -1285,29 +840,15 @@
       "parent_key": "EPIC-06",
       "source_anchor": "EPIC-06",
       "goal": "Annotated tag exists on the epic head; production is not deployed.",
-      "scope": [
-        "git tag v1.0.0-skeleton"
-      ],
+      "scope": ["git tag v1.0.0-skeleton"],
       "acceptance_criteria": [
         "tag points at epic head SHA",
         "no production rollout"
       ],
-      "required_checks": [
-        "git show tag"
-      ],
-      "depends_on": [
-        "TASK-06-02"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "edit",
-        "test",
-        "commit",
-        "push"
-      ],
+      "required_checks": ["git show tag"],
+      "depends_on": ["TASK-06-02"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "edit", "test", "commit", "push"],
       "stop_conditions": [
         "production",
         "scope expansion",
@@ -1327,38 +868,15 @@
       "parent_key": "EPIC-06",
       "source_anchor": "EPIC-06",
       "goal": "L5 is delivered as a PR into main without merge.",
-      "scope": [
-        "PR"
-      ],
-      "acceptance_criteria": [
-        "PR exists with exact head SHA"
-      ],
-      "required_checks": [
-        "PR URL and head SHA"
-      ],
-      "depends_on": [
-        "TASK-06-01",
-        "TASK-06-02",
-        "TASK-06-03"
-      ],
-      "required_context": [
-        "MASTER PLAN_ «Союз застройщиков».md"
-      ],
-      "allowed_actions": [
-        "read",
-        "commit",
-        "push",
-        "create_pr"
-      ],
-      "stop_conditions": [
-        "merge",
-        "production"
-      ],
+      "scope": ["PR"],
+      "acceptance_criteria": ["PR exists with exact head SHA"],
+      "required_checks": ["PR URL and head SHA"],
+      "depends_on": ["TASK-06-01", "TASK-06-02", "TASK-06-03"],
+      "required_context": ["MASTER PLAN_ «Союз застройщиков».md"],
+      "allowed_actions": ["read", "commit", "push", "create_pr"],
+      "stop_conditions": ["merge", "production"],
       "priority": 4,
-      "labels": [
-        "work:delivery",
-        "delivery:pr-only"
-      ]
+      "labels": ["work:delivery", "delivery:pr-only"]
     }
   ]
 }
