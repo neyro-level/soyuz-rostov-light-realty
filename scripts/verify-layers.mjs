@@ -38,13 +38,19 @@ for (const file of platformFiles) {
   const text = readFileSync(file, "utf8");
   for (const literal of forbiddenLiterals) {
     if (text.includes(literal)) {
-      fail(`platform-no-project-literals: ${relative(root, file)} contains "${literal}"`);
+      fail(
+        `platform-no-project-literals: ${relative(root, file)} contains "${literal}"`,
+      );
     }
   }
 }
 
 const hrefPattern = /\bhref\s*=\s*["'][^"']+["']/g;
-const codeFiles = [...walk(join(root, "src/app")), ...walk(join(root, "src/platform")), ...walk(join(root, "src/project"))];
+const codeFiles = [
+  ...walk(join(root, "src/app")),
+  ...walk(join(root, "src/platform")),
+  ...walk(join(root, "src/project")),
+];
 for (const file of codeFiles) {
   const text = readFileSync(file, "utf8");
   const matches = text.match(hrefPattern);

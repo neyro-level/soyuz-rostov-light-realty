@@ -1,4 +1,4 @@
-import { env } from "@/platform/env";
+import { env } from "../platform/env";
 
 export const analytics = {
   provider: "yandex-metrika" as const,

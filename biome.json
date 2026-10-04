@@ -7,7 +7,18 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!fixtures",
+      "!docs/standards",
+      "!docs/task-manager-inventory.v1.json",
+      "!.beads",
+      "!test-results"
+    ]
   },
   "formatter": {
     "enabled": true,

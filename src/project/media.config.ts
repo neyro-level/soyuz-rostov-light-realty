@@ -1,4 +1,4 @@
-import { env } from "@/platform/env";
+import { env } from "../platform/env";
 import { site } from "./site.config";
 
 export const media = {
