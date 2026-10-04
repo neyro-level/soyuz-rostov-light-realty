@@ -7,6 +7,7 @@ const envSchema = z.object({
   APP_ENV: z.enum(["local", "staging", "production"]).default("local"),
   INDEXING_MODE: z.enum(["staging", "live"]).default("staging"),
   DATA_MODE: z.enum(["hub", "local"]).default("local"),
+  MEDIA_ORIGIN: z.string().url().optional(),
 });
 
 export type AppEnv = z.infer<typeof envSchema>;

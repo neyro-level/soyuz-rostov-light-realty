@@ -17,6 +17,7 @@
     "verify:ui-core": "tsx scripts/verify-ui-core.ts",
     "verify:routes": "tsx scripts/verify-routes.ts",
     "verify:leads": "tsx scripts/verify-leads.ts",
+    "verify:media": "tsx scripts/verify-media.ts",
     "test:e2e": "playwright test",
     "verify:contracts": "tsx scripts/verify-contracts.ts",
     "verify:snapshot": "tsx scripts/verify-snapshot.ts"
