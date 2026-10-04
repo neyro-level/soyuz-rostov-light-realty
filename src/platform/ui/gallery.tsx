@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export function Gallery({
   items,
 }: {
@@ -8,11 +10,12 @@ export function Gallery({
       {items.map((item) => (
         <li key={item.src}>
           <div className="aspect-4/3 overflow-hidden rounded-md border border-border bg-surface">
-            {/* biome-ignore lint/performance/noImgElement: token shell uses native img */}
-            <img
+            <Image
               alt={item.alt}
               className="h-full w-full object-cover"
+              height={720}
               src={item.src}
+              width={960}
             />
           </div>
         </li>

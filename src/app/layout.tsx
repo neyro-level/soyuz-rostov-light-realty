@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { OptInAnalytics } from "@/platform/analytics";
 import { env } from "@/platform/env";
 import { buildHref } from "@/platform/grammar";
 import { resolveNavGroup } from "@/platform/nav";
@@ -11,6 +12,7 @@ import {
 } from "@/platform/seo";
 import { JsonLdScript } from "@/platform/seo/json-ld-script";
 import { Footer, Header } from "@/platform/ui";
+import { analytics } from "@/project/analytics.config";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
 import { navigation } from "@/project/navigation.config";
@@ -82,6 +84,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           columns={footerColumns}
           copyright={`© ${new Date().getFullYear()} ${site.brand}`}
           legal={`${site.legalName}, ИНН ${site.inn}, ${site.address}, ${site.phoneDisplay}, ${site.email}, ${site.hoursDisplay}`}
+        />
+        <OptInAnalytics
+          acceptLabel="Разрешить"
+          counterId={analytics.counterId}
+          declineLabel="Отклонить"
+          prompt="Сбор статистики только после согласия."
         />
       </body>
     </html>
