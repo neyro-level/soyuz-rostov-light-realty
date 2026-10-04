@@ -57,6 +57,77 @@ export function buildHref(
   return fillTemplate(route.template, merged);
 }
 
+function escapeRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export type MatchedRoute = {
+  pageKey: string;
+  params: Record<string, string>;
+};
+
+function matchTemplate(
+  template: string,
+  pathname: string,
+  config: GrammarConfig,
+): Record<string, string> | null {
+  const known: Record<string, string> = {
+    geo: config.geo,
+    developersSegment: config.developersSegment,
+    developmentSegment: config.developmentSegment,
+    propertySegment: config.propertySegment,
+  };
+  let pattern = "^";
+  const names: string[] = [];
+  let last = 0;
+  const token = /\{([a-zA-Z]+)\}/g;
+  let match = token.exec(template);
+  while (match) {
+    pattern += escapeRegex(template.slice(last, match.index));
+    const name = match[1];
+    const fixed = known[name];
+    if (fixed) {
+      pattern += escapeRegex(fixed);
+    } else {
+      pattern += "([^/]+)";
+      names.push(name);
+    }
+    last = match.index + match[0].length;
+    match = token.exec(template);
+  }
+  pattern += `${escapeRegex(template.slice(last))}$`;
+  const found = pathname.match(new RegExp(pattern));
+  if (!found) {
+    return null;
+  }
+  const params: Record<string, string> = {};
+  names.forEach((name, index) => {
+    params[name] = found[index + 1];
+  });
+  return params;
+}
+
+export function matchPath(
+  config: GrammarConfig,
+  flags: FeatureFlags,
+  pathname: string,
+): MatchedRoute | null {
+  const path = withTrailingSlash(pathname);
+  const routes = [...config.routes].sort(
+    (left, right) => right.template.length - left.template.length,
+  );
+  for (const route of routes) {
+    if (!isFeatureEnabled(flags, route.feature)) {
+      continue;
+    }
+    const params = matchTemplate(route.template, path, config);
+    if (params) {
+      return { pageKey: route.pageKey, params };
+    }
+  }
+  return null;
+}
+
 export function assertNoCollisions(config: GrammarConfig): void {
   const pageKeys = new Set<string>();
   const templates = new Set<string>();

@@ -1,0 +1,33 @@
+:root {
+  --sr-bg: #f7f5f1;
+  --sr-fg: #1c1917;
+  --sr-muted: #78716c;
+  --sr-border: #e7e5e4;
+  --sr-accent: #1d4ed8;
+  --sr-accent-fg: #ffffff;
+  --sr-surface: #ffffff;
+  --sr-radius-sm: 0.25rem;
+  --sr-radius-md: 0.5rem;
+  --sr-space-sm: 0.5rem;
+  --sr-space-md: 1rem;
+  --sr-space-lg: 1.5rem;
+  --sr-shadow-card: 0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+@theme inline {
+  --color-bg: var(--sr-bg);
+  --color-fg: var(--sr-fg);
+  --color-muted: var(--sr-muted);
+  --color-border: var(--sr-border);
+  --color-accent: var(--sr-accent);
+  --color-accent-fg: var(--sr-accent-fg);
+  --color-surface: var(--sr-surface);
+  --radius-sm: var(--sr-radius-sm);
+  --radius-md: var(--sr-radius-md);
+  --spacing-sm: var(--sr-space-sm);
+  --spacing-md: var(--sr-space-md);
+  --spacing-lg: var(--sr-space-lg);
+  --shadow-card: var(--sr-shadow-card);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
