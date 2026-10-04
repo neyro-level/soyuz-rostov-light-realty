@@ -4,8 +4,20 @@ import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
 import { legacyRules } from "@/project/redirects/legacy";
 
-export function middleware(request: NextRequest) {
-  const rule = matchLegacy(request.nextUrl.pathname, legacyRules);
+function isStaticPath(pathname: string): boolean {
+  return (
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/media/") ||
+    /\.(?:ico|png|jpe?g|webp|gif|svg|woff2?|css|js|map)$/i.test(pathname)
+  );
+}
+
+export function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  if (isStaticPath(pathname)) {
+    return NextResponse.next();
+  }
+  const rule = matchLegacy(pathname, legacyRules);
   if (!rule) {
     return NextResponse.next();
   }
@@ -18,13 +30,3 @@ export function middleware(request: NextRequest) {
   }
   return NextResponse.redirect(new URL(location, request.url), 301);
 }
-
-export const config = {
-  matcher: [
-    "/novostroyki-rostova/:path*",
-    "/kvartiry-rostova/:path*",
-    "/blog/:path*",
-    "/stroitelstvo-domov/:path*",
-    "/otzyvy/:path*",
-  ],
-};

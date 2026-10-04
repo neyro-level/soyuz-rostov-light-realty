@@ -1,6 +1,8 @@
 import { assertNoCollisions, type GrammarConfig } from "@/platform/grammar";
+import { grammar as altGrammar } from "../../fixtures/fixture-alt/project/grammar.config";
+import { isAltFixture } from "./data.config";
 
-export const grammar = {
+const primaryGrammar = {
   geoMode: "SINGLE_GEO",
   geo: "rostov-na-donu",
   categories: ["novostroyki", "kvartiry"],
@@ -51,5 +53,7 @@ export const grammar = {
     { pageKey: "search", template: "/poisk/", feature: "search" },
   ],
 } as const satisfies GrammarConfig;
+
+export const grammar = isAltFixture() ? altGrammar : primaryGrammar;
 
 assertNoCollisions(grammar);

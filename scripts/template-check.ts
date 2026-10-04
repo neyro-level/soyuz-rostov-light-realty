@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,6 +37,28 @@ function loadTrust(fixtureDir: string) {
     publicKeyDer: Buffer.from(trustJson.publicKeySpkiBase64, "base64"),
   });
   return trust;
+}
+
+function runChecks(label: string, extraEnv: Record<string, string>) {
+  const commands: Array<{ cmd: string; args: string[] }> = [
+    { cmd: "pnpm", args: ["build"] },
+    { cmd: "pnpm", args: ["verify:seo-contracts"] },
+    { cmd: "pnpm", args: ["verify:layers"] },
+    { cmd: "pnpm", args: ["verify:routes"] },
+  ];
+  for (const { cmd, args } of commands) {
+    const result = spawnSync(cmd, args, {
+      cwd: root,
+      env: { ...process.env, ...extraEnv },
+      stdio: "inherit",
+      shell: true,
+    });
+    const ok = result.status === 0;
+    check(`${label}:${args.join(" ")}`, ok, ok ? "" : `exit ${result.status}`);
+    if (!ok) {
+      return;
+    }
+  }
 }
 
 const overlay = JSON.parse(
@@ -80,6 +103,17 @@ check(
     overlay.geo,
   ),
 );
+
+if (!failed) {
+  runChecks("primary-fixture", {
+    PROJECT_FIXTURE: "fixture-sz-rostov",
+  });
+}
+if (!failed) {
+  runChecks("alt-fixture", {
+    PROJECT_FIXTURE: "fixture-alt",
+  });
+}
 
 if (failed) {
   process.exit(1);

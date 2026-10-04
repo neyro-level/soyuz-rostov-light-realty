@@ -17,11 +17,17 @@ if (!novostroyki?.endsWith("/")) {
   fail("catalog href must use trailing slash");
 }
 
-if (buildHref(grammar, features, "facetVtorichka") === null) {
-  fail("vtorichka is ON and must produce an href");
+const hasVtorichka = grammar.routes.some(
+  (route) => route.pageKey === "facetVtorichka",
+);
+if (hasVtorichka && features.vtorichka === "ON") {
+  if (buildHref(grammar, features, "facetVtorichka") === null) {
+    fail("vtorichka is ON and must produce an href");
+  }
 }
 
 if (
+  hasVtorichka &&
   buildHref(
     grammar,
     { ...features, vtorichka: "DISABLED" },

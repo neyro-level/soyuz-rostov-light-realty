@@ -4,7 +4,7 @@
 
 | Файл | Роль |
 |---|---|
-| `../MASTER PLAN_ «Союз застройщиков».md` | Утверждённый мастер-план v1 |
+| `MASTER_PLAN.md` | Канонический мастер-план v1.4 |
 | `task-manager-inventory.v1.json` | Inventory Task Manager |
 | `DELIVERY_STATE.yaml` | Текущий эпик |
 | `standards/AMS_REALTY_LITE_CORE_STANDARD.md` | Lite Standard 1.1.0 |

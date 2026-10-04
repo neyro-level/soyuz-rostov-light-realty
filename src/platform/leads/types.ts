@@ -22,16 +22,27 @@ export type LeadSink = {
   deliver(delivery: LeadDelivery): Promise<void>;
 };
 
+export type LeadTransport = "none" | "smtp";
+
 export type LeadResult =
   | { ok: true; captured: true }
   | { ok: true; captured: false; reason: "honeypot" }
-  | { ok: false; code: "consent" | "validation" | "rate_limit" | "sink" };
+  | {
+      ok: false;
+      code:
+        | "consent"
+        | "validation"
+        | "rate_limit"
+        | "sink"
+        | "lead_transport_disabled";
+    };
 
 export type LeadSubmitContext = {
   ip: string;
   now: Date;
   destinationEmail: string;
   mode: LeadMode;
+  transport: LeadTransport;
   sink: LeadSink;
   limiter: RateLimiter;
 };

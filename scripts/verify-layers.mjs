@@ -59,9 +59,28 @@ for (const file of codeFiles) {
   }
 }
 
+function stripComments(text) {
+  return text
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/(^|[^:])\/\/.*$/gm, "$1");
+}
+
+const cyrillic = /[\u0400-\u04FF]/;
+const appAndPlatform = [
+  ...walk(join(root, "src/app")),
+  ...walk(join(root, "src/platform")),
+];
+for (const file of appAndPlatform) {
+  const stripped = stripComments(readFileSync(file, "utf8"));
+  if (cyrillic.test(stripped)) {
+    fail(`no-cyrillic: ${relative(root, file)}`);
+  }
+}
+
 if (process.exitCode) {
   process.exit(process.exitCode);
 }
 
 console.log("platform-no-project-literals: PASS");
 console.log("no-literal-hrefs: PASS");
+console.log("no-cyrillic: PASS");

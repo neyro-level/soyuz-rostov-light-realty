@@ -1,8 +1,17 @@
 plan_id: SZ-ROSTOV-LITE-MAIN
-plan_version: v1
-status: APPROVED
-current_epic: EPIC-01
-current_branch: epic/L0-foundation
+plan_version: v1.4
+status: TEMPLATE_READY
+current_epic: F1
+current_branch: main
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
-notes: L0 foundation in progress. Production is out of scope.
+closed_epics:
+  - L0
+  - L1
+  - L2
+  - L3
+  - L4
+  - L5
+  - F1
+post_merge_status: TEMPLATE_READY
+notes: L0–L5 and F1 closed. Production is a separate owner task.

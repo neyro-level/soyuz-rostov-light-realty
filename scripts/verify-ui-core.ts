@@ -72,6 +72,39 @@ for (const file of walk(join(root, "src/platform/ui"))) {
   check(`no-raw-color:${relative(root, file)}`, !match, match ? match[0] : "");
 }
 
+const layout = readFileSync(join(root, "src/app/layout.tsx"), "utf8");
+check("no-google-fonts-import", !layout.includes("next/font/google"));
+check(
+  "manrope-local-font",
+  readFileSync(join(root, "src/platform/ui/fonts.ts"), "utf8").includes(
+    "Manrope-cyrillic.woff2",
+  ) &&
+    readFileSync(join(root, "src/platform/ui/fonts.ts"), "utf8").includes(
+      "Manrope-latin.woff2",
+    ),
+);
+check(
+  "manrope-files",
+  statSync(join(root, "src/platform/ui/fonts/Manrope-latin.woff2")).isFile() &&
+    statSync(
+      join(root, "src/platform/ui/fonts/Manrope-cyrillic.woff2"),
+    ).isFile(),
+);
+check(
+  "manrope-license",
+  statSync(join(root, "src/platform/ui/fonts/OFL.txt")).isFile(),
+);
+check(
+  "no-googleapis-fonts",
+  !readFileSync(join(root, "src/app/layout.tsx"), "utf8").includes(
+    "fonts.googleapis",
+  ) &&
+    !readFileSync(
+      join(root, "src/platform/security/headers.ts"),
+      "utf8",
+    ).includes("fonts.googleapis"),
+);
+
 if (failed) {
   process.exit(1);
 }

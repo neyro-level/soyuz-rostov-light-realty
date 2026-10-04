@@ -1,4 +1,7 @@
-export const seo = {
+import { seo as altSeo } from "../../fixtures/fixture-alt/project/seo.config";
+import { isAltFixture } from "./data.config";
+
+const primarySeo = {
   registryPath: "docs/seo/SEO_REGISTRY_SEED.csv",
   titleMin: 30,
   titleMax: 65,
@@ -36,3 +39,5 @@ export const seo = {
     "property",
   ],
 } as const;
+
+export const seo = isAltFixture() ? altSeo : primarySeo;
