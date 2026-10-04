@@ -3,7 +3,8 @@ export default {
   forbidden: [
     {
       name: "platform-must-not-import-project",
-      comment: "Platform reads project through configs later; it must not import src/project.",
+      comment:
+        "Platform reads project through configs later; it must not import src/project.",
       severity: "error",
       from: { path: "^src/platform" },
       to: { path: "^src/project" },
