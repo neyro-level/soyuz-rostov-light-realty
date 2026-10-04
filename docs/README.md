@@ -11,5 +11,6 @@
 | `standards/AMS_DATA_HUB_CONTRACT.md` | Hub contract 3.1.2 |
 | `standards/AMS_UI_CORE_v5.0_FINAL.md` | UI Core 5.0 |
 | `adr/0001-platform-project-layers.md` | Слои platform / project |
+| `EXIT_BUNDLE.md` | Состав Exit Bundle для handoff без Hub/DB |
 
 Title, Description и H1 задаются только через `docs/seo/SEO_REGISTRY_SEED.csv` и `src/project/seo.config.ts` после эпика L2.

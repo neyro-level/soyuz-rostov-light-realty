@@ -1,0 +1,18 @@
+# Artifact only: not a production rollout. This plan does not deploy.
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      APP_ENV: local
+      DATA_MODE: local
+      LEADS_MODE: direct
+      INDEXING_MODE: staging
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+    volumes:
+      - lite-data:/data
+volumes:
+  lite-data:

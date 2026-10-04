@@ -1,0 +1,16 @@
+.git
+.beads
+.next
+node_modules
+test-results
+playwright-report
+blob-report
+playwright/.cache
+coverage
+.env
+.env.*
+!.env.example
+*.pem
+*.md
+docs/standards
+MASTER PLAN*

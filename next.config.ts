@@ -5,6 +5,10 @@ import { media } from "./src/project/media.config";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
+  output: "standalone",
+  outputFileTracingIncludes: {
+    "/*": ["./fixtures/**/*", "./docs/seo/**/*"],
+  },
   images: {
     loader: "custom",
     loaderFile: "./src/project/image-loader.ts",
