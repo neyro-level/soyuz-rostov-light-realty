@@ -1,0 +1,8 @@
+plan_id: SZ-ROSTOV-LITE-MAIN
+plan_version: v1
+status: APPROVED
+current_epic: EPIC-01
+current_branch: epic/L0-foundation
+delivery_mode: PR_ONLY
+delivery_profile: COMMERCIAL
+notes: L0 foundation in progress. Production is out of scope.

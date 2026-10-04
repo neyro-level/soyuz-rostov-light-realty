@@ -1,8 +1,23 @@
-# **Мастер-план SZ-ROSTOV-LITE-MAIN v1.4 (финальный, стартовый)**
+# **Мастер-план SZ-ROSTOV-LITE-MAIN**
+
+```text
+Plan ID: SZ-ROSTOV-LITE-MAIN
+Canonical file: MASTER PLAN_ «Союз застройщиков».md
+SourceCraft: integrator-p/soyuz-rostov-light-realty
+Version: v1
+Status: APPROVED
+Phase: APPROVAL_HANDOFF
+approved_by: owner
+approved_at: 2026-10-03T13:04:00+03:00
+PROJECT_CLASS: COMMERCIAL
+DELIVERY_PROFILE: COMMERCIAL
+AMS_PROFILE: REALTY_LITE
+delivery_mode: PR_ONLY
+```
 
 **Проект:** «Союз Застройщиков», Ростов-на-Дону 
 
-**Домен:** [https\://souz-home.ru/](https://souz-home.ru/) (работаем на текущем домене, перенос будет отдельным шагом) **Профиль:** `AMS_PROFILE=REALTY_LITE` 
+**Домен:** [https://souz-home.ru/](https://souz-home.ru/) (работаем на текущем домене, перенос будет отдельным шагом) **Профиль:** `AMS_PROFILE=REALTY_LITE` 
 
 **Нормативы:** AMS REALTY LITE Core Standard 1.1.0, AMS Data Hub contract 3.1.2, AMS UI Core 5.0 
 
@@ -50,22 +65,6 @@ Title, Description и H1 берутся только из `docs/seo/SEO_REGISTRY
 * Всё, что относится к «Союзу» (названия, города, URL-сегменты, тексты, контакты, цвета), лежит только в `src/project/*` и `docs/seo/*`.  
 * Платформенный код читает это из конфигов и сам ничего такого не содержит.
 
-## 
-
-## 
-
-## 
-
-## 
-
-## 
-
-## 
-
-## 
-
-## 
-
 ## **2\. Архитектура: платформа и проектный слой**
 
 | Слой | Где лежит | Что внутри | Меняется в следующем проекте |
@@ -96,12 +95,17 @@ docs/seo/SEO\_REGISTRY\_SEED.csv    Title / Description / H1 / robots по pageK
 
 ## **3\. Git-протокол**
 
-* Каждый эпик делается в ветке `epic/L<N>-<slug>`, созданной от свежего `main`.  
+Канон: SourceCraft primary, `delivery_mode=PR_ONLY`. Direct push в `main` запрещён.
+
+* Каждый эпик делается в ветке `epic/L<N>-<slug>` от свежего `origin/main`.  
 * Коммиты оформляются как `T<N>.<k>: <описание>`.  
-* Перед PR выполняется `pnpm install --frozen-lockfile && pnpm verify && pnpm build`.  
-* Один эпик — один PR в `main`.  
-* Мёрж только при зелёном CI, после мёржа ветка удаляется.  
-* Эпики выполняются строго по очереди.
+* Перед PR локально: `pnpm install --frozen-lockfile && pnpm verify && pnpm build`.  
+* Один эпик — один PR в `main`. Создание PR не запускает проверки и не означает merge.  
+* На `push` и обновление PR CI не запускается.  
+* Перед merge — один ручной exact-head SourceCraft gate (`STANDARD` или `RISKY` по риску эпика) и review.  
+* Production этим планом не делается и отдельной командой не подменяется.  
+* После merge source-ветка удаляется.  
+* Эпики L0→L5 идут по HARD-зависимостям контракта, а не потому что «так удобнее CI».
 
 ## **4\. Стек**
 
@@ -152,6 +156,9 @@ docs/seo/SEO\_REGISTRY\_SEED.csv    Title / Description / H1 / robots по pageK
 | D15 | Групповые пункты меню («Недвижимость», «Услуги», «О компании») — это заголовки выпадающих списков, а не ссылки |
 | D16 | Компоненты берут цвета, шрифты, радиусы и отступы только из токенов `theme.css`. Произвольные цвета и значения в компонентах запрещены, это проверяет `verify:ui-core` |
 | D17 | Тексты страниц хранятся отдельно от компонентов. Пока на их месте нейтральные заглушки |
+| D18 | `PROJECT_CLASS=COMMERCIAL`, `DELIVERY_PROFILE=COMMERCIAL`: клиентский сайт, заявки, публичный домен |
+| D19 | Git: `PR_ONLY`, zero-CI на push/PR, один ручной SourceCraft gate перед merge |
+| D20 | Базы данных в проекте нет и не будет. Запрещены PostgreSQL, Payload, Prisma, CMS и `DATABASE_URL`. Оставшиеся Payload-секреты в Secret Master не читать и не подключать |
 
 ## **7\. Карта страниц и SEO-реестр**
 
@@ -247,12 +254,107 @@ docs/seo/SEO\_REGISTRY\_SEED.csv    Title / Description / H1 / robots по pageK
 
 | Эпик | Ветка | Что входит | Критерий приёмки |
 | :---- | :---- | :---- | :---- |
-| L0 Фундамент | `epic/L0-foundation` | Установка стека в репозиторий sourcecraft, Next App Router, структура слоёв по §2 (`src/platform`, `src/project`, `fixtures`), AGENTS.md, DELIVERY\_STATE.yaml, обязательные docs и ADR (включая ADR о разделении слоёв), Zod-схема `env.ts`, `next.config.ts`, guards `platform-no-project-literals`, `no-literal-hrefs`, dependency-cruiser (`verify:layers`), CI | Чистая установка, зелёные `pnpm verify` и `pnpm build` |
+| L0 Фундамент | `epic/L0-foundation` | Установка стека в репозиторий SourceCraft, Next App Router, структура слоёв по §2, AGENTS.md, DELIVERY\_STATE.yaml, docs/ADR, Zod `env.ts` без DATABASE_URL, `next.config.ts`, guards слоёв, `.sourcecraft/ci.yaml` только с ручными gate (без push/PR) | Локально зелёные `pnpm verify` и `pnpm build`; в зависимостях нет PostgreSQL/Payload/Prisma |
 | L1 Данные и снапшот | `epic/L1-data` | Hub-контракты 3.1.2, проверка подписи и хеша, хранилище, карантин, sync-воркер, DTO, `DATA_MODE=local`, фикстура `fixture-sz-rostov` (около 10 районов, 20 застройщиков, 300 квартир), тесты | Зелёные `verify:snapshot` и `verify:contracts` |
 | L2 Grammar и SEO | `epic/L2-grammar-seo` | Движок grammar, который читает `grammar.config.ts`, флаги из `features.config.ts` (D13), guards коллизий, legacy-редиректы и 410, SEO\_REGISTRY\_SEED.csv со всеми строками §7, metadata resolver с правилами из `seo.config.ts`, content gate (D4), robots.txt, sitemap, JSON-LD (D12), `site.config.ts` | Зелёные `verify:seo-contracts` и `verify:journal`, у каждой страницы корректные Title, Description и H1 |
 | L3 Каркас UI | `epic/L3-skeleton` | `theme.css` с токенами (D16), нейтральные компоненты (шапка, подвал, хлебные крошки, карточки квартиры и ЖК, сетка каталога, фильтры, пагинация, галерея, форма заявки), меню из `navigation.config.ts`, страницы по карте §7 (H1 и один блок), серверный рендер каталогов, Playwright smoke | Зелёный `verify:ui-core`, в коде компонентов нет произвольных цветов, в навигации нет выключенных разделов |
 | L4 Заявки, медиа, безопасность | `epic/L4-leads-media-security` | Lead API (direct) на e-mail из §5, формы с согласием на ПДн, Метрика только после согласия (opt-in), image loader, CSP и security headers, health endpoint | Зелёный `verify:security`, тестовая заявка доходит |
 | L5 Готовность к шаблону | `epic/L5-template-ready` | Минимальные Dockerfile и compose, exit bundle и exit-mode, бюджеты производительности (LCP ≤ 2,5 с, CLS ≤ 0,1), вторая фикстура `fixture-alt` с другим набором гео, категорий и флагов в рамках Lite Standard, `template:check` (сборка и `verify` на обеих фикстурах без правок платформы), черновик `docs/NEW_PROJECT.md` (какие файлы проектного слоя заменить и в каком порядке), тег `v1.0.0-skeleton` | Зелёные `verify:performance`, `verify:exit-mode`, `template:check` и полный `pnpm verify` |
 
-Порядок выполнения: L0 → L1 → L2 → L3 → L4 → L5. Блокеров на старте нет.
+Порядок выполнения: L0 → L1 → L2 → L3 → L4 → L5. Это HARD-цепочка контрактов, не CI-очередь. Production в цепочку не входит.
+
+### 9.1. Контракты эпиков
+
+Общее для всех эпиков: Source of Truth — этот план + стандарты из §0; `delivery_mode=PR_ONLY`; repository `integrator-p/soyuz-rostov-light-realty`; rollback — закрыть PR / не merge; stop — production, новый секрет, БД/Payload, расширение scope.
+
+### EPIC-01 Фундамент
+
+
+Outcome: в репозитории есть Next App Router, слои `src/platform` и `src/project`, канонические docs и guards без базы данных.  
+Entry: чистый `origin/main`. Exit: `pnpm verify` и `pnpm build` зелёные, нет `payload`/`prisma`/`pg` в зависимостях, нет `DATABASE_URL` в `env.ts`.  
+Depends on: нет. Wave: foundation. Critical path: yes.  
+Verification: `pnpm verify`, `pnpm build`, `verify:layers`.
+
+### EPIC-02 Данные и снапшот
+
+
+Outcome: локальный подписанный снапшот Hub 3.1.2 читается из фикстуры, карантин и sync работают без БД.  
+Entry: L0 в `main`. Exit: `verify:snapshot` и `verify:contracts` зелёные, `DATA_MODE=local`.  
+Depends on: L0 HARD. Wave: data. Critical path: yes.  
+Verification: `verify:snapshot`, `verify:contracts`.
+
+### EPIC-03 Grammar и SEO
+
+
+Outcome: все URL и metadata из §7 строятся grammar+реестром, content gate D4 закрыт, journal=DISABLED доказан.  
+Entry: L1 в `main`. Exit: `verify:seo-contracts` и `verify:journal` зелёные; у каждой pageKey есть Title/Description/H1.  
+Depends on: L1 HARD. Wave: seo. Critical path: yes.  
+Verification: `verify:seo-contracts`, `verify:journal`.
+
+### EPIC-04 Каркас UI
+
+
+Outcome: страницы §7 серверно рендерятся нейтральным каркасом на токенах `theme.css`.  
+Entry: L2 в `main`. Exit: `verify:ui-core` зелёный, Playwright smoke по карте страниц, в компонентах нет произвольных цветов.  
+Depends on: L2 HARD. Wave: ui. Critical path: yes.  
+Verification: `verify:ui-core`, Playwright smoke.
+
+### EPIC-05 Заявки, медиа, безопасность
+
+
+Outcome: заявка уходит на e-mail §5 в `LEADS_MODE=direct`, медиа через свой loader, CSP/headers на месте.  
+Entry: L3 в `main`. Exit: `verify:security` зелёный; тестовая заявка доходит до проверяемого sink (тест/перехват, не production mailbox).  
+Depends on: L3 HARD. External: SMTP/e-mail preflight через project env без Secret Master Payload; fallback — mock sink + запись в OPEN_QUESTIONS; stop — live production mail.  
+Wave: leads. Critical path: yes.  
+Verification: `verify:security`, lead test.
+
+### EPIC-06 Готовность к шаблону
+
+Outcome: сборка проверяется на двух фикстурах, exit-mode и perf-бюджеты закрыты, тег `v1.0.0-skeleton` стоит, production не выкатывается.  
+Entry: L4 в `main`. Exit: `verify:performance`, `verify:exit-mode`, `template:check`, полный `pnpm verify`.  
+Depends on: L4 HARD. Wave: template-ready. Critical path: yes.  
+Verification: `verify:performance`, `verify:exit-mode`, `template:check`.
+
+Каждый эпик заканчивается delivery-task: PR в `main` без merge этим планом, пока владелец отдельно не сказал выводить в main.
+
+### 9.2. OWNER_DECISION_REGISTER
+
+| ID | Вопрос | Решение | Deadline | Status |
+| :---- | :---- | :---- | :---- | :---- |
+| OD1 | Профиль доставки | `DELIVERY_PROFILE=COMMERCIAL`, `PROJECT_CLASS=COMMERCIAL` | before APPROVAL | DECIDED |
+| OD2 | Git/CI | `PR_ONLY`, zero-CI, один ручной gate | before APPROVAL | DECIDED |
+| OD3 | База данных | Нет БД/CMS/Payload; старые Payload-секреты не использовать | before APPROVAL | DECIDED |
+
+---
+
+## Architect revision history
+
+| Version | Status | Date | Input | Result |
+| :---- | :---- | :---- | :---- | :---- |
+| v0 | DRAFT | 2026-10-03 | Owner: взять существующий мастер-план | Основа принята. |
+| v1 | APPROVED | 2026-10-03 | Owner: «План утвержден» | Snapshot v1 утверждён. Task Manager import разрешён. Production не разрешён. |
+
+### FINAL_AUDIT v1
+
+MASTER PLAN MAP  
+Primary goal: чистая `main` REALTY_LITE без CMS/design/production.  
+Non-goals: БД, Payload, упаковка шаблона как отдельный продукт, перенос домена, production.  
+Epics: L0–L5.  
+Data: local Hub snapshot.  
+Security: PII в заявках L4, opt-in метрика.  
+Infrastructure: Dockerfile/compose в L5 как artifact, не rollout.
+
+FINDING REGISTER: открытых BLOCKER нет. Sequential L0→L5 = HARD, ослабить нельзя: каждый слой читает контракт предыдущего.
+
+Night Run Readiness: READY_WITH_LIMITS — одна критическая цепочка эпиков, параллельных implementation waves нет; внутри эпика tasks могут идти пакетом в одной ветке. Production изолирован.
+
+```text
+MASTER PLAN AUDIT
+Logic/completeness: blockers 0 / major 0
+Architecture/data/security: blockers 0 / major 0
+Dependency/autonomy: cycles 0 / hard L1←L0, L2←L1, L3←L2, L4←L3, L5←L4 / waves 1 serial
+Executability/evidence: 6/6 epics with acceptance+verification
+Owner decisions before approval: 0
+Night Run Readiness: READY_WITH_LIMITS
+```
 
