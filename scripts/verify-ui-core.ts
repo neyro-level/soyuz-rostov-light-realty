@@ -69,11 +69,7 @@ function walk(dir: string, files: string[] = []): string[] {
 for (const file of walk(join(root, "src/platform/ui"))) {
   const text = readFileSync(file, "utf8");
   const match = text.match(rawColor);
-  check(
-    `no-raw-color:${relative(root, file)}`,
-    !match,
-    match ? match[0] : "",
-  );
+  check(`no-raw-color:${relative(root, file)}`, !match, match ? match[0] : "");
 }
 
 if (failed) {

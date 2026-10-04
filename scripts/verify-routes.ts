@@ -53,8 +53,10 @@ for (const row of registry) {
   check(`registry-in-grammar:${row.pageKey}`, grammarKeys.has(row.pageKey));
 }
 
-const header = navigation.header.flatMap((group) =>
-  resolveNavGroup(group, grammar, features, registry, navigation.labels).items,
+const header = navigation.header.flatMap(
+  (group) =>
+    resolveNavGroup(group, grammar, features, registry, navigation.labels)
+      .items,
 );
 const geoHub = buildHref(grammar, features, "geoHub");
 check(
@@ -83,7 +85,10 @@ const docs = resolveNavGroup(
   registry,
   navigation.labels,
 );
-check("footer-documents-privacy", docs.items.some((item) => item.label === navigation.labels.privacy));
+check(
+  "footer-documents-privacy",
+  docs.items.some((item) => item.label === navigation.labels.privacy),
+);
 
 if (failed) {
   process.exit(1);
