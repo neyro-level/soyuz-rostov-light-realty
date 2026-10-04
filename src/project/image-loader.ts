@@ -1,5 +1,5 @@
-import { buildMediaSrc } from "@/platform/media";
-import { media } from "@/project/media.config";
+import { buildMediaSrc } from "../platform/media";
+import { media } from "./media.config";
 
 export default function imageLoader({
   src,
