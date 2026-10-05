@@ -65,7 +65,9 @@ check("lead-transport-default-none", defaults.LEAD_TRANSPORT === "none");
 
 check(
   "smtp-missing-secret-throws",
-  throws(() => loadEnv({ LEAD_TRANSPORT: "smtp" } as NodeJS.ProcessEnv)),
+  throws(() =>
+    loadEnv({ LEAD_TRANSPORT: "smtp" } as unknown as NodeJS.ProcessEnv),
+  ),
 );
 check(
   "smtp-placeholder-secret-throws",
@@ -78,7 +80,7 @@ check(
       SMTP_USER: "user",
       SMTP_PASS: "changeme",
       SMTP_FROM: "noreply@example.test",
-    } as NodeJS.ProcessEnv),
+    } as unknown as NodeJS.ProcessEnv),
   ),
 );
 
@@ -90,7 +92,7 @@ const smtp = loadEnv({
   SMTP_USER: "user",
   SMTP_PASS: "ephemeral-test-key",
   SMTP_FROM: "noreply@example.test",
-} as NodeJS.ProcessEnv);
+} as unknown as NodeJS.ProcessEnv);
 check("smtp-explicit-secret-loads", smtp.SMTP_PASS === "ephemeral-test-key");
 
 if (failed) {

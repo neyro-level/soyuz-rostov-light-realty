@@ -1,3 +1,8 @@
+export type {
+  PropertyCardDTO,
+  PropertyDetailsDTO,
+  RealtyRepository,
+} from "./catalog";
 export { env, loadEnv } from "./env";
 export {
   HUB_CONTRACT_VERSION,
