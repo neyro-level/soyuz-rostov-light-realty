@@ -1,12 +1,12 @@
-export type IndexingMode = "staging" | "live";
+export type IndexingMode = "private" | "staging" | "public";
 
 export function buildRobotsTxt(indexingMode: IndexingMode): string {
-  if (indexingMode === "staging") {
-    return "User-agent: *\nDisallow: /\n";
+  if (indexingMode === "public") {
+    return "User-agent: *\nAllow: /\n";
   }
-  return "User-agent: *\nAllow: /\n";
+  return "User-agent: *\nDisallow: /\n";
 }
 
 export function sitemapAllowed(indexingMode: IndexingMode): boolean {
-  return indexingMode === "live";
+  return indexingMode === "public";
 }

@@ -216,11 +216,11 @@ if (listing) {
 
 const liveEntries = buildSitemapEntries(snapshot, {
   ...context,
-  indexingMode: "live",
+  indexingMode: "public",
 });
-check("sitemap-live-not-empty", liveEntries.length > 0);
+check("sitemap-public-not-empty", liveEntries.length > 0);
 check(
-  "sitemap-live-no-noindex-thanks",
+  "sitemap-public-no-noindex-thanks",
   liveEntries.every((item) => !String(item.url).includes("/spasibo/")),
 );
 const stagingEntries = buildSitemapEntries(snapshot, {

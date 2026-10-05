@@ -8,8 +8,10 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   APP_ENV: z.enum(["local", "staging", "production"]).default("local"),
-  INDEXING_MODE: z.enum(["staging", "live"]).default("staging"),
-  DATA_MODE: z.enum(["hub", "local"]).default("local"),
+  INDEXING_MODE: z
+    .enum(["private", "staging", "public"])
+    .default("staging"),
+  DATA_MODE: z.enum(["snapshot", "local"]).default("local"),
   LEADS_MODE: z.enum(["direct", "hub"]).default("direct"),
   LEAD_TRANSPORT: z.enum(["none", "smtp"]).default("none"),
   PROJECT_FIXTURE: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
