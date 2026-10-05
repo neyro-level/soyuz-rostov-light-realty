@@ -12,8 +12,8 @@ const envSchema = z.object({
     .enum(["private", "staging", "public"])
     .default("staging"),
   DATA_MODE: z.enum(["snapshot", "local"]).default("local"),
-  LEADS_MODE: z.enum(["direct", "hub"]).default("direct"),
-  LEAD_TRANSPORT: z.enum(["none", "smtp"]).default("none"),
+  LEADS_ROUTE: z.enum(["direct", "service", "dual"]).default("direct"),
+  LEAD_TRANSPORT: z.enum(["none", "smtp", "webhook", "crm"]).default("none"),
   PROJECT_FIXTURE: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   MEDIA_ORIGIN: z.preprocess(emptyToUndefined, z.string().url().optional()),
   ANALYTICS_METRIKA_ID: z.preprocess(

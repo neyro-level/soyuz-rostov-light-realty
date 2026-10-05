@@ -8,7 +8,7 @@ services:
       NODE_ENV: production
       APP_ENV: local
       DATA_MODE: local
-      LEADS_MODE: direct
+      LEADS_ROUTE: direct
       INDEXING_MODE: staging
       HOSTNAME: 0.0.0.0
       PORT: "3000"

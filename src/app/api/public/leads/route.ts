@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     ip,
     now: new Date(),
     destinationEmail: lead.destinationEmail,
-    mode: lead.mode,
+    mode: env.LEADS_ROUTE,
     transport,
     sink:
       transport === "smtp" ? smtpSink() : { deliver: async () => undefined },

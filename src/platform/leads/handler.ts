@@ -5,7 +5,7 @@ export async function submitLead(
   input: unknown,
   context: LeadSubmitContext,
 ): Promise<LeadResult> {
-  if (context.mode !== "direct") {
+  if (context.mode !== "direct" && context.mode !== "dual") {
     return { ok: false, code: "sink" };
   }
   const parsed = parseLeadSubmission(input);
@@ -22,7 +22,7 @@ export async function submitLead(
   if (!context.limiter.allow(context.ip, context.now)) {
     return { ok: false, code: "rate_limit" };
   }
-  if (context.transport === "none") {
+  if (context.transport !== "smtp") {
     return { ok: false, code: "lead_transport_disabled" };
   }
   const capturedAt = context.now.toISOString();

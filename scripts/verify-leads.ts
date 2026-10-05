@@ -34,7 +34,7 @@ async function main() {
       ip: "test-ip",
       now: new Date("2026-10-03T12:00:00.000Z"),
       destinationEmail: lead.destinationEmail,
-      mode: lead.mode,
+      mode: lead.route,
       transport: "none",
       sink: noneSink,
       limiter,
@@ -58,7 +58,7 @@ async function main() {
       ip: "test-ip",
       now: new Date("2026-10-03T12:00:00.000Z"),
       destinationEmail: lead.destinationEmail,
-      mode: lead.mode,
+      mode: lead.route,
       transport: "smtp",
       sink: smtpSink,
       limiter,
@@ -74,7 +74,7 @@ async function main() {
   check("smtp-to-config-email", raw.includes(lead.destinationEmail));
   check("smtp-has-pageKey", raw.includes("pageKey=contacts"));
   check("smtp-has-consent", raw.includes("consent=true"));
-  check("leads-mode-direct", lead.mode === "direct");
+  check("leads-route-direct", lead.route === "direct");
 
   const noConsent = await submitLead(
     { name: "Test", phone: "+79885552027", consent: false },
@@ -82,7 +82,7 @@ async function main() {
       ip: "test-ip",
       now: new Date("2026-10-03T12:00:00.000Z"),
       destinationEmail: lead.destinationEmail,
-      mode: lead.mode,
+      mode: lead.route,
       transport: "none",
       sink: noneSink,
       limiter,

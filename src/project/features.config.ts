@@ -11,4 +11,12 @@ const primaryFeatures = {
   search: "ON",
 } as const satisfies FeatureFlags;
 
+export const modules = {
+  leads: "ON",
+  catalog: "ON",
+  journal: "DISABLED",
+  analytics: "ON",
+  indexNow: "DISABLED",
+} as const;
+
 export const features = isAltFixture() ? altFeatures : primaryFeatures;

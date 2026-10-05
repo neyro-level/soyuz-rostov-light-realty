@@ -32,8 +32,8 @@ const example = readFileSync(join(root, ".env.example"), "utf8");
 const defaults = loadEnv({} as NodeJS.ProcessEnv);
 
 check("data-mode-default-local", defaults.DATA_MODE === "local");
-check("leads-mode-default-direct", defaults.LEADS_MODE === "direct");
-check("runtime-leads-direct", lead.mode === "direct");
+check("leads-route-default-direct", defaults.LEADS_ROUTE === "direct");
+check("runtime-leads-direct", lead.route === "direct");
 check("env-has-no-database-url", !envFile.includes("DATABASE_URL"));
 check(
   "no-payload-postgres-deps",
@@ -49,17 +49,17 @@ check(
   "compose-is-artifact",
   compose.includes("not a production rollout") &&
     compose.includes("DATA_MODE: local") &&
-    compose.includes("LEADS_MODE: direct"),
+    compose.includes("LEADS_ROUTE: direct"),
 );
 check(
   "exit-bundle-notes",
   bundle.includes("DATA_MODE=local") &&
-    bundle.includes("LEADS_MODE=direct") &&
+    bundle.includes("LEADS_ROUTE=direct") &&
     bundle.includes("DATABASE_URL"),
 );
 check(
   "env-example-exit-mode",
-  example.includes("DATA_MODE=local") && example.includes("LEADS_MODE=direct"),
+  example.includes("DATA_MODE=local") && example.includes("LEADS_ROUTE=direct"),
 );
 
 if (failed) {

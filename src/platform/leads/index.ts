@@ -4,6 +4,7 @@ export { SmtpLeadSink } from "./smtp-sink";
 export type {
   LeadDelivery,
   LeadMode,
+  LeadRoute,
   LeadResult,
   LeadSink,
   LeadSubmission,

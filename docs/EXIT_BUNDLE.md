@@ -9,7 +9,7 @@ Handoff-пакет без AMS Hub, S3 и базы данных. Docker/compose �
 - vendored Hub contract в `src/platform/hub`
 - SEO registry `docs/seo/`
 - `DATA_MODE=local`
-- `LEADS_MODE=direct` (mock sink до SMTP владельца)
+- `LEADS_ROUTE=direct` (mock sink до SMTP владельца)
 - заменяемый `MEDIA_ORIGIN`
 - `Dockerfile` и `compose.yaml`
 

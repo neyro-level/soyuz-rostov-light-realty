@@ -1,4 +1,5 @@
-export type LeadMode = "direct";
+export type LeadRoute = "direct" | "service" | "dual";
+export type LeadMode = LeadRoute;
 
 export type LeadSubmission = {
   name: string;
@@ -22,7 +23,7 @@ export type LeadSink = {
   deliver(delivery: LeadDelivery): Promise<void>;
 };
 
-export type LeadTransport = "none" | "smtp";
+export type LeadTransport = "none" | "smtp" | "webhook" | "crm";
 
 export type LeadResult =
   | { ok: true; captured: true }
