@@ -4,24 +4,37 @@
 
 ## Plan
 
-- Plan ID: `SZ-ROSTOV-LITE-MAIN`
-- Version: `v1.4`
+- Plan ID: `SOUZ-TEMPLATE-FREEZE`
+- Version: `v2`
 - Status: `APPROVED`
 - Canonical file: `docs/MASTER_PLAN.md`
 - Standards: `docs/standards/`
-- Inventory: `docs/task-manager-inventory.v1.json`
+- Design system: `docs/SOUZ_DESIGN_SYSTEM.md`
+- Predecessor archive: `docs/archive/` (не Source of Truth; Beads Lite не трогать)
 
-Порядок чтения: `AGENTS.md` → `docs/MASTER_PLAN.md` → `docs/DELIVERY_STATE.yaml` → `docs/standards/` → текущая Task Manager task.
+Порядок чтения:
 
-Приоритет при конфликте: ADR владельца → Lite Standard → Hub contract → master plan → UI Core → код → чат.
+```text
+AMS SITE CORE
+→ AMS REALTY CORE
+→ AMS UI CORE
+→ SOUZ DESIGN SYSTEM
+→ Project / ADR
+→ Master Plan
+→ Delivery State
+→ Task
+```
+
+Приоритет при конфликте: явное решение владельца → ADR проекта → фактический код/lockfile → SITE CORE → REALTY CORE → UI CORE → дизайн-система → master plan → чат.
 
 ## Invariants
 
-- `AMS_PROFILE=REALTY_LITE`, `PROJECT_CLASS=COMMERCIAL`, `DELIVERY_PROFILE=COMMERCIAL`
-- Базы данных нет: запрещены PostgreSQL, Payload, Prisma, CMS и `DATABASE_URL`
+- `AMS_PROFILE=REALTY`, `PROJECT_CLASS=COMMERCIAL`, `DELIVERY_PROFILE=COMMERCIAL`
+- `DATA_MODE=snapshot | local`; БД нет: запрещены PostgreSQL, Payload, Prisma, CMS и `DATABASE_URL`
 - Git: SourceCraft primary, `PR_ONLY`, лёгкая проверка на PR, один ручной `merge-gate` перед merge
 - Production этим планом не делается
 - Платформа: `src/platform/**`. Проектный слой: `src/project/**` и `docs/seo/**`
+- Единственная проектная дизайн-система: `docs/SOUZ_DESIGN_SYSTEM.md`
 
 ## Delivery state
 
