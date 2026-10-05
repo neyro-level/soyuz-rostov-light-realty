@@ -28,7 +28,10 @@ const deps = {
 const dockerfile = readFileSync(join(root, "Dockerfile"), "utf8");
 const compose = readFileSync(join(root, "compose.yaml"), "utf8");
 const bundle = readFileSync(join(root, "docs/EXIT_BUNDLE.md"), "utf8");
-const example = readFileSync(join(root, ".env.example"), "utf8");
+const example = readFileSync(join(root, ".env.example"), "utf8").replaceAll(
+  "\r\n",
+  "\n",
+);
 const defaults = loadEnv({} as NodeJS.ProcessEnv);
 
 check("data-mode-default-local", defaults.DATA_MODE === "local");
@@ -59,7 +62,7 @@ check(
 );
 check(
   "env-example-exit-mode",
-  example.includes("DATA_MODE=local") && example.includes("LEADS_ROUTE=direct"),
+  /^DATA_MODE$/m.test(example) && /^LEADS_ROUTE$/m.test(example),
 );
 
 if (failed) {

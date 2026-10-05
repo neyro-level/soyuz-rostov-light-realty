@@ -128,11 +128,14 @@ check(
   !hidden.includes("8500000") && !hidden.includes("₽"),
 );
 
-const exampleEnv = readFileSync(join(root, ".env.example"), "utf8");
+const exampleEnv = readFileSync(join(root, ".env.example"), "utf8").replaceAll(
+  "\r\n",
+  "\n",
+);
 const envSource = readFileSync(join(root, "src/platform/env.ts"), "utf8");
 check(
   "INDEXING_MODE=staging",
-  exampleEnv.includes("INDEXING_MODE=staging") &&
+  /^INDEXING_MODE$/m.test(exampleEnv) &&
     envSource.includes('.default("staging")'),
 );
 
