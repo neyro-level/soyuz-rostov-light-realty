@@ -32,6 +32,7 @@ export type PageMetadataContext = {
     params: Record<string, string>,
     snapshot: CatalogSnapshot,
   ) => Record<string, string | undefined>;
+  noindexAutoPageKeys?: readonly string[];
   now?: Date;
 };
 
@@ -155,6 +156,8 @@ export function resolvePageMetadata(
   let robots = parseRobotsDirective(row.robotsDefault);
   if (context.indexingMode === "staging") {
     robots = { index: false, follow: false };
+  } else if (context.noindexAutoPageKeys?.includes(pageKey)) {
+    robots = { index: false, follow: true };
   } else if (pageKey === "property") {
     const listing = findProperty(snapshot, params.publicUrlId);
     if (!listing) {

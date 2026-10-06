@@ -29,6 +29,7 @@ import type {
   PropertyListQuery,
   RealtyRepository,
 } from "./repository";
+import { loadFixtureJson } from "./local";
 
 type GeoRecord = { uid: string; name: string };
 type AgentRecord = {
@@ -93,6 +94,11 @@ export class SnapshotRepository implements RealtyRepository {
     private readonly agents: AgentRecord[],
     private readonly contact: ProjectContactDTO | null,
   ) {}
+
+  /** Catalog view for SEO, lifecycle, and sitemap (same revision as repository reads). */
+  catalogSnapshot(): CatalogSnapshot {
+    return this.snapshot;
+  }
 
   static fromRevisionDir(
     root: string,
