@@ -66,6 +66,7 @@ pending_epics:
     branch: epic/I6-e2e
     base: epic/I5-seo
   - epic: J1
+    pr: 40
     branch: epic/J1-fixtures
     base: epic/I6-e2e
 last_merged:
