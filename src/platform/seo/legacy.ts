@@ -2,7 +2,7 @@ import { buildHref, type FeatureFlags, type GrammarConfig } from "../grammar";
 
 export type LegacyRedirect = {
   from: string;
-  status: 301;
+  status: 308;
   toPageKey: string;
 };
 
@@ -27,7 +27,7 @@ export function matchLegacy(
 ): LegacyRule | undefined {
   const path = normalizePath(pathname);
   for (const rule of rules) {
-    if (rule.status === 301) {
+    if (rule.status === 308) {
       if (normalizePath(rule.from) === path) {
         return rule;
       }
@@ -51,7 +51,7 @@ export function legacyLocation(
   grammar: GrammarConfig,
   flags: FeatureFlags,
 ): string | null {
-  if (rule.status !== 301) {
+  if (rule.status !== 308) {
     return null;
   }
   return buildHref(grammar, flags, rule.toPageKey);

@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import type { CatalogSnapshot } from "../catalog/entities";
 import {
+  developmentUrlSlug,
   findDeveloper,
   findProperty,
-  propertySemantic,
+  propertyUrlParams,
 } from "../catalog/entities";
 import { buildHref, isFeatureEnabled } from "../grammar";
 import {
@@ -53,7 +54,7 @@ export function buildSitemapEntries(
     if (route.pageKey === "development") {
       for (const development of snapshot.developments) {
         if (development.publicUrlId) {
-          push("development", { slug: development.publicUrlId });
+          push("development", { slug: developmentUrlSlug(development) });
         }
       }
       continue;
@@ -61,12 +62,12 @@ export function buildSitemapEntries(
     if (route.pageKey === "property") {
       for (const listing of snapshot.inventory) {
         if (findProperty(snapshot, listing.publicUrlId)) {
-          push("property", {
-            semantic: propertySemantic(listing),
-            id: listing.publicUrlId,
-          });
+          push("property", propertyUrlParams(listing));
         }
       }
+      continue;
+    }
+    if (route.pageKey === "agent") {
       continue;
     }
     push(route.pageKey);

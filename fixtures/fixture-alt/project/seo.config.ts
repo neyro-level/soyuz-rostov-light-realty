@@ -18,5 +18,7 @@ export const seo = {
     "developer",
     "development",
     "property",
+    "team",
+    "agent",
   ],
 } as const;

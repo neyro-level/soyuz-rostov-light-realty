@@ -37,6 +37,8 @@ const primarySeo = {
     "developer",
     "development",
     "property",
+    "team",
+    "agent",
   ],
 } as const;
 

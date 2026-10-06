@@ -73,7 +73,7 @@ export function evaluatePageGate(
     return { gate: "PASS", hidePrice: false };
   }
   if (pageKey === "property") {
-    const listing = findProperty(snapshot, params.id);
+    const listing = findProperty(snapshot, params.publicUrlId);
     const checkedAt = listing ? listingCheckedAt(snapshot, listing) : undefined;
     const price = evaluatePriceFreshness(checkedAt, now, thresholds);
     return {

@@ -10,6 +10,7 @@ export type DeveloperRecord = {
 export type DevelopmentRecord = {
   uid: string;
   publicUrlId?: string;
+  slug?: string;
   name: string;
   developerUid?: string;
   checkedAt?: string;
@@ -55,6 +56,23 @@ export function propertySemantic(listing: PublicInventoryDto): string {
   return `${roomsOf(listing)}k`;
 }
 
+export function propertyUrlParams(listing: {
+  slug?: string;
+  publicUrlId: string;
+}): { slug: string; publicUrlId: string } {
+  return {
+    slug: listing.slug || listing.publicUrlId,
+    publicUrlId: listing.publicUrlId,
+  };
+}
+
+export function developmentUrlSlug(item: DevelopmentRecord): string {
+  if (item.slug?.startsWith("zhk-")) {
+    return item.slug.slice(4);
+  }
+  return item.slug || item.publicUrlId || item.uid;
+}
+
 export function formatMoney(price?: MoneyValue): string | undefined {
   if (!price) {
     return undefined;
@@ -83,7 +101,12 @@ export function findDevelopment(
   if (!slug) {
     return undefined;
   }
-  return snapshot.developments.find((item) => item.publicUrlId === slug);
+  return snapshot.developments.find(
+    (item) =>
+      developmentUrlSlug(item) === slug ||
+      item.slug === slug ||
+      item.publicUrlId === slug,
+  );
 }
 
 export function findDeveloper(

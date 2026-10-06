@@ -18,6 +18,8 @@ export const grammar = {
   developersSegment: "developers",
   developmentSegment: "novostroyki",
   propertySegment: "kvartiry",
+  objectNamespace: "kvartiry",
+  teamSegment: "komanda",
   routes: [
     { pageKey: "home", template: "/" },
     { pageKey: "geoHub", template: "/{geo}/" },
@@ -34,7 +36,12 @@ export const grammar = {
     { pageKey: "developers", template: "/{developersSegment}/" },
     { pageKey: "developer", template: "/{developersSegment}/{slug}/" },
     { pageKey: "development", template: "/{developmentSegment}/zhk-{slug}/" },
-    { pageKey: "property", template: "/{propertySegment}/{semantic}-{id}/" },
+    {
+      pageKey: "property",
+      template: "/{objectNamespace}/{slug}-{publicUrlId}/",
+    },
+    { pageKey: "team", template: "/{teamSegment}/" },
+    { pageKey: "agent", template: "/{teamSegment}/{slug}/" },
     { pageKey: "about", template: "/o-kompanii/" },
     { pageKey: "contacts", template: "/kontakty/" },
   ],

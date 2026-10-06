@@ -2,6 +2,7 @@ import type { CatalogSnapshot } from "@/platform/catalog/entities";
 import {
   developerOf,
   developmentOf,
+  developmentUrlSlug,
   findDeveloper,
   findDevelopment,
   findProperty,
@@ -26,7 +27,7 @@ export function seoVarsForPage(
   snapshot: CatalogSnapshot,
 ): Record<string, string | undefined> {
   if (pageKey === "property") {
-    const listing = findProperty(snapshot, params.id);
+    const listing = findProperty(snapshot, params.publicUrlId);
     if (!listing) {
       return { ...params };
     }
@@ -42,8 +43,8 @@ export function seoVarsForPage(
       Название: development?.name ?? listing.addressPublic,
       Застройщик: developerOf(snapshot, development)?.name,
       price: formatMoney(listing.price),
-      semantic: `${roomsOf(listing)}k`,
-      id: listing.publicUrlId,
+      slug: listing.slug || listing.publicUrlId,
+      publicUrlId: listing.publicUrlId,
     };
   }
   if (pageKey === "development") {
@@ -55,7 +56,7 @@ export function seoVarsForPage(
       Название: development.name,
       Застройщик: developerOf(snapshot, development)?.name,
       minPrice: minPriceForDevelopment(snapshot, development.uid),
-      slug: development.publicUrlId,
+      slug: developmentUrlSlug(development),
     };
   }
   if (pageKey === "developer") {

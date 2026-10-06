@@ -28,5 +28,5 @@ export function proxy(request: NextRequest) {
   if (!location) {
     return new NextResponse(null, { status: 410 });
   }
-  return NextResponse.redirect(new URL(location, request.url), 301);
+  return NextResponse.redirect(new URL(location, request.url), 308);
 }

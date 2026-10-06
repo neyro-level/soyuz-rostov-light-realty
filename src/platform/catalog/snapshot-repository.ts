@@ -16,6 +16,7 @@ import {
   type CatalogSnapshot,
   developerOf,
   developmentOf,
+  developmentUrlSlug,
   findDeveloper,
   findDevelopment,
   findProperty,
@@ -181,6 +182,7 @@ export class SnapshotRepository implements RealtyRepository {
     return {
       uid: listing.uid,
       publicUrlId: listing.publicUrlId,
+      slug: listing.slug || listing.publicUrlId,
       title: this.propertyTitle(listing),
       rooms: roomsOf(listing),
       area: areaOf(listing),
@@ -233,6 +235,7 @@ export class SnapshotRepository implements RealtyRepository {
     return {
       uid: development.uid,
       publicUrlId: development.publicUrlId,
+      slug: developmentUrlSlug(development),
       name: development.name,
       description: null,
       developer: developer ? this.toDeveloper(developer) : null,
@@ -285,6 +288,7 @@ export class SnapshotRepository implements RealtyRepository {
     return {
       uid: listing.uid,
       publicUrlId: listing.publicUrlId,
+      slug: listing.slug || listing.publicUrlId,
       title: this.propertyTitle(listing),
       rooms: roomsOf(listing),
       area: areaOf(listing),
@@ -310,6 +314,7 @@ export class SnapshotRepository implements RealtyRepository {
     return {
       uid: development.uid,
       publicUrlId: development.publicUrlId ?? development.uid,
+      slug: developmentUrlSlug(development),
       name: development.name,
       developerUid: development.developerUid ?? null,
       minPrice,

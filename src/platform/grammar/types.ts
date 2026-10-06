@@ -24,5 +24,7 @@ export type GrammarConfig = {
   developersSegment: string;
   developmentSegment: string;
   propertySegment: string;
+  objectNamespace: string;
+  teamSegment: string;
   routes: GrammarRoute[];
 };

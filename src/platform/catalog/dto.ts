@@ -26,6 +26,7 @@ export type GeoDTO = {
 export type PropertyCardDTO = {
   uid: string;
   publicUrlId: string;
+  slug: string;
   title: string;
   rooms: number | null;
   area: number | null;
@@ -38,6 +39,7 @@ export type PropertyCardDTO = {
 export type PropertyDetailsDTO = {
   uid: string;
   publicUrlId: string;
+  slug: string;
   title: string;
   rooms: number | null;
   area: number | null;
@@ -57,6 +59,7 @@ export type PropertyDetailsDTO = {
 export type DevelopmentCardDTO = {
   uid: string;
   publicUrlId: string;
+  slug: string;
   name: string;
   developerUid: string | null;
   minPrice: MoneyDTO | null;
@@ -65,6 +68,7 @@ export type DevelopmentCardDTO = {
 export type DevelopmentDetailsDTO = {
   uid: string;
   publicUrlId: string;
+  slug: string;
   name: string;
   description: string | null;
   developer: DeveloperDTO | null;

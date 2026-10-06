@@ -31,6 +31,7 @@ const grammarKeys = new Set<string>(
 for (const route of grammar.routes) {
   const href = buildHref(grammar, features, route.pageKey, {
     slug: "sample",
+    publicUrlId: "aaaaab",
     semantic: "2k",
     id: "aaaaab",
   });

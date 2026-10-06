@@ -25,6 +25,7 @@ export async function generateStaticParams() {
     }
     if (
       route.template.includes("{slug}") ||
+      route.template.includes("{publicUrlId}") ||
       route.template.includes("{semantic}") ||
       route.template.includes("{id}")
     ) {
@@ -45,7 +46,15 @@ export async function generateStaticParams() {
   }
   for (const item of await repo.listDevelopments()) {
     const href = buildHref(grammar, features, "development", {
-      slug: item.publicUrlId,
+      slug: item.slug,
+    });
+    if (href) {
+      paths.push({ path: hrefToSegments(href) });
+    }
+  }
+  for (const item of await repo.listAgents()) {
+    const href = buildHref(grammar, features, "agent", {
+      slug: item.slug,
     });
     if (href) {
       paths.push({ path: hrefToSegments(href) });
@@ -53,8 +62,8 @@ export async function generateStaticParams() {
   }
   for (const item of await repo.listProperties()) {
     const href = buildHref(grammar, features, "property", {
-      semantic: `${item.rooms ?? 1}k`,
-      id: item.publicUrlId,
+      slug: item.slug,
+      publicUrlId: item.publicUrlId,
     });
     if (href) {
       paths.push({ path: hrefToSegments(href) });
@@ -76,15 +85,14 @@ export async function generateMetadata({
   }
   const repo = getRealtyRepository();
   if (matched.pageKey === "property") {
-    const listing = await repo.getProperty(matched.params.id ?? "");
+    const listing = await repo.getProperty(matched.params.publicUrlId ?? "");
     if (!listing) {
       notFound();
     }
-    const canonicalSemantic = `${listing.rooms ?? 1}k`;
-    if (matched.params.semantic !== canonicalSemantic) {
+    if (matched.params.slug !== listing.slug) {
       const href = buildHref(grammar, features, "property", {
-        semantic: canonicalSemantic,
-        id: listing.publicUrlId,
+        slug: listing.slug,
+        publicUrlId: listing.publicUrlId,
       });
       if (href) {
         permanentRedirect(href);
@@ -101,6 +109,12 @@ export async function generateMetadata({
   if (
     matched.pageKey === "developer" &&
     !(await repo.getDeveloper(matched.params.slug ?? ""))
+  ) {
+    notFound();
+  }
+  if (
+    matched.pageKey === "agent" &&
+    !(await repo.getAgent(matched.params.slug ?? ""))
   ) {
     notFound();
   }

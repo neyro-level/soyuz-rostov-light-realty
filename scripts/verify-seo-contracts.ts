@@ -161,8 +161,8 @@ check("legacy-410-blog", gone?.status === 410);
 const moved = matchLegacy("/novostroyki-rostova/", legacyRules);
 const novostroykiHref = buildHref(grammar, features, "catNovostroyki");
 check(
-  "legacy-301-novostroyki",
-  moved?.status === 301 &&
+  "legacy-308-novostroyki",
+  moved?.status === 308 &&
     Boolean(novostroykiHref) &&
     legacyLocation(moved, grammar, features) === novostroykiHref,
 );
@@ -197,8 +197,8 @@ if (listing) {
   const propertyMeta = resolvePageMetadata(
     "property",
     {
-      semantic: `${"rooms" in listing.facts ? listing.facts.rooms : 1}k`,
-      id: listing.publicUrlId,
+      slug: listing.slug || listing.publicUrlId,
+      publicUrlId: listing.publicUrlId,
     },
     snapshot,
     context,

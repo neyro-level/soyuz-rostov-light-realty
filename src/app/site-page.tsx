@@ -1,5 +1,5 @@
 import { notFound, permanentRedirect } from "next/navigation";
-import type { MoneyDTO, PropertyCardDTO } from "@/platform/catalog";
+import type { MoneyDTO } from "@/platform/catalog";
 import { buildHref } from "@/platform/grammar";
 import {
   CatalogGrid,
@@ -24,8 +24,8 @@ function formatPrice(price: MoneyDTO | null): string | undefined {
   return String(Math.round(major));
 }
 
-function propertySemantic(listing: PropertyCardDTO): string {
-  return `${listing.rooms ?? 1}k`;
+function propertyHrefParams(listing: { slug: string; publicUrlId: string }) {
+  return { slug: listing.slug, publicUrlId: listing.publicUrlId };
 }
 
 export async function SitePage({
@@ -38,16 +38,17 @@ export async function SitePage({
   const repo = getRealtyRepository();
   const contextResolved = resolveAppMetadata(pageKey, params);
   if (pageKey === "property") {
-    const listing = await repo.getProperty(params.id ?? "");
+    const listing = await repo.getProperty(params.publicUrlId ?? "");
     if (!listing) {
       notFound();
     }
-    const canonicalSemantic = `${listing.rooms ?? 1}k`;
-    if (params.semantic !== canonicalSemantic) {
-      const href = buildHref(grammar, features, "property", {
-        semantic: canonicalSemantic,
-        id: listing.publicUrlId,
-      });
+    if (params.slug !== listing.slug) {
+      const href = buildHref(
+        grammar,
+        features,
+        "property",
+        propertyHrefParams(listing),
+      );
       if (href) {
         permanentRedirect(href);
       }
@@ -64,6 +65,9 @@ export async function SitePage({
     pageKey === "developer" &&
     !(await repo.getDeveloper(params.slug ?? ""))
   ) {
+    notFound();
+  }
+  if (pageKey === "agent" && !(await repo.getAgent(params.slug ?? ""))) {
     notFound();
   }
   const hasRoute = (key: string) =>
@@ -124,6 +128,26 @@ async function CatalogSlot({
       </CatalogGrid>
     );
   }
+  if (pageKey === "team") {
+    const agents = await repo.listAgents();
+    return (
+      <CatalogGrid>
+        {agents.map((item) => {
+          const href = buildHref(grammar, features, "agent", {
+            slug: item.slug,
+          });
+          return href ? (
+            <DevelopmentCard
+              href={href}
+              key={item.uid}
+              meta={item.slug}
+              title={item.name}
+            />
+          ) : null;
+        })}
+      </CatalogGrid>
+    );
+  }
   if (
     pageKey !== "catNovostroyki" &&
     pageKey !== "catKvartiry" &&
@@ -138,10 +162,12 @@ async function CatalogSlot({
   return (
     <CatalogGrid>
       {listings.map((item) => {
-        const href = buildHref(grammar, features, "property", {
-          semantic: propertySemantic(item),
-          id: item.publicUrlId,
-        });
+        const href = buildHref(
+          grammar,
+          features,
+          "property",
+          propertyHrefParams(item),
+        );
         const price =
           hidePrice || item.hidePrice ? undefined : formatPrice(item.price);
         const metaParts = [
