@@ -39,8 +39,8 @@ const primaryGrammar = {
       pageKey: "property",
       template: "/{objectNamespace}/{slug}-{publicUrlId}/",
     },
-    { pageKey: "team", template: "/{teamSegment}/" },
-    { pageKey: "agent", template: "/{teamSegment}/{slug}/" },
+    { pageKey: "team", template: "/{teamSegment}/", feature: "team" },
+    { pageKey: "agent", template: "/{teamSegment}/{slug}/", feature: "team" },
     { pageKey: "ipoteka", template: "/ipoteka/" },
     {
       pageKey: "yurist",

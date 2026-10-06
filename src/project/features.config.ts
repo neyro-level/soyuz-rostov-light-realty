@@ -9,7 +9,7 @@ const primaryFeatures = {
   vacancies: "ON",
   favorites: "ON",
   search: "ON",
-  team: "DISABLED",
+  team: "ON",
 } as const satisfies FeatureFlags;
 
 export const modules = {

@@ -35,8 +35,8 @@ test.describe("H4 entity detail shells", () => {
     await expect(page.getByTestId("entity-detail")).toBeVisible();
   });
 
-  test("team route is hidden when team feature is disabled", async ({ page }) => {
+  test("team route resolves when team feature is enabled", async () => {
     const teamPath = buildHref(grammar, features, "team");
-    expect(teamPath).toBeNull();
+    expect(teamPath).toBe("/komanda/");
   });
 });
