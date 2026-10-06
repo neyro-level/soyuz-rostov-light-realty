@@ -7,6 +7,7 @@ export type FeatureFlags = {
   vacancies: FeatureState;
   favorites: FeatureState;
   search: FeatureState;
+  team?: FeatureState;
 };
 
 export type GrammarRoute = {

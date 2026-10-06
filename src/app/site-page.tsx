@@ -22,12 +22,14 @@ import {
   isDevelopmentCatalogEntry,
   isH3CatalogEntryPageKey,
 } from "@/project/catalog-entry.config";
+import { isH4EntityPageKey } from "@/project/entity-pages.config";
 import { navigation } from "@/project/navigation.config";
 import {
   type H2StaticPageKey,
   h2StarterBodies,
   isH2StaticPageKey,
 } from "@/project/starter-pages.config";
+import { EntityDetailSlot } from "@/ui/sections/entity-detail-slot";
 import { HomePage } from "@/ui/sections/home-page";
 import { EmptyState } from "@/ui/shared/empty-state";
 import { LeadDialog } from "@/ui/shared/lead-dialog";
@@ -132,6 +134,13 @@ export async function SitePage({
   ];
   const starterContent = isH2StaticPageKey(pageKey) ? (
     <StaticStarterSlot leadForm={leadForm} pageKey={pageKey} />
+  ) : isH4EntityPageKey(pageKey) ? (
+    <EntityDetailSlot
+      hidePrice={contextResolved.hidePrice}
+      leadForm={leadForm}
+      pageKey={pageKey}
+      params={params}
+    />
   ) : (
     <CatalogSlot
       gate={contextResolved.gate}
@@ -141,6 +150,7 @@ export async function SitePage({
   );
   const hasStarterContent =
     isH2StaticPageKey(pageKey) ||
+    isH4EntityPageKey(pageKey) ||
     isH3CatalogEntryPageKey(pageKey) ||
     pageKey === "developers" ||
     pageKey === "team";
