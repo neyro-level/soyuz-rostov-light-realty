@@ -23,6 +23,11 @@ import {
   isH3CatalogEntryPageKey,
 } from "@/project/catalog-entry.config";
 import { isH4EntityPageKey } from "@/project/entity-pages.config";
+import {
+  type H5UtilityPageKey,
+  h5UtilityBodies,
+  isH5UtilityPageKey,
+} from "@/project/utility-pages.config";
 import { navigation } from "@/project/navigation.config";
 import {
   type H2StaticPageKey,
@@ -141,6 +146,11 @@ export async function SitePage({
       pageKey={pageKey}
       params={params}
     />
+  ) : isH5UtilityPageKey(pageKey) ? (
+    <UtilityStarterSlot
+      pageKey={pageKey}
+      registryLead={contextResolved.description}
+    />
   ) : (
     <CatalogSlot
       gate={contextResolved.gate}
@@ -151,6 +161,7 @@ export async function SitePage({
   const hasStarterContent =
     isH2StaticPageKey(pageKey) ||
     isH4EntityPageKey(pageKey) ||
+    isH5UtilityPageKey(pageKey) ||
     isH3CatalogEntryPageKey(pageKey) ||
     pageKey === "developers" ||
     pageKey === "team";
@@ -163,6 +174,45 @@ export async function SitePage({
     >
       {hasStarterContent ? starterContent : null}
     </StarterPageShell>
+  );
+}
+
+function UtilityStarterSlot({
+  pageKey,
+  registryLead,
+}: {
+  pageKey: H5UtilityPageKey;
+  registryLead: string;
+}) {
+  return (
+    <div
+      className="flex max-w-2xl flex-col gap-[var(--sr-space-lg)]"
+      data-testid="utility-content"
+    >
+      <p className="text-[length:var(--sr-body-size)] leading-relaxed text-[var(--sr-muted-foreground)]">
+        {h5UtilityBodies[pageKey]}
+      </p>
+      {pageKey === "privacy" || pageKey === "consent" ? (
+        <p className="text-sm text-[var(--sr-muted-foreground)]">{registryLead}</p>
+      ) : null}
+      {pageKey === "search" ? (
+        <label className="flex flex-col gap-[var(--sr-space-xs)]">
+          <span className="text-sm text-[var(--sr-muted-foreground)]">Поиск</span>
+          <input
+            aria-disabled="true"
+            className="min-h-11 rounded-lg border border-border bg-[var(--sr-background)] px-[var(--sr-space-md)]"
+            disabled
+            placeholder="Скоро будет доступен в каталоге"
+            type="search"
+          />
+        </label>
+      ) : null}
+      {pageKey === "favorites" ? (
+        <p className="text-sm text-[var(--sr-muted-foreground)]">
+          Список избранного пуст.
+        </p>
+      ) : null}
+    </div>
   );
 }
 

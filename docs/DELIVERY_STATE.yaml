@@ -37,6 +37,8 @@ closed_epics:
   - H3
 pending_epics:
   - epic: H4
+    pr: 32
+    sha: 50f4f76
     branch: epic/H4-entities
     base: main
 last_merged:
