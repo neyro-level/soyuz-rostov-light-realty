@@ -12,7 +12,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { env } from "../src/platform/env";
 import { PropertyTypeSchema } from "../src/platform/hub/contract";
+import { listPendingAcks } from "../src/platform/snapshot/ack";
 import { REQUIRED_DATASET_KINDS } from "../src/platform/snapshot/constants";
+import {
+  createHubAdapter,
+  parseSyncTrigger,
+} from "../src/platform/snapshot/provider";
 import {
   acquireLock,
   activateStaging,
@@ -29,6 +34,10 @@ import {
 } from "../src/platform/snapshot/sync";
 import { TrustSet } from "../src/platform/snapshot/trust";
 import { verifyCandidate } from "../src/platform/snapshot/verify";
+import {
+  flushPendingAcks,
+  runProviderSync,
+} from "../src/platform/snapshot/worker";
 
 const PROJECT_ID = "lite-demo";
 let failed = 0;
@@ -563,6 +572,111 @@ check(
     fixtureDevelopers.length === 20 &&
     fixtureInventory.length === 300,
   `geo=${fixtureGeo.length} developers=${fixtureDevelopers.length} inventory=${fixtureInventory.length}`,
+);
+
+try {
+  parseSyncTrigger({});
+  parseSyncTrigger({ at: "2026-10-06T00:00:00Z" });
+  check("signal-only-trigger-accept", true);
+} catch {
+  check("signal-only-trigger-accept", false);
+}
+try {
+  parseSyncTrigger({ url: "https://evil.example/snapshot" });
+  check("signal-only-trigger-reject-url", false);
+} catch {
+  check("signal-only-trigger-reject-url", true);
+}
+
+const providerStore = mkdtempSync(join(tmpdir(), "sz-provider-"));
+const origin = writeCandidate({
+  sequence: 1,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+});
+const synced = runProviderSync({
+  storeRoot: providerStore,
+  provider: createHubAdapter(origin),
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "hub-adapter-local-sync",
+  synced.status === "activated",
+  synced.status === "rejected" || synced.status === "provider-unavailable"
+    ? synced.reason
+    : "",
+);
+
+const replay = runProviderSync({
+  storeRoot: providerStore,
+  provider: createHubAdapter(origin),
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "idempotent-ack-same-sequence",
+  replay.status === "already-current" &&
+    loadCurrentSnapshot(providerStore)?.publishSequence === 1,
+  replay.status,
+);
+
+let ackFails = 1;
+const flakyOrigin = writeCandidate({
+  sequence: 2,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+});
+const flaky = createHubAdapter(flakyOrigin);
+const flakyProvider = {
+  ...flaky,
+  ack() {
+    if (ackFails > 0) {
+      ackFails -= 1;
+      throw new Error("ack transport down");
+    }
+  },
+};
+const pendingSync = runProviderSync({
+  storeRoot: providerStore,
+  provider: flakyProvider,
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "ack-retry-pending",
+  pendingSync.status === "activated" &&
+    pendingSync.ack === "pending" &&
+    listPendingAcks(openSnapshotStore(providerStore)).length === 1,
+  JSON.stringify(pendingSync),
+);
+flushPendingAcks(providerStore, flakyProvider);
+check(
+  "ack-retry-flush",
+  listPendingAcks(openSnapshotStore(providerStore)).length === 0,
+);
+
+const down = runProviderSync({
+  storeRoot: providerStore,
+  provider: {
+    fetchManifest() {
+      throw new Error("hub down");
+    },
+    fetchSignature() {
+      throw new Error("hub down");
+    },
+    fetchFile() {
+      throw new Error("hub down");
+    },
+    ack() {},
+  },
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "provider-down-keeps-current",
+  down.status === "provider-unavailable" &&
+    loadCurrentSnapshot(providerStore)?.publishSequence === 2,
 );
 
 if (failed) {
