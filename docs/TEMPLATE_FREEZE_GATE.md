@@ -2,6 +2,10 @@
 
 Точка готовности шаблона **без production**. Тег `REFERENCE BASELINE — TEMPLATE FREEZE` ставится только после merge PR K1 в `main` на exact SHA (команда владельца).
 
+## Merge-wave
+
+Порядок вливания PR **#33–#43**: `docs/MERGE_WAVE_TEMPLATE_FREEZE.md`.
+
 ## Автоматизация
 
 `pnpm verify:freeze` — статические проверки Gate 6 и привязка к существующим verifiers. Полное доказательство Freeze:
