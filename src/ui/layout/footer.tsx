@@ -63,7 +63,7 @@ export function Footer({
             {columns.map((column) => (
               <section key={column.title}>
                 <h2
-                  className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[rgb(255_255_255/0.4)]"
+                  className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[var(--sr-label-on-dark)]"
                 >
                   {column.title}
                 </h2>
@@ -86,7 +86,7 @@ export function Footer({
               {requisites}
             </p>
             <p
-              className="mt-[var(--sr-space-sm)] text-sm text-[rgb(255_255_255/0.4)]"
+              className="mt-[var(--sr-space-sm)] text-sm text-[var(--sr-label-on-dark)]"
             >
               {copyright}
             </p>
