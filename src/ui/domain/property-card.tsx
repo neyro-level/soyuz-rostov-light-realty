@@ -8,13 +8,22 @@ export function PropertyCard({
   href: string;
 }) {
   return (
-    <article className="rounded-md border border-border bg-surface p-md shadow-card">
-      <h2 className="text-fg">
-        <a className="text-fg" href={href}>
+    <article className="flex h-full flex-col rounded-md border border-[var(--sr-border)] bg-[var(--sr-card)] p-[var(--sr-space-md)] shadow-[var(--sr-shadow-card)]">
+      <div
+        aria-hidden
+        className="mb-[var(--sr-space-md)] aspect-[4/3] rounded-md bg-[var(--sr-surface-soft)]"
+      />
+      <h3 className="font-semibold text-[var(--sr-foreground)]">
+        <a
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-primary)]"
+          href={href}
+        >
           {title}
         </a>
-      </h2>
-      <p className="mt-sm text-muted">{meta}</p>
+      </h3>
+      <p className="mt-[var(--sr-space-xs)] text-sm text-[var(--sr-muted-foreground)]">
+        {meta}
+      </p>
     </article>
   );
 }

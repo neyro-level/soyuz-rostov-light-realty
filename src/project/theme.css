@@ -12,6 +12,7 @@
   --sr-subtle-foreground: #8a93a3;
   --sr-foreground-on-dark: #ffffff;
   --sr-muted-on-dark: rgb(255 255 255 / 0.7);
+  --sr-label-on-dark: rgb(255 255 255 / 0.4);
 
   /* Surfaces */
   --sr-background: #ffffff;
