@@ -46,6 +46,7 @@ pending_epics:
     branch: epic/I1-architecture
     base: main
   - epic: I2
+    pr: 35
     branch: epic/I2-ui-core
     base: epic/H5-utility
 last_merged:
