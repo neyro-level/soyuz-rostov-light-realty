@@ -54,6 +54,7 @@ pending_epics:
     branch: epic/I3-snapshot
     base: epic/I2-ui-core
   - epic: I4
+    pr: 37
     branch: epic/I4-leads
     base: epic/I3-snapshot
 last_merged:
