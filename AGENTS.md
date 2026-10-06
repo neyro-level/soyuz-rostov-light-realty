@@ -7,7 +7,7 @@
 - Plan ID: `SOUZ-TEMPLATE-FREEZE`
 - Version: `v2`
 - Status: `APPROVED`
-- Canonical file: `docs/MASTER_PLAN.md`
+- Canonical file: `docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md`
 - Standards: `docs/standards/`
 - Design system: `docs/SOUZ_DESIGN_SYSTEM.md`
 - Predecessor archive: `docs/archive/` (не Source of Truth; Beads Lite не трогать)

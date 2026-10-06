@@ -3,7 +3,7 @@
   "beads_prefix": "souztf",
   "source": {
     "plan_id": "SOUZ-TEMPLATE-FREEZE",
-    "path": "docs/MASTER_PLAN.md",
+    "path": "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
     "version": "v2",
     "status": "APPROVED",
     "approved_by": "owner",
@@ -73,7 +73,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -124,7 +124,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -176,7 +176,7 @@
         "TASK-A1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -225,7 +225,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -275,7 +275,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -326,7 +326,7 @@
         "TASK-A2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -378,7 +378,7 @@
         "TASK-A2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -432,7 +432,7 @@
         "TASK-A2-03"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -482,7 +482,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -530,7 +530,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -585,7 +585,7 @@
         "TASK-B1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -638,7 +638,7 @@
         "TASK-B1-02"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -686,7 +686,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -733,7 +733,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -785,7 +785,7 @@
         "TASK-B2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -838,7 +838,7 @@
         "TASK-B2-02"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -886,7 +886,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -934,7 +934,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -986,7 +986,7 @@
         "TASK-B3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1036,7 +1036,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1085,7 +1085,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1137,7 +1137,7 @@
         "TASK-B4-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1186,7 +1186,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1237,7 +1237,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1289,7 +1289,7 @@
         "TASK-C1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1338,7 +1338,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1388,7 +1388,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1440,7 +1440,7 @@
         "TASK-D1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1489,7 +1489,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1537,7 +1537,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1589,7 +1589,7 @@
         "TASK-D2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1639,7 +1639,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1690,7 +1690,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1742,7 +1742,7 @@
         "TASK-D3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1790,7 +1790,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1838,7 +1838,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1890,7 +1890,7 @@
         "TASK-E1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1937,7 +1937,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -1987,7 +1987,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2039,7 +2039,7 @@
         "TASK-E2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2088,7 +2088,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2137,7 +2137,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2189,7 +2189,7 @@
         "TASK-E3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2240,7 +2240,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2291,7 +2291,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2343,7 +2343,7 @@
         "TASK-F1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2391,7 +2391,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2438,7 +2438,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2490,7 +2490,7 @@
         "TASK-F2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2539,7 +2539,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2587,7 +2587,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2639,7 +2639,7 @@
         "TASK-F3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2692,7 +2692,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2746,7 +2746,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2797,7 +2797,7 @@
         "TASK-G1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2850,7 +2850,7 @@
         "TASK-G1-02"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2899,7 +2899,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2946,7 +2946,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -2998,7 +2998,7 @@
         "TASK-H1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3046,7 +3046,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3093,7 +3093,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3145,7 +3145,7 @@
         "TASK-H2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3194,7 +3194,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3245,7 +3245,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3297,7 +3297,7 @@
         "TASK-H3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3346,7 +3346,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3392,7 +3392,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3444,7 +3444,7 @@
         "TASK-H4-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3492,7 +3492,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3538,7 +3538,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3590,7 +3590,7 @@
         "TASK-H5-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3638,7 +3638,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3686,7 +3686,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3738,7 +3738,7 @@
         "TASK-I1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3785,7 +3785,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3832,7 +3832,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3884,7 +3884,7 @@
         "TASK-I2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3931,7 +3931,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -3977,7 +3977,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4029,7 +4029,7 @@
         "TASK-I3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4076,7 +4076,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4122,7 +4122,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4174,7 +4174,7 @@
         "TASK-I4-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4221,7 +4221,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4268,7 +4268,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4320,7 +4320,7 @@
         "TASK-I5-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4368,7 +4368,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4414,7 +4414,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4466,7 +4466,7 @@
         "TASK-I6-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4514,7 +4514,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4561,7 +4561,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4613,7 +4613,7 @@
         "TASK-J1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4661,7 +4661,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4707,7 +4707,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4759,7 +4759,7 @@
         "TASK-J2-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4806,7 +4806,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4852,7 +4852,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4904,7 +4904,7 @@
         "TASK-J3-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -4953,7 +4953,7 @@
       "propagate_dependencies_to_children": true,
       "delivery_mode": "PR_ONLY",
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -5004,7 +5004,7 @@
       ],
       "depends_on": [],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",
@@ -5057,7 +5057,7 @@
         "TASK-K1-01"
       ],
       "required_context": [
-        "docs/MASTER_PLAN.md",
+        "docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md",
         "docs/standards/AMS_SITE_CORE.md",
         "docs/standards/AMS_REALTY_CORE.md",
         "docs/standards/AMS_UI_CORE.md",

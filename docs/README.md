@@ -4,7 +4,7 @@
 
 | Файл | Роль |
 |---|---|
-| `MASTER_PLAN.md` | Канонический мастер-план `SOUZ-TEMPLATE-FREEZE` v2 APPROVED |
+| `ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md` | Канонический мастер-план `SOUZ-TEMPLATE-FREEZE` v2 APPROVED |
 | `task-manager-inventory.v2.json` | Inventory Task Manager `souztf` |
 | `DELIVERY_STATE.yaml` | Текущий эпик и статус доставки |
 | `SOUZ_DESIGN_SYSTEM.md` | Единственная проектная дизайн-система |
@@ -14,6 +14,7 @@
 | `adr/0001-platform-project-layers.md` | Слои platform / project |
 | `EXIT_BUNDLE.md` | Состав Exit Bundle |
 | `NEW_PROJECT.md` | Порядок замены проектного слоя |
+| `OPEN_QUESTIONS.md` | Открытые вопросы владельца |
 | `archive/` | Предшественник Lite / UI Core 5 / Hub 3.1.2 — не Source of Truth |
 
 Title, Description и H1 задаются через `docs/seo/SEO_REGISTRY_SEED.csv` и `src/project/seo.config.ts`.
