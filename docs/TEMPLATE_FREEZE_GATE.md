@@ -4,7 +4,9 @@
 
 ## Merge-wave
 
-Порядок вливания PR **#33–#43**: `docs/MERGE_WAVE_TEMPLATE_FREEZE.md`.
+**Быстрый путь:** [PR #44](https://sourcecraft.dev/integrator-p/soyuz-rostov-light-realty/pr/44) `epic/K1-freeze` → `main` (стек H5–K1 одним merge-gate).
+
+Пошагово PR **#33–#43**: `docs/MERGE_WAVE_TEMPLATE_FREEZE.md`.
 
 ## Автоматизация
 
