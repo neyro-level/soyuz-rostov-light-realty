@@ -102,5 +102,5 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Implementation graph PR_ONLY #33–#43. Head epic/K1-freeze @5b77cad: pnpm lint PASS,
-  verify:* (incl. freeze), test:e2e 55 passed. Merge stack #33→#43 then Freeze tag on main SHA.
+  PR #33 merge-gate green @49510e8. One-shot merge: PR #44 epic/K1-freeze→main @8d0c411.
+  Or stepwise #33→#43. After merge: tag REFERENCE BASELINE on main SHA; no production.

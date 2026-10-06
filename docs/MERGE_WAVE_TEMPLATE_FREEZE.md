@@ -2,6 +2,10 @@
 
 **PR_ONLY.** Production не входит. Merge только по команде владельца.
 
+## Быстрый путь (один PR)
+
+**[#44](https://sourcecraft.dev/integrator-p/soyuz-rostov-light-realty/pr/44)** — `epic/K1-freeze` → `main` (весь стек H5–K1 одним merge-gate).
+
 ## Порядок (строго по цепочке)
 
 | # | Эпик | Ветка | Base (на момент открытия PR) |
