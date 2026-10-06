@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { OptInAnalytics } from "@/platform/analytics";
-import { buildHref } from "@/platform/grammar";
+import { buildHref, isFeatureEnabled } from "@/platform/grammar";
 import { resolveNavGroup } from "@/platform/nav";
 import { buildRealEstateAgentJsonLd } from "@/platform/seo";
 import { JsonLdScript } from "@/platform/seo/json-ld-script";
@@ -39,20 +39,45 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       resolveNavGroup(group, grammar, features, registry, navigation.labels),
     )
     .filter((group) => group.items.length > 0);
-  const ctaHref =
-    buildHref(grammar, features, navigation.ctaPageKey) ??
-    buildHref(grammar, features, "home") ??
-    "/";
+  const homeHref =
+    buildHref(grammar, features, "home") ?? "/";
+  const consentHref =
+    buildHref(grammar, features, "consent") ?? homeHref;
+  const thanksUrl = buildHref(grammar, features, "thanks") ?? homeHref;
+  const searchHref = isFeatureEnabled(features, "search")
+    ? buildHref(grammar, features, "search")
+    : undefined;
+  const favoritesHref = isFeatureEnabled(features, "favorites")
+    ? buildHref(grammar, features, "favorites")
+    : undefined;
   return (
     <html lang="ru" className={`${manrope.variable} h-full antialiased`}>
       <body className={`${manrope.className} min-h-full flex flex-col`}>
         <JsonLdScript data={agentJsonLd} />
         <Header
           brand={site.brand}
-          ctaHref={ctaHref}
           ctaLabel={navigation.ctaLabel}
+          favoritesHref={favoritesHref ?? undefined}
           groups={headerGroups}
-          phone={site.phoneDisplay}
+          homeHref={homeHref}
+          leadForm={{
+            actionUrl: "/api/public/leads/",
+            consentHref,
+            consentLabel: uiText.form.consentLabel,
+            consentLinkLabel: uiText.form.consentLinkLabel,
+            nameLabel: uiText.form.nameLabel,
+            pageKey: "header-cta",
+            phoneLabel: uiText.form.phoneLabel,
+            retryMessage: uiText.form.retryMessage,
+            submitLabel: uiText.form.submitLabel,
+            thanksUrl,
+            transportDisabledMessage: uiText.form.transportDisabledMessage,
+          }}
+          phoneDisplay={site.phoneDisplay}
+          phoneTel={site.phoneTel}
+          favoritesLabel={navigation.labels.favorites}
+          searchHref={searchHref ?? undefined}
+          searchLabel={navigation.labels.search}
         />
         {children}
         <Footer
