@@ -22,6 +22,7 @@ import {
   isDevelopmentCatalogEntry,
   isH3CatalogEntryPageKey,
 } from "@/project/catalog-entry.config";
+import { loadEntityDetailModel } from "@/project/entity-detail-model";
 import { isH4EntityPageKey } from "@/project/entity-pages.config";
 import {
   type H5UtilityPageKey,
@@ -137,14 +138,20 @@ export async function SitePage({
     { label: site.brand, href: homeHref },
     { label: contextResolved.h1 },
   ];
+  let entityDetailModel = null;
+  if (isH4EntityPageKey(pageKey)) {
+    entityDetailModel = await loadEntityDetailModel(pageKey, params);
+    if (!entityDetailModel) {
+      notFound();
+    }
+  }
   const starterContent = isH2StaticPageKey(pageKey) ? (
     <StaticStarterSlot leadForm={leadForm} pageKey={pageKey} />
   ) : isH4EntityPageKey(pageKey) ? (
     <EntityDetailSlot
       hidePrice={contextResolved.hidePrice}
       leadForm={leadForm}
-      pageKey={pageKey}
-      params={params}
+      model={entityDetailModel!}
     />
   ) : isH5UtilityPageKey(pageKey) ? (
     <UtilityStarterSlot
