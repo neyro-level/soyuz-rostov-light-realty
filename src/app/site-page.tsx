@@ -197,19 +197,21 @@ function UtilityStarterSlot({
       ) : null}
       {pageKey === "search" ? (
         <label className="flex flex-col gap-[var(--sr-space-xs)]">
-          <span className="text-sm text-[var(--sr-muted-foreground)]">Поиск</span>
+          <span className="text-sm text-[var(--sr-muted-foreground)]">
+            {uiText.utility.searchLabel}
+          </span>
           <input
             aria-disabled="true"
             className="min-h-11 rounded-lg border border-border bg-[var(--sr-background)] px-[var(--sr-space-md)]"
             disabled
-            placeholder="Скоро будет доступен в каталоге"
+            placeholder={uiText.utility.searchPlaceholder}
             type="search"
           />
         </label>
       ) : null}
       {pageKey === "favorites" ? (
         <p className="text-sm text-[var(--sr-muted-foreground)]">
-          Список избранного пуст.
+          {uiText.utility.favoritesEmpty}
         </p>
       ) : null}
     </div>
@@ -253,8 +255,8 @@ async function CatalogSlot({
   if (isH3CatalogEntryPageKey(pageKey) && gate === "FAIL") {
     return (
       <EmptyState
-        message="Каталог временно недоступен для индексации. Данные обновляются."
-        title="Раздел на проверке"
+        message={uiText.catalog.gateFailMessage}
+        title={uiText.catalog.gateFailTitle}
       />
     );
   }
@@ -305,8 +307,8 @@ async function CatalogSlot({
       return (
         <div data-testid="catalog-grid">
           <EmptyState
-            message="Новые объекты появятся после обновления каталога."
-            title="Пока нет новостроек"
+            message={uiText.catalog.emptyDevelopmentsMessage}
+            title={uiText.catalog.emptyDevelopmentsTitle}
           />
         </div>
       );
@@ -344,8 +346,8 @@ async function CatalogSlot({
     return (
       <div data-testid="catalog-grid">
         <EmptyState
-          message="Объекты появятся после обновления каталога."
-          title="Пока нет предложений"
+          message={uiText.catalog.emptyListingsMessage}
+          title={uiText.catalog.emptyListingsTitle}
         />
       </div>
     );

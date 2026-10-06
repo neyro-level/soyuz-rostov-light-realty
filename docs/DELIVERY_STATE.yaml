@@ -39,8 +39,11 @@ closed_epics:
 pending_epics:
   - epic: H5
     pr: 33
-    sha: 626ea26
     branch: epic/H5-utility
+    base: main
+  - epic: I1
+    pr: 34
+    branch: epic/I1-architecture
     base: main
 last_merged:
   epic: H4
@@ -55,5 +58,4 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  H5: utility/legal shells (thanks, privacy, consent, search, favorites), error boundary, 404 starter shell.
-  e2e/utility-pages.spec.ts. PR_ONLY. lint red on main.
+  H5 PR #33 includes I1 verify:layers merge; I1 PR #34 open on main. Merge H5 then I1 (or rebase I1).
