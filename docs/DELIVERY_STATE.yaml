@@ -4,19 +4,38 @@ status: CONSTITUTION_ALIGNMENT
 plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
-current_epic: A2
+canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
+current_epic: paused_after_D2
+next_ready:
+  - D3
+  - E1
 current_branch: main
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
 beads_prefix: souztf
+owner_pause: true
 closed_epics:
   - A1
+  - A2
+  - B1
+  - B2
+  - B3
+  - B4
+  - C1
+  - D1
+  - D2
+last_merged:
+  epic: D2
+  pr: 18
+  sha: c1f8fd2
 predecessor:
   plan_id: SZ-ROSTOV-LITE-MAIN
   plan_version: v1.4
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Plan approved. Import souztf graph. First implementation after A1 verify is A2.
-  Production and repository split remain owner-only.
+  Owner paused the implementation graph after D2. Stack A1–D2 is on main
+  (PR 18, c1f8fd2). Canonical plan file is docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md.
+  Do not auto-claim E1 or later until an explicit owner command. Production
+  and repository split remain owner-only.
