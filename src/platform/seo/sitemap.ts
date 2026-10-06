@@ -3,7 +3,9 @@ import type { CatalogSnapshot } from "../catalog/entities";
 import {
   developmentUrlSlug,
   findDeveloper,
+  findDevelopment,
   findProperty,
+  listingCheckedAt,
   propertyUrlParams,
 } from "../catalog/entities";
 import { buildHref, isFeatureEnabled } from "../grammar";
@@ -14,6 +16,48 @@ import {
   resolvePageMetadata,
 } from "./resolve-page-metadata";
 import { sitemapAllowed } from "./robots";
+
+function factualLastModified(
+  pageKey: string,
+  params: Record<string, string>,
+  snapshot: CatalogSnapshot,
+): Date | undefined {
+  if (pageKey === "property") {
+    const listing = findProperty(snapshot, params.publicUrlId);
+    if (!listing) {
+      return undefined;
+    }
+    const checkedAt = listingCheckedAt(snapshot, listing);
+    if (!checkedAt) {
+      return undefined;
+    }
+    const date = new Date(checkedAt);
+    return Number.isNaN(date.getTime()) ? undefined : date;
+  }
+  if (pageKey === "development") {
+    const development = findDevelopment(snapshot, params.slug);
+    const checkedAt = development?.checkedAt;
+    if (!checkedAt) {
+      return undefined;
+    }
+    const date = new Date(checkedAt);
+    return Number.isNaN(date.getTime()) ? undefined : date;
+  }
+  const inventoryGated =
+    pageKey === "facetVtorichka" || pageKey.startsWith("dist");
+  if (!inventoryGated) {
+    return undefined;
+  }
+  const dates = snapshot.developments
+    .map((item) => item.checkedAt)
+    .filter((value): value is string => Boolean(value));
+  if (dates.length === 0) {
+    return undefined;
+  }
+  const latest = dates.reduce((left, right) => (left > right ? left : right));
+  const date = new Date(latest);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
 
 export function buildSitemapEntries(
   snapshot: CatalogSnapshot,
@@ -37,7 +81,12 @@ export function buildSitemapEntries(
       return;
     }
     seen.add(resolved.canonical);
-    entries.push({ url: resolved.canonical });
+    const lastModified = factualLastModified(pageKey, params, snapshot);
+    entries.push(
+      lastModified
+        ? { url: resolved.canonical, lastModified }
+        : { url: resolved.canonical },
+    );
   };
 
   for (const route of context.grammar.routes) {

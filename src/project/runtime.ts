@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { loadCatalogSnapshot } from "@/platform/catalog/entities";
+import type { CatalogSnapshot } from "@/platform/catalog/entities";
 import { SnapshotRepository } from "@/platform/catalog/snapshot-repository";
 import { env } from "@/platform/env";
 import {
@@ -24,8 +24,13 @@ export function getRealtyRepository(): SnapshotRepository {
   return SnapshotRepository.fromRevisionDir(process.cwd(), revisionDir());
 }
 
+export function catalogSnapshot(): CatalogSnapshot {
+  return getRealtyRepository().catalogSnapshot();
+}
+
+/** @deprecated Use catalogSnapshot() — kept for lifecycle/proxy call sites. */
 export function loadSnapshot() {
-  return loadCatalogSnapshot(process.cwd(), revisionDir());
+  return catalogSnapshot();
 }
 
 export function loadRegistry() {
@@ -50,6 +55,7 @@ export function metadataContext(): PageMetadataContext {
       failAfterDays: seo.priceGateFailAfterDays,
       developmentTextFailAfterDays: seo.developmentTextFailAfterDays,
     },
+    noindexAutoPageKeys: seo.noindexAutoPageKeys,
   };
 }
 
@@ -60,11 +66,11 @@ export function resolveAppMetadata(
   return resolvePageMetadata(
     pageKey,
     params,
-    loadSnapshot(),
+    catalogSnapshot(),
     metadataContext(),
   );
 }
 
 export function buildAppSitemap() {
-  return buildSitemapEntries(loadSnapshot(), metadataContext());
+  return buildSitemapEntries(catalogSnapshot(), metadataContext());
 }

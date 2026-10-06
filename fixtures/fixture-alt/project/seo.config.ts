@@ -8,6 +8,7 @@ export const seo = {
   priceGateFailAfterDays: 120,
   developmentTextFailAfterDays: 180,
   brandInTitlePageKeys: [] as string[],
+  noindexAutoPageKeys: [] as string[],
   catalogPageKeys: [
     "geoHub",
     "catNovostroyki",

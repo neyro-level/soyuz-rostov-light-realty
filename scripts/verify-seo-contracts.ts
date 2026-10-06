@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { loadCatalogSnapshot } from "../src/platform/catalog/entities";
+import { SnapshotRepository } from "../src/platform/catalog/snapshot-repository";
 import { buildHref } from "../src/platform/grammar";
 import {
   buildBreadcrumbListJsonLd,
@@ -172,8 +172,13 @@ check(
 );
 check("sitemap-staging-empty", sitemapAllowed("staging") === false);
 
-const snapshot = loadCatalogSnapshot(root, "fixtures/fixture-sz-rostov");
+const repo = SnapshotRepository.fromRevisionDir(
+  root,
+  "fixtures/fixture-sz-rostov",
+);
+const snapshot = repo.catalogSnapshot();
 const context = metadataContext();
+const publicContext = { ...context, indexingMode: "public" as const };
 let missingThrows = false;
 try {
   resolvePageMetadata("missing-page-key", {}, snapshot, context);
@@ -217,14 +222,33 @@ if (listing) {
   );
 }
 
-const liveEntries = buildSitemapEntries(snapshot, {
-  ...context,
-  indexingMode: "public",
-});
+for (const pageKey of seo.noindexAutoPageKeys) {
+  const starterMeta = resolvePageMetadata(
+    pageKey,
+    {},
+    snapshot,
+    publicContext,
+  );
+  check(
+    `starter-noindex:${pageKey}`,
+    starterMeta.robots.index === false && starterMeta.robots.follow === true,
+  );
+}
+
+const liveEntries = buildSitemapEntries(snapshot, publicContext);
 check("sitemap-public-not-empty", liveEntries.length > 0);
 check(
   "sitemap-public-no-noindex-thanks",
   liveEntries.every((item) => !String(item.url).includes("/spasibo/")),
+);
+const propertySitemapEntry = listing
+  ? liveEntries.find((item) =>
+      String(item.url).includes(`-${listing.publicUrlId}/`),
+    )
+  : undefined;
+check(
+  "sitemap-property-factual-lastmod",
+  propertySitemapEntry?.lastModified instanceof Date,
 );
 const stagingEntries = buildSitemapEntries(snapshot, {
   ...context,

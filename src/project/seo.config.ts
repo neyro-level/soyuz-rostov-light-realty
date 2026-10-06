@@ -24,6 +24,13 @@ const primarySeo = {
     "search",
     "notFound",
   ],
+  noindexAutoPageKeys: [
+    "ipoteka",
+    "yurist",
+    "about",
+    "contacts",
+    "vacancies",
+  ],
   catalogPageKeys: [
     "geoHub",
     "catNovostroyki",

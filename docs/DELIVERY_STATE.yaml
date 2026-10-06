@@ -1,20 +1,19 @@
 plan_id: SOUZ-TEMPLATE-FREEZE
 plan_version: v2
-status: CONSTITUTION_ALIGNMENT
+status: IN_PROGRESS
 plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: paused_after_D2
+current_epic: D3
 next_ready:
-  - D3
   - E1
-current_branch: main
+current_branch: epic/D3-seo
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
 beads_prefix: souztf
-owner_pause: true
+owner_pause: false
 closed_epics:
   - A1
   - A2
@@ -35,7 +34,6 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Owner paused the implementation graph after D2. Stack A1–D2 is on main
-  (PR 18, c1f8fd2). Canonical plan file is docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md.
-  Do not auto-claim E1 or later until an explicit owner command. Production
-  and repository split remain owner-only.
+  Owner resumed graph on 2026-10-06. D3 SEO runtime in progress on epic/D3-seo.
+  Stack A1–D2 on main (PR 18, c1f8fd2). Production and repository split
+  remain owner-only.
