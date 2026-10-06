@@ -1,17 +1,88 @@
 :root {
-  --sr-bg: #f7f5f1;
-  --sr-fg: #1c1917;
-  --sr-muted: #78716c;
-  --sr-border: #e7e5e4;
-  --sr-accent: #1d4ed8;
-  --sr-accent-fg: #ffffff;
-  --sr-surface: #ffffff;
-  --sr-radius-sm: 0.25rem;
-  --sr-radius-md: 0.5rem;
-  --sr-space-sm: 0.5rem;
-  --sr-space-md: 1rem;
-  --sr-space-lg: 1.5rem;
-  --sr-shadow-card: 0 1px 2px rgb(0 0 0 / 0.06);
+  /* SOUZ brand */
+  --sr-primary: #014eba;
+  --sr-primary-hover: #003b8d;
+  --sr-primary-active: #002e75;
+  --sr-primary-soft: #eaf2ff;
+  --sr-primary-pale: #f4f7fd;
+
+  /* Text */
+  --sr-foreground: #1f2937;
+  --sr-muted-foreground: #5b6472;
+  --sr-subtle-foreground: #8a93a3;
+  --sr-foreground-on-dark: #ffffff;
+  --sr-muted-on-dark: rgb(255 255 255 / 0.7);
+
+  /* Surfaces */
+  --sr-background: #ffffff;
+  --sr-surface-base: #f8fafc;
+  --sr-surface-soft: #f2f5f8;
+  --sr-surface-primary: #f4f7fd;
+  --sr-surface-primary-strong: #eaf2ff;
+  --sr-surface-dark: #0f1f3a;
+  --sr-card: #ffffff;
+
+  /* Borders */
+  --sr-border: #e5eaf1;
+  --sr-border-strong: #d8e3f3;
+  --sr-border-focus: #b7cae8;
+  --sr-border-dark: rgb(255 255 255 / 0.08);
+
+  /* Status */
+  --sr-success: #1f8a4c;
+  --sr-warning: #b7791f;
+  --sr-destructive: #c0392b;
+
+  /* Legacy platform aliases */
+  --sr-bg: var(--sr-background);
+  --sr-fg: var(--sr-foreground);
+  --sr-muted: var(--sr-muted-foreground);
+  --sr-accent: var(--sr-primary);
+  --sr-accent-fg: var(--sr-foreground-on-dark);
+  --sr-surface: var(--sr-card);
+
+  /* Radius (~5px system) */
+  --sr-radius-sm: 4px;
+  --sr-radius-md: 5px;
+  --sr-radius-lg: 5px;
+  --sr-radius-control: 5px;
+  --sr-radius-card: 5px;
+
+  /* Spacing scale (4px base) */
+  --sr-space-xs: 4px;
+  --sr-space-sm: 8px;
+  --sr-space-md: 16px;
+  --sr-space-lg: 24px;
+  --sr-space-xl: 32px;
+  --sr-space-2xl: 48px;
+  --sr-space-3xl: 64px;
+
+  /* Layout */
+  --sr-container-max: 1360px;
+  --sr-container-padding-mobile: 20px;
+  --sr-container-padding-tablet: 32px;
+  --sr-container-padding-desktop: 48px;
+  --sr-grid-gap: 32px;
+  --sr-section-sm-mobile: 32px;
+  --sr-section-sm-desktop: 48px;
+  --sr-section-md-mobile: 48px;
+  --sr-section-md-desktop: 72px;
+  --sr-section-lg-mobile: 64px;
+  --sr-section-lg-desktop: 96px;
+
+  /* Typography — section H2 */
+  --sr-text-h2-mobile: 1.5rem;
+  --sr-text-h2-tablet: 1.75rem;
+  --sr-text-h2-desktop: 1.875rem;
+  --sr-text-h2-weight: 600;
+  --sr-text-h2-leading: 1.2;
+
+  /* Shadows / focus */
+  --sr-shadow-card: 0 1px 2px rgb(15 31 58 / 0.06);
+  --sr-shadow-elevated: 0 8px 24px rgb(15 31 58 / 0.08);
+  --sr-focus-ring: 0 0 0 3px rgb(1 78 186 / 0.25);
+  --sr-motion-fast: 150ms;
+  --sr-motion-base: 200ms;
 }
 
 @theme inline {
@@ -22,12 +93,21 @@
   --color-accent: var(--sr-accent);
   --color-accent-fg: var(--sr-accent-fg);
   --color-surface: var(--sr-surface);
+  --color-primary: var(--sr-primary);
+  --color-primary-hover: var(--sr-primary-hover);
+  --color-primary-active: var(--sr-primary-active);
+  --color-card: var(--sr-card);
+  --color-destructive: var(--sr-destructive);
+  --color-success: var(--sr-success);
+  --color-warning: var(--sr-warning);
   --radius-sm: var(--sr-radius-sm);
   --radius-md: var(--sr-radius-md);
+  --radius-lg: var(--sr-radius-lg);
   --spacing-sm: var(--sr-space-sm);
   --spacing-md: var(--sr-space-md);
   --spacing-lg: var(--sr-space-lg);
   --shadow-card: var(--sr-shadow-card);
   --font-sans: var(--font-manrope);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --container-site: var(--sr-container-max);
 }
