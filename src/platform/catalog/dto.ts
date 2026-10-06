@@ -54,6 +54,7 @@ export type PropertyDetailsDTO = {
   agent: AgentCardDTO | null;
   contact: ProjectContactDTO;
   media: MediaRefDTO[];
+  lifecycle: string;
 };
 
 export type DevelopmentCardDTO = {
@@ -76,6 +77,7 @@ export type DevelopmentDetailsDTO = {
   contact: ProjectContactDTO;
   media: MediaRefDTO[];
   properties: PropertyCardDTO[];
+  lifecycle: string;
 };
 
 export type DeveloperDTO = {
@@ -103,5 +105,5 @@ export type AgentDetailsDTO = {
   photo: MediaRefDTO | null;
   workPhone: string | null;
   workEmail: string | null;
-  lifecycle: "active" | "hidden" | "departed" | "redirected";
+  lifecycle: string;
 };

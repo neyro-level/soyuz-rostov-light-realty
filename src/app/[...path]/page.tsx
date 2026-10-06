@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { buildHref, matchPath } from "@/platform/grammar";
+import { lifecycleForMatchedRoute } from "@/platform/lifecycle";
 import { toNextMetadata } from "@/platform/seo";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
-import { getRealtyRepository, resolveAppMetadata } from "@/project/runtime";
+import {
+  getRealtyRepository,
+  loadSnapshot,
+  resolveAppMetadata,
+} from "@/project/runtime";
+import { applyLifecycleDecision } from "../apply-lifecycle";
 import { SitePage } from "../site-page";
 
 function hrefToSegments(href: string): string[] {
@@ -83,20 +89,13 @@ export async function generateMetadata({
   if (!matched) {
     notFound();
   }
+  applyLifecycleDecision(
+    lifecycleForMatchedRoute(matched, loadSnapshot(), grammar, features),
+  );
   const repo = getRealtyRepository();
   if (matched.pageKey === "property") {
     const listing = await repo.getProperty(matched.params.publicUrlId ?? "");
     if (!listing) {
-      notFound();
-    }
-    if (matched.params.slug !== listing.slug) {
-      const href = buildHref(grammar, features, "property", {
-        slug: listing.slug,
-        publicUrlId: listing.publicUrlId,
-      });
-      if (href) {
-        permanentRedirect(href);
-      }
       notFound();
     }
   }
@@ -132,5 +131,8 @@ export default async function CatchAllPage({
   if (!matched) {
     notFound();
   }
+  applyLifecycleDecision(
+    lifecycleForMatchedRoute(matched, loadSnapshot(), grammar, features),
+  );
   return <SitePage pageKey={matched.pageKey} params={matched.params} />;
 }

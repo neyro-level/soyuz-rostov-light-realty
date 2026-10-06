@@ -7,6 +7,7 @@ import {
   propertyUrlParams,
 } from "../catalog/entities";
 import { buildHref, isFeatureEnabled } from "../grammar";
+import { isPubliclyListed } from "../lifecycle";
 import {
   isSitemapUrl,
   type PageMetadataContext,
@@ -53,7 +54,10 @@ export function buildSitemapEntries(
     }
     if (route.pageKey === "development") {
       for (const development of snapshot.developments) {
-        if (development.publicUrlId) {
+        if (
+          development.publicUrlId &&
+          isPubliclyListed(development.lifecycle)
+        ) {
           push("development", { slug: developmentUrlSlug(development) });
         }
       }
@@ -61,7 +65,10 @@ export function buildSitemapEntries(
     }
     if (route.pageKey === "property") {
       for (const listing of snapshot.inventory) {
-        if (findProperty(snapshot, listing.publicUrlId)) {
+        if (
+          findProperty(snapshot, listing.publicUrlId) &&
+          isPubliclyListed(listing.lifecycle)
+        ) {
           push("property", propertyUrlParams(listing));
         }
       }

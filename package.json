@@ -27,7 +27,8 @@
     "template:check": "tsx scripts/template-check.ts",
     "test:e2e": "playwright test",
     "verify:contracts": "tsx scripts/verify-contracts.ts",
-    "verify:snapshot": "tsx scripts/verify-snapshot.ts"
+    "verify:snapshot": "tsx scripts/verify-snapshot.ts",
+    "verify:lifecycle": "tsx scripts/verify-lifecycle.ts"
   },
   "dependencies": {
     "next": "16.3.8",

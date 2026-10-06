@@ -11,6 +11,8 @@ export type DevelopmentRecord = {
   uid: string;
   publicUrlId?: string;
   slug?: string;
+  slugHistory?: string[];
+  lifecycle?: string;
   name: string;
   developerUid?: string;
   checkedAt?: string;

@@ -1,4 +1,5 @@
 import type { PublicInventoryDto } from "../hub/contract";
+import { isPubliclyListed, normalizeLifecycle } from "../lifecycle";
 import type {
   AgentCardDTO,
   AgentDetailsDTO,
@@ -23,7 +24,6 @@ import {
   loadCatalogSnapshot,
   roomsOf,
 } from "./entities";
-import { loadFixtureJson } from "./local";
 import type {
   DevelopmentListQuery,
   PropertyListQuery,
@@ -35,6 +35,7 @@ type AgentRecord = {
   uid: string;
   slug?: string;
   displayName: string;
+  lifecycle?: string;
 };
 type ContactRecord = {
   phone: string;
@@ -157,7 +158,7 @@ export class SnapshotRepository implements RealtyRepository {
         ) {
           return false;
         }
-        return true;
+        return isPubliclyListed(item.lifecycle);
       })
       .map((item) => this.toPropertyCard(item));
   }
@@ -198,6 +199,7 @@ export class SnapshotRepository implements RealtyRepository {
       agent: agent ? this.toAgentCard(agent) : null,
       contact,
       media: mediaOf(listing),
+      lifecycle: normalizeLifecycle(listing.lifecycle),
     };
   }
 
@@ -209,7 +211,7 @@ export class SnapshotRepository implements RealtyRepository {
         if (query?.developerUid && item.developerUid !== query.developerUid) {
           return false;
         }
-        return Boolean(item.publicUrlId);
+        return Boolean(item.publicUrlId) && isPubliclyListed(item.lifecycle);
       })
       .map((item) => this.toDevelopmentCard(item));
   }
@@ -243,6 +245,7 @@ export class SnapshotRepository implements RealtyRepository {
       contact,
       media: [],
       properties,
+      lifecycle: normalizeLifecycle(development.lifecycle),
     };
   }
 
@@ -275,7 +278,7 @@ export class SnapshotRepository implements RealtyRepository {
       photo: null,
       workPhone: null,
       workEmail: null,
-      lifecycle: "active",
+      lifecycle: normalizeLifecycle(agent.lifecycle),
     };
   }
 
