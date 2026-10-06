@@ -1,6 +1,14 @@
+import { randomBytes } from "node:crypto";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { NextResponse } from "next/server";
 import { env } from "@/platform/env";
-import { SmtpLeadSink, submitLead, WindowRateLimiter } from "@/platform/leads";
+import {
+  FileLeadSpool,
+  SmtpLeadSink,
+  submitLead,
+  WindowRateLimiter,
+} from "@/platform/leads";
 import { lead } from "@/project/lead.config";
 
 const limiter = new WindowRateLimiter(
@@ -19,6 +27,14 @@ function smtpSink() {
   });
 }
 
+function spoolFromEnv() {
+  const key = env.LEAD_SPOOL_KEY
+    ? Buffer.from(env.LEAD_SPOOL_KEY, "base64")
+    : randomBytes(32);
+  const dir = env.LEAD_SPOOL_DIR ?? join(tmpdir(), "souz-lead-spool");
+  return new FileLeadSpool(dir, key.length === 32 ? key : randomBytes(32));
+}
+
 export async function POST(request: Request) {
   const payload = await request.json().catch(() => null);
   const forwarded = request.headers.get("x-forwarded-for");
@@ -33,13 +49,8 @@ export async function POST(request: Request) {
     sink:
       transport === "smtp" ? smtpSink() : { deliver: async () => undefined },
     limiter,
+    spool: spoolFromEnv(),
   });
-  if (!result.ok && result.code === "lead_transport_disabled") {
-    return NextResponse.json(
-      { code: "lead_transport_disabled" },
-      { status: 503 },
-    );
-  }
   if (!result.ok) {
     const status =
       result.code === "rate_limit"
@@ -52,5 +63,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     captured: result.captured,
+    leadId: result.captured ? result.leadId : undefined,
   });
 }

@@ -12,7 +12,7 @@ const PLACEHOLDER_SECRETS = new Set([
   "placeholder",
 ]);
 
-const SECRET_KEYS = ["SMTP_PASS"] as const;
+const SECRET_KEYS = ["SMTP_PASS", "LEAD_SPOOL_KEY"] as const;
 
 const envSchema = z.object({
   NODE_ENV: z
@@ -41,6 +41,8 @@ const envSchema = z.object({
   SMTP_USER: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   SMTP_PASS: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   SMTP_FROM: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  LEAD_SPOOL_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  LEAD_SPOOL_DIR: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
 });
 
 export type AppEnv = Omit<z.infer<typeof envSchema>, "SMTP_SECURE"> & {

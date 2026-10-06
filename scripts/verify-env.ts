@@ -44,6 +44,8 @@ const names = [
   "SMTP_USER",
   "SMTP_PASS",
   "SMTP_FROM",
+  "LEAD_SPOOL_KEY",
+  "LEAD_SPOOL_DIR",
 ];
 
 for (const name of names) {

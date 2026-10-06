@@ -26,7 +26,7 @@ export type LeadSink = {
 export type LeadTransport = "none" | "smtp" | "webhook" | "crm";
 
 export type LeadResult =
-  | { ok: true; captured: true }
+  | { ok: true; captured: true; leadId: string }
   | { ok: true; captured: false; reason: "honeypot" }
   | {
       ok: false;
@@ -38,6 +38,24 @@ export type LeadResult =
         | "lead_transport_disabled";
     };
 
+export type LeadSpoolStatus = "pending" | "delivered" | "failed-retryable";
+
+export type LeadSpoolRecord = {
+  leadId: string;
+  status: LeadSpoolStatus;
+  attempts: number;
+  updatedAt: string;
+  delivery: LeadDelivery;
+};
+
+export type LeadSpool = {
+  write(record: LeadSpoolRecord): void;
+  read(leadId: string): LeadSpoolRecord | null;
+  listPending(): LeadSpoolRecord[];
+  pendingCount(): number;
+  remove(leadId: string): void;
+};
+
 export type LeadSubmitContext = {
   ip: string;
   now: Date;
@@ -46,6 +64,7 @@ export type LeadSubmitContext = {
   transport: LeadTransport;
   sink: LeadSink;
   limiter: RateLimiter;
+  spool: LeadSpool;
 };
 
 export type RateLimiter = {
