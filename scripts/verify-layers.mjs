@@ -54,6 +54,46 @@ function isTypeOnlyImport(line) {
   return /^\s*import\s+type\b/.test(line);
 }
 
+function loadProjectBrandHexes() {
+  const theme = readFileSync(join(root, "src/project/theme.css"), "utf8");
+  const hexes = new Set();
+  for (const line of theme.split("\n")) {
+    if (!/--sr-(primary|surface-dark)/.test(line)) {
+      continue;
+    }
+    for (const match of line.matchAll(/#[0-9a-fA-F]{3,8}/g)) {
+      hexes.add(match[0].toLowerCase());
+    }
+  }
+  return [...hexes];
+}
+
+function checkNoProjectLiterals(files, label) {
+  for (const file of files) {
+    const text = readFileSync(file, "utf8");
+    for (const literal of forbiddenLiterals) {
+      if (text.includes(literal)) {
+        fail(
+          `${label}: ${relative(root, file)} contains "${literal}"`,
+        );
+      }
+    }
+  }
+}
+
+function checkNoBrandHexes(files, hexes, label) {
+  for (const file of files) {
+    const text = readFileSync(file, "utf8").toLowerCase();
+    for (const hex of hexes) {
+      if (text.includes(hex)) {
+        fail(
+          `${label}: ${relative(root, file)} contains brand color ${hex}`,
+        );
+      }
+    }
+  }
+}
+
 function checkForbiddenImports(files, fragments, label, options = {}) {
   const { skipRelative = [] } = options;
   for (const file of files) {
@@ -79,16 +119,13 @@ function checkForbiddenImports(files, fragments, label, options = {}) {
 }
 
 const platformFiles = walk(join(root, "src/platform"));
-for (const file of platformFiles) {
-  const text = readFileSync(file, "utf8");
-  for (const literal of forbiddenLiterals) {
-    if (text.includes(literal)) {
-      fail(
-        `platform-no-project-literals: ${relative(root, file)} contains "${literal}"`,
-      );
-    }
-  }
-}
+const uiFiles = walk(join(root, "src/ui"));
+const brandHexes = loadProjectBrandHexes();
+
+checkNoProjectLiterals(platformFiles, "platform-no-project-literals");
+checkNoProjectLiterals(uiFiles, "ui-no-project-literals");
+checkNoBrandHexes(platformFiles, brandHexes, "platform-no-brand-colors");
+checkNoBrandHexes(uiFiles, brandHexes, "ui-no-brand-colors");
 
 const hrefPattern = /\bhref\s*=\s*["'][^"']+["']/g;
 const codeFiles = [
@@ -122,7 +159,6 @@ for (const file of appAndPlatform) {
   }
 }
 
-const uiFiles = walk(join(root, "src/ui"));
 checkForbiddenImports(uiFiles, uiForbiddenImportFragments, "ui-no-data-source");
 checkForbiddenImports(
   uiFiles,
@@ -156,6 +192,9 @@ if (process.exitCode) {
 }
 
 console.log("platform-no-project-literals: PASS");
+console.log("ui-no-project-literals: PASS");
+console.log("platform-no-brand-colors: PASS");
+console.log("ui-no-brand-colors: PASS");
 console.log("no-literal-hrefs: PASS");
 console.log("no-cyrillic: PASS");
 console.log("ui-no-data-source: PASS");
