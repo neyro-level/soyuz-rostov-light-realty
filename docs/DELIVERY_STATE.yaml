@@ -25,6 +25,10 @@ closed_epics:
   - D1
   - D2
 pending_epics:
+  - epic: F1
+    pr: 24
+    sha: 3d7ac17
+    base: epic/E3-ui
   - epic: D3
     pr: 20
     sha: fd348c8
