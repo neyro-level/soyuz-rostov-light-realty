@@ -50,6 +50,7 @@ pending_epics:
     branch: epic/I2-ui-core
     base: epic/H5-utility
   - epic: I3
+    pr: 36
     branch: epic/I3-snapshot
     base: epic/I2-ui-core
 last_merged:

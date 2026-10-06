@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -25,10 +25,11 @@ function check(name: string, ok: boolean, detail = "") {
 }
 
 function makeSpool() {
-  return new FileLeadSpool(
-    mkdtempSync(join(tmpdir(), "sz-lead-")),
-    randomBytes(32),
-  );
+  const dir = mkdtempSync(join(tmpdir(), "sz-lead-"));
+  return {
+    dir,
+    spool: new FileLeadSpool(dir, randomBytes(32)),
+  };
 }
 
 async function main() {
@@ -37,7 +38,7 @@ async function main() {
     lead.rateLimitWindowMs,
   );
   const noneSink = new MemoryLeadSink();
-  const noneSpool = makeSpool();
+  const noneSpool = makeSpool().spool;
   const phone = "+79885552027";
   const none = await submitLead(
     {
@@ -64,7 +65,7 @@ async function main() {
   check("pii-encrypted-at-rest", !noneSpool.ciphertextContains(phone));
 
   const smtpSink = SmtpLeadSink.jsonTransport("noreply@example.com");
-  const smtpSpool = makeSpool();
+  const smtpSpool = makeSpool().spool;
   const smtp = await submitLead(
     {
       name: "Test",
@@ -106,10 +107,99 @@ async function main() {
       transport: "none",
       sink: noneSink,
       limiter,
-      spool: makeSpool(),
+      spool: makeSpool().spool,
     },
   );
   check("consent-required", !noConsent.ok && noConsent.code === "consent");
+
+  const honeypotSpool = makeSpool();
+  const honeypot = await submitLead(
+    {
+      name: "Bot",
+      phone,
+      consent: true,
+      website: "https://spam.example",
+      pageKey: "contacts",
+    },
+    {
+      ip: "honeypot-ip",
+      now: new Date("2026-10-03T12:00:00.000Z"),
+      destinationEmail: lead.destinationEmail,
+      mode: lead.route,
+      transport: "none",
+      sink: noneSink,
+      limiter,
+      spool: honeypotSpool.spool,
+    },
+  );
+  check(
+    "honeypot-silent-success",
+    honeypot.ok &&
+      honeypot.captured === false &&
+      honeypot.reason === "honeypot",
+  );
+  check("honeypot-skips-spool", honeypotSpool.spool.pendingCount() === 0);
+
+  const invalid = await submitLead(
+    { name: "A", phone: "not-a-phone", consent: true },
+    {
+      ip: "validation-ip",
+      now: new Date("2026-10-03T12:00:00.000Z"),
+      destinationEmail: lead.destinationEmail,
+      mode: lead.route,
+      transport: "none",
+      sink: noneSink,
+      limiter,
+      spool: makeSpool().spool,
+    },
+  );
+  check("validation-reject", !invalid.ok && invalid.code === "validation");
+
+  const rateLimiter = new WindowRateLimiter(2, lead.rateLimitWindowMs);
+  const rateSpool = makeSpool().spool;
+  const rateNow = new Date("2026-10-03T12:00:00.000Z");
+  for (let index = 0; index < 2; index += 1) {
+    await submitLead(
+      {
+        name: "Rate",
+        phone: `+7988555203${index}`,
+        consent: true,
+        pageKey: "contacts",
+      },
+      {
+        ip: "rate-ip",
+        now: rateNow,
+        destinationEmail: lead.destinationEmail,
+        mode: lead.route,
+        transport: "none",
+        sink: noneSink,
+        limiter: rateLimiter,
+        spool: rateSpool,
+      },
+    );
+  }
+  const rateLimited = await submitLead(
+    {
+      name: "Rate",
+      phone: "+79885552039",
+      consent: true,
+      pageKey: "contacts",
+    },
+    {
+      ip: "rate-ip",
+      now: rateNow,
+      destinationEmail: lead.destinationEmail,
+      mode: lead.route,
+      transport: "none",
+      sink: noneSink,
+      limiter: rateLimiter,
+      spool: rateSpool,
+    },
+  );
+  check(
+    "rate-limit-reject",
+    !rateLimited.ok && rateLimited.code === "rate_limit",
+  );
 
   const second = await submitLead(
     {
@@ -126,7 +216,7 @@ async function main() {
       transport: "none",
       sink: noneSink,
       limiter,
-      spool: makeSpool(),
+      spool: makeSpool().spool,
     },
   );
   check(
@@ -148,7 +238,7 @@ async function main() {
       }
     },
   };
-  const retrySpool = makeSpool();
+  const retrySpool = makeSpool().spool;
   const accepted = await submitLead(
     {
       name: "Retry",
@@ -178,6 +268,33 @@ async function main() {
     "retry-delivers-once",
     delivered === 1 && retrySpool.pendingCount() === 0,
   );
+  const duplicateFlush = await flushLeadSpool(retrySpool, mockSink, later);
+  check("duplicate-delivery-protected", duplicateFlush === 0);
+
+  const atomic = makeSpool();
+  await submitLead(
+    {
+      name: "Atomic",
+      phone,
+      consent: true,
+      pageKey: "contacts",
+    },
+    {
+      ip: "atomic-ip",
+      now: new Date("2026-10-03T12:00:00.000Z"),
+      destinationEmail: lead.destinationEmail,
+      mode: lead.route,
+      transport: "none",
+      sink: noneSink,
+      limiter,
+      spool: atomic.spool,
+    },
+  );
+  check(
+    "spool-atomic-no-tmp",
+    !readdirSync(atomic.dir).some((name) => name.endsWith(".tmp")),
+  );
+  check("spool-persists-encrypted-file", atomic.spool.pendingCount() === 1);
 
   let posts = 0;
   const webhook = new WebhookLeadSink(
@@ -187,7 +304,7 @@ async function main() {
       return { ok: true };
     },
   );
-  const hookSpool = makeSpool();
+  const hookSpool = makeSpool().spool;
   const hooked = await submitLead(
     {
       name: "Hook",
