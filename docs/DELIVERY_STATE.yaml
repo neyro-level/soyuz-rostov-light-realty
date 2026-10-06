@@ -5,17 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-<<<<<<< HEAD
-current_epic: D3
+current_epic: E2
 next_ready:
-  - E1
-current_branch: epic/D3-seo
-=======
-current_epic: E1
-next_ready:
-  - E2
-current_branch: epic/E1-shadcn
->>>>>>> 93ada94 (docs: delivery state E1 in progress, D3 PR pending)
+  - E3
+current_branch: epic/E2-tokens
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -31,14 +24,13 @@ closed_epics:
   - C1
   - D1
   - D2
-pending_epic:
-  epic: D3
-  pr: 20
-  sha: fd348c8
-<<<<<<< HEAD
-=======
-  note: awaiting merge to main
->>>>>>> 93ada94 (docs: delivery state E1 in progress, D3 PR pending)
+pending_epics:
+  - epic: D3
+    pr: 20
+    sha: fd348c8
+  - epic: E1
+    pr: 21
+    sha: 93ada94
 last_merged:
   epic: D2
   pr: 18
@@ -49,11 +41,5 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-<<<<<<< HEAD
-  Owner resumed graph on 2026-10-06. D3 SEO runtime in progress on epic/D3-seo.
-  Stack A1–D2 on main (PR 18, c1f8fd2). Production and repository split
-  remain owner-only.
-=======
-  D3 delivered on PR 20 (epic/D3-seo). E1 shadcn foundation in progress on
-  epic/E1-shadcn. Production and repository split remain owner-only.
->>>>>>> 93ada94 (docs: delivery state E1 in progress, D3 PR pending)
+  D3 PR 20 and E1 PR 21 await merge. E2 SOUZ tokens on epic/E2-tokens (based on
+  E1). Production and repository split remain owner-only.

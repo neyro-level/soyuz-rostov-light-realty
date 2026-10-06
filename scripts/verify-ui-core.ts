@@ -98,8 +98,27 @@ const tokenNames = [
 for (const token of tokenNames) {
   check(`token:${token}`, theme.includes(token));
 }
+check(
+  "souz-primary-014eba",
+  /--sr-primary:\s*#014eba/i.test(theme),
+);
+check(
+  "souz-radius-5px",
+  /--sr-radius-md:\s*5px/.test(theme),
+);
+check(
+  "souz-container-1360",
+  /--sr-container-max:\s*1360px/.test(theme),
+);
+check(
+  "souz-h2-typography",
+  theme.includes("--sr-text-h2-mobile") &&
+    theme.includes("--sr-text-h2-desktop") &&
+    theme.includes("--sr-text-h2-weight: 600"),
+);
 
 const rawColor = /#(?:[0-9a-fA-F]{3,8})\b|\brgb\(|\bhsl\(|\boklch\(/;
+const bannedRadius = /\brounded-(?:xl|2xl|3xl)\b/;
 function walk(dir: string, files: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
@@ -114,10 +133,28 @@ function walk(dir: string, files: string[] = []): string[] {
   return files;
 }
 
-for (const file of walk(join(root, "src/platform/ui"))) {
-  const text = readFileSync(file, "utf8");
-  const match = text.match(rawColor);
-  check(`no-raw-color:${relative(root, file)}`, !match, match ? match[0] : "");
+for (const dir of ["src/platform/ui", "src/ui"]) {
+  const base = join(root, dir);
+  try {
+    statSync(base);
+  } catch {
+    continue;
+  }
+  for (const file of walk(base)) {
+    const text = readFileSync(file, "utf8");
+    const colorMatch = text.match(rawColor);
+    check(
+      `no-raw-color:${relative(root, file)}`,
+      !colorMatch,
+      colorMatch ? colorMatch[0] : "",
+    );
+    const radiusMatch = text.match(bannedRadius);
+    check(
+      `no-banned-radius:${relative(root, file)}`,
+      !radiusMatch,
+      radiusMatch ? radiusMatch[0] : "",
+    );
+  }
 }
 
 const layout = readFileSync(join(root, "src/app/layout.tsx"), "utf8");
