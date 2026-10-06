@@ -17,6 +17,13 @@ export const uiText = {
     prompt: "Сбор статистики только после согласия.",
   },
   notFoundFallback: "Страница не найдена",
+  appShell: {
+    errorTitle: "Что-то пошло не так",
+    errorLead:
+      "Произошла ошибка при загрузке страницы. Попробуйте обновить или вернитесь на главную.",
+    retryLabel: "Повторить",
+    homeLinkLabel: "На главную",
+  },
   innLabel: "ИНН",
 };
 

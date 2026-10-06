@@ -1,7 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { StarterPageShell } from "@/platform/ui";
+import { homeHref } from "@/project/home-href";
+import { uiText } from "@/project/ui-text.config";
+
 export default function Error({
   error,
   reset,
@@ -15,8 +19,8 @@ export default function Error({
 
   return (
     <StarterPageShell
-      lead="Произошла ошибка при загрузке страницы. Попробуйте обновить или вернитесь на главную."
-      title="Что-то пошло не так"
+      lead={uiText.appShell.errorLead}
+      title={uiText.appShell.errorTitle}
     >
       <div className="flex flex-col gap-[var(--sr-space-md)]">
         <button
@@ -24,14 +28,14 @@ export default function Error({
           onClick={() => reset()}
           type="button"
         >
-          Повторить
+          {uiText.appShell.retryLabel}
         </button>
-        <a
+        <Link
           className="text-[var(--sr-primary)] underline-offset-4 hover:underline"
-          href="/"
+          href={homeHref}
         >
-          На главную
-        </a>
+          {uiText.appShell.homeLinkLabel}
+        </Link>
       </div>
     </StarterPageShell>
   );
