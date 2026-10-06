@@ -35,6 +35,8 @@ closed_epics:
   - H1
 pending_epics:
   - epic: H2
+    pr: 30
+    sha: b654e93
     branch: epic/H2-static-pages
     base: main
 last_merged:
