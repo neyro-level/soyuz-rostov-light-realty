@@ -1,17 +1,22 @@
-plan_id: SZ-ROSTOV-LITE-MAIN
-plan_version: v1.4
-status: TEMPLATE_READY
-current_epic: F1
+plan_id: SOUZ-TEMPLATE-FREEZE
+plan_version: v2
+status: CONSTITUTION_ALIGNMENT
+plan_status: APPROVED
+approved_by: owner
+approved_at: 2026-10-05T23:25:00+03:00
+current_epic: A2
 current_branch: main
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
+ams_profile: REALTY
+beads_prefix: souztf
 closed_epics:
-  - L0
-  - L1
-  - L2
-  - L3
-  - L4
-  - L5
-  - F1
-post_merge_status: TEMPLATE_READY
-notes: L0–L5 and F1 closed. Production is a separate owner task.
+  - A1
+predecessor:
+  plan_id: SZ-ROSTOV-LITE-MAIN
+  plan_version: v1.4
+  status: archived
+  beads: do_not_touch_or_reimport
+notes: >
+  Plan approved. Import souztf graph. First implementation after A1 verify is A2.
+  Production and repository split remain owner-only.

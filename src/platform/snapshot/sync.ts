@@ -1,13 +1,12 @@
-import { cpSync, existsSync, rmSync } from "node:fs";
 import type { SnapshotManifest } from "../hub/contract";
 import {
   acquireLock,
   activateStaging,
   openSnapshotStore,
+  prepareStaging,
   quarantineCandidate,
   readCurrentManifest,
   releaseLock,
-  type SnapshotStore,
 } from "./store";
 import type { TrustSet } from "./trust";
 import { verifyCandidate } from "./verify";
@@ -39,8 +38,12 @@ export function applyLocalSnapshot(input: {
         expectedProjectId: input.expectedProjectId,
         currentSequence: current?.publishSequence,
       });
-      prepareStaging(store, input.candidateDir);
-      activateStaging(store);
+      prepareStaging(
+        store,
+        input.candidateDir,
+        verified.manifest.publishSequence,
+      );
+      activateStaging(store, verified.manifest.publishSequence);
       return {
         status: "activated",
         manifest: verified.manifest,
@@ -58,16 +61,6 @@ export function applyLocalSnapshot(input: {
   } finally {
     releaseLock(store);
   }
-}
-
-export function prepareStaging(
-  store: SnapshotStore,
-  candidateDir: string,
-): void {
-  if (existsSync(store.stagingDir)) {
-    rmSync(store.stagingDir, { recursive: true, force: true });
-  }
-  cpSync(candidateDir, store.stagingDir, { recursive: true });
 }
 
 export function loadCurrentSnapshot(

@@ -7,6 +7,17 @@ function withTrailingSlash(path: string): string {
   return path.endsWith("/") ? path : `${path}/`;
 }
 
+function knownTokens(config: GrammarConfig): Record<string, string> {
+  return {
+    geo: config.geo,
+    developersSegment: config.developersSegment,
+    developmentSegment: config.developmentSegment,
+    propertySegment: config.propertySegment,
+    objectNamespace: config.objectNamespace,
+    teamSegment: config.teamSegment,
+  };
+}
+
 export function fillTemplate(
   template: string,
   params: Record<string, string>,
@@ -48,14 +59,13 @@ export function buildHref(
     return null;
   }
   const merged = {
-    geo: config.geo,
-    developersSegment: config.developersSegment,
-    developmentSegment: config.developmentSegment,
-    propertySegment: config.propertySegment,
+    ...knownTokens(config),
     ...params,
   };
   return fillTemplate(route.template, merged);
 }
+
+export const buildUrl = buildHref;
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -71,12 +81,7 @@ function matchTemplate(
   pathname: string,
   config: GrammarConfig,
 ): Record<string, string> | null {
-  const known: Record<string, string> = {
-    geo: config.geo,
-    developersSegment: config.developersSegment,
-    developmentSegment: config.developmentSegment,
-    propertySegment: config.propertySegment,
-  };
+  const known = knownTokens(config);
   let pattern = "^";
   const names: string[] = [];
   let last = 0;
@@ -88,6 +93,9 @@ function matchTemplate(
     const fixed = known[name];
     if (fixed) {
       pattern += escapeRegex(fixed);
+    } else if (name === "publicUrlId") {
+      pattern += "([a-z2-7]{5,8})";
+      names.push(name);
     } else {
       pattern += "([^/]+)";
       names.push(name);
@@ -128,6 +136,8 @@ export function matchPath(
   return null;
 }
 
+export const parseUrl = matchPath;
+
 export function assertNoCollisions(config: GrammarConfig): void {
   const pageKeys = new Set<string>();
   const templates = new Set<string>();
@@ -157,5 +167,25 @@ export function assertNoCollisions(config: GrammarConfig): void {
       throw new Error(`duplicate category ${category}`);
     }
     categories.add(category);
+  }
+  const reserved = [
+    config.geo,
+    config.developersSegment,
+    config.developmentSegment,
+    config.objectNamespace,
+    config.teamSegment,
+  ];
+  if (config.districts.includes(config.objectNamespace)) {
+    throw new Error("objectNamespace collides with district");
+  }
+  const seenRoots = new Set<string>();
+  for (const root of reserved) {
+    if (!root) {
+      throw new Error("reserved root must be non-empty");
+    }
+    if (seenRoots.has(root)) {
+      throw new Error(`duplicate reserved root ${root}`);
+    }
+    seenRoots.add(root);
   }
 }

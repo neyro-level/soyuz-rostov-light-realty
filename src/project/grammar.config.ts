@@ -13,6 +13,8 @@ const primaryGrammar = {
   developersSegment: "zastroyshchiki",
   developmentSegment: "novostroyki",
   propertySegment: "kvartiry",
+  objectNamespace: "kvartiry",
+  teamSegment: "komanda",
   routes: [
     { pageKey: "home", template: "/" },
     { pageKey: "geoHub", template: "/{geo}/" },
@@ -33,7 +35,12 @@ const primaryGrammar = {
     { pageKey: "developers", template: "/{developersSegment}/" },
     { pageKey: "developer", template: "/{developersSegment}/{slug}/" },
     { pageKey: "development", template: "/{developmentSegment}/zhk-{slug}/" },
-    { pageKey: "property", template: "/{propertySegment}/{semantic}-{id}/" },
+    {
+      pageKey: "property",
+      template: "/{objectNamespace}/{slug}-{publicUrlId}/",
+    },
+    { pageKey: "team", template: "/{teamSegment}/" },
+    { pageKey: "agent", template: "/{teamSegment}/{slug}/" },
     { pageKey: "ipoteka", template: "/ipoteka/" },
     {
       pageKey: "yurist",

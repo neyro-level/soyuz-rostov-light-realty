@@ -1,21 +1,16 @@
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
-import {
-  findDeveloper,
-  findDevelopment,
-  findProperty,
-  propertySemantic,
-} from "@/platform/catalog/entities";
-import {
-  loadFixtureInventory,
-  loadFixtureJson,
-} from "@/platform/catalog/local";
+import { notFound } from "next/navigation";
 import { buildHref, matchPath } from "@/platform/grammar";
-import { resolvePageMetadata, toNextMetadata } from "@/platform/seo";
-import { data } from "@/project/data.config";
+import { lifecycleForMatchedRoute } from "@/platform/lifecycle";
+import { toNextMetadata } from "@/platform/seo";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
-import { loadSnapshot, metadataContext } from "@/project/runtime";
+import {
+  getRealtyRepository,
+  loadSnapshot,
+  resolveAppMetadata,
+} from "@/project/runtime";
+import { applyLifecycleDecision } from "../apply-lifecycle";
 import { SitePage } from "../site-page";
 
 function hrefToSegments(href: string): string[] {
@@ -27,8 +22,8 @@ function hrefToSegments(href: string): string[] {
 
 export const dynamicParams = true;
 
-export function generateStaticParams() {
-  const snapshotRoot = process.cwd();
+export async function generateStaticParams() {
+  const repo = getRealtyRepository();
   const paths: Array<{ path: string[] }> = [];
   for (const route of grammar.routes) {
     if (route.pageKey === "home") {
@@ -36,6 +31,7 @@ export function generateStaticParams() {
     }
     if (
       route.template.includes("{slug}") ||
+      route.template.includes("{publicUrlId}") ||
       route.template.includes("{semantic}") ||
       route.template.includes("{id}")
     ) {
@@ -46,12 +42,7 @@ export function generateStaticParams() {
       paths.push({ path: hrefToSegments(href) });
     }
   }
-  const developers = loadFixtureJson<Array<{ slug: string }>>(
-    snapshotRoot,
-    data.fixtureDir,
-    "developers.json",
-  );
-  for (const item of developers) {
+  for (const item of await repo.listDevelopers()) {
     const href = buildHref(grammar, features, "developer", {
       slug: item.slug,
     });
@@ -59,26 +50,26 @@ export function generateStaticParams() {
       paths.push({ path: hrefToSegments(href) });
     }
   }
-  const developments = loadFixtureJson<Array<{ publicUrlId?: string }>>(
-    snapshotRoot,
-    data.fixtureDir,
-    "developments.json",
-  );
-  for (const item of developments) {
-    if (!item.publicUrlId) {
-      continue;
-    }
+  for (const item of await repo.listDevelopments()) {
     const href = buildHref(grammar, features, "development", {
-      slug: item.publicUrlId,
+      slug: item.slug,
     });
     if (href) {
       paths.push({ path: hrefToSegments(href) });
     }
   }
-  for (const item of loadFixtureInventory(snapshotRoot, data.fixtureDir)) {
+  for (const item of await repo.listAgents()) {
+    const href = buildHref(grammar, features, "agent", {
+      slug: item.slug,
+    });
+    if (href) {
+      paths.push({ path: hrefToSegments(href) });
+    }
+  }
+  for (const item of await repo.listProperties()) {
     const href = buildHref(grammar, features, "property", {
-      semantic: propertySemantic(item),
-      id: item.publicUrlId,
+      slug: item.slug,
+      publicUrlId: item.publicUrlId,
     });
     if (href) {
       paths.push({ path: hrefToSegments(href) });
@@ -98,44 +89,35 @@ export async function generateMetadata({
   if (!matched) {
     notFound();
   }
-  const snapshot = loadSnapshot();
+  applyLifecycleDecision(
+    lifecycleForMatchedRoute(matched, loadSnapshot(), grammar, features),
+  );
+  const repo = getRealtyRepository();
   if (matched.pageKey === "property") {
-    const listing = findProperty(snapshot, matched.params.id);
+    const listing = await repo.getProperty(matched.params.publicUrlId ?? "");
     if (!listing) {
-      notFound();
-    }
-    const canonicalSemantic = propertySemantic(listing);
-    if (matched.params.semantic !== canonicalSemantic) {
-      const href = buildHref(grammar, features, "property", {
-        semantic: canonicalSemantic,
-        id: listing.publicUrlId,
-      });
-      if (href) {
-        permanentRedirect(href);
-      }
       notFound();
     }
   }
   if (
     matched.pageKey === "development" &&
-    !findDevelopment(snapshot, matched.params.slug)
+    !(await repo.getDevelopment(matched.params.slug ?? ""))
   ) {
     notFound();
   }
   if (
     matched.pageKey === "developer" &&
-    !findDeveloper(snapshot, matched.params.slug)
+    !(await repo.getDeveloper(matched.params.slug ?? ""))
   ) {
     notFound();
   }
-  return toNextMetadata(
-    resolvePageMetadata(
-      matched.pageKey,
-      matched.params,
-      snapshot,
-      metadataContext(),
-    ),
-  );
+  if (
+    matched.pageKey === "agent" &&
+    !(await repo.getAgent(matched.params.slug ?? ""))
+  ) {
+    notFound();
+  }
+  return toNextMetadata(resolveAppMetadata(matched.pageKey, matched.params));
 }
 
 export default async function CatchAllPage({
@@ -149,5 +131,8 @@ export default async function CatchAllPage({
   if (!matched) {
     notFound();
   }
+  applyLifecycleDecision(
+    lifecycleForMatchedRoute(matched, loadSnapshot(), grammar, features),
+  );
   return <SitePage pageKey={matched.pageKey} params={matched.params} />;
 }

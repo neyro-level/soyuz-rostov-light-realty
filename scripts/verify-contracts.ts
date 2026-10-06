@@ -40,6 +40,15 @@ check(
   "garage-box-accepted",
   PropertyTypeSchema.safeParse("GARAGE_BOX").success,
 );
+check(
+  "commercial-type-accepted",
+  PropertyTypeSchema.safeParse("COMMERCIAL").success,
+);
+check(
+  "new-build-unit-type-accepted",
+  PropertyTypeSchema.safeParse("NEW_BUILD_UNIT").success,
+);
+check("other-type-accepted", PropertyTypeSchema.safeParse("OTHER").success);
 check("forked-garage-enum-absent", !propertyTypes.includes("GARAGE" as never));
 check("rent-long-accepted", transactionTypes.includes("RENT_LONG"));
 check("rent-short-accepted", transactionTypes.includes("RENT_SHORT"));
@@ -52,7 +61,7 @@ const inventory = parsePublicInventoryDto({
   dealKind: "PRIMARY_SALE",
   price: { amount: "12500000", currency: "RUB", scale: 2 },
   addressPublic: "Public street",
-  locationPrecision: "STREET",
+  geoPrecision: "street",
   facts: { lotAreaM2: 640 },
   media: [],
   status: "ACTIVE",
@@ -108,7 +117,6 @@ try {
       },
     ],
     keyId: "key-1",
-    signature: "sig",
   });
   check("manifest-unknown-major-throws", false);
 } catch {
@@ -118,6 +126,7 @@ try {
 parseSnapshotManifest({
   schemaMajor: 3,
   schemaMinor: 1,
+  schemaPatch: 0,
   projectId: "demo",
   publishSequence: 1,
   generatedAt: "2026-10-03T00:00:00Z",
@@ -134,7 +143,6 @@ parseSnapshotManifest({
     },
   ],
   keyId: "key-1",
-  signature: "sig",
 });
 check("supported-manifest-accepted", true);
 

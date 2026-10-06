@@ -6,6 +6,7 @@ import {
   listingCheckedAt,
 } from "../catalog/entities";
 import { buildHref, type FeatureFlags, type GrammarConfig } from "../grammar";
+import { normalizeLifecycle } from "../lifecycle";
 import {
   evaluateDevelopmentTextGate,
   evaluatePriceFreshness,
@@ -73,8 +74,11 @@ export function evaluatePageGate(
     return { gate: "PASS", hidePrice: false };
   }
   if (pageKey === "property") {
-    const listing = findProperty(snapshot, params.id);
-    const checkedAt = listing ? listingCheckedAt(snapshot, listing) : undefined;
+    const listing = findProperty(snapshot, params.publicUrlId);
+    if (!listing) {
+      return { gate: "FAIL", hidePrice: false };
+    }
+    const checkedAt = listingCheckedAt(snapshot, listing);
     const price = evaluatePriceFreshness(checkedAt, now, thresholds);
     return {
       gate: price.gate,
@@ -84,6 +88,9 @@ export function evaluatePageGate(
   }
   if (pageKey === "development") {
     const development = findDevelopment(snapshot, params.slug);
+    if (!development) {
+      return { gate: "FAIL", hidePrice: false };
+    }
     const textGate = evaluateDevelopmentTextGate(
       development?.checkedAt,
       now,
@@ -148,6 +155,26 @@ export function resolvePageMetadata(
   let robots = parseRobotsDirective(row.robotsDefault);
   if (context.indexingMode === "staging") {
     robots = { index: false, follow: false };
+  } else if (pageKey === "property") {
+    const listing = findProperty(snapshot, params.publicUrlId);
+    if (!listing) {
+      robots = { index: false, follow: false };
+    } else if (normalizeLifecycle(listing.lifecycle) === "ARCHIVED_VISIBLE") {
+      robots = { index: false, follow: true };
+    } else if (gate === "FAIL") {
+      robots = { index: false, follow: robots.follow };
+    }
+  } else if (pageKey === "development") {
+    const development = findDevelopment(snapshot, params.slug);
+    if (!development) {
+      robots = { index: false, follow: false };
+    } else if (
+      normalizeLifecycle(development.lifecycle) === "ARCHIVED_VISIBLE"
+    ) {
+      robots = { index: false, follow: true };
+    } else if (gate === "FAIL") {
+      robots = { index: false, follow: robots.follow };
+    }
   } else if (gate === "FAIL") {
     robots = { index: false, follow: robots.follow };
   }

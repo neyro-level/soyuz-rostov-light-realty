@@ -2,7 +2,8 @@
 
 Status: accepted  
 Date: 2026-10-03  
-Plan: SZ-ROSTOV-LITE-MAIN v1 APPROVED
+Plan origin: SZ-ROSTOV-LITE-MAIN v1 (archived)  
+Current plan: SOUZ-TEMPLATE-FREEZE v1 REVIEW
 
 ## Decision
 

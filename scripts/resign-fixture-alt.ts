@@ -2,7 +2,6 @@ import { createHash, createPrivateKey, sign } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { canonicalManifestPayload } from "../src/platform/snapshot/verify";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -17,9 +16,10 @@ type Manifest = {
     count: number;
   }>;
   keyId: string;
-  signature: string;
+  signature?: string;
   schemaMajor: number;
   schemaMinor: number;
+  schemaPatch?: number;
   publishSequence: number;
   generatedAt: string;
   publishedAt: string;
@@ -37,6 +37,7 @@ function resign(name: string) {
   const dir = join(root, "fixtures", name);
   const manifestPath = join(dir, "manifest.json");
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
+  delete manifest.signature;
 
   for (const file of manifest.files) {
     const path = join(dir, file.key);
@@ -54,13 +55,12 @@ function resign(name: string) {
     format: "der",
     type: "pkcs8",
   });
-  manifest.signature = sign(
-    null,
-    canonicalManifestPayload(manifest),
-    privateKey,
-  ).toString("base64");
-
-  writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
+  const manifestBytes = Buffer.from(`${JSON.stringify(manifest)}\n`, "utf8");
+  writeFileSync(manifestPath, manifestBytes);
+  writeFileSync(
+    join(dir, "manifest.sig"),
+    sign(null, manifestBytes, privateKey),
+  );
   const developers = manifest.files.find((file) => file.kind === "developers");
   console.log("resigned", name, developers);
 }

@@ -9,10 +9,13 @@ export const propertyTypes = [
   "ROOM",
   "HOUSE",
   "HOUSE_PART",
-  "LAND",
   "COTTAGE",
   "TOWNHOUSE",
   "GARAGE_BOX",
+  "LAND",
+  "COMMERCIAL",
+  "NEW_BUILD_UNIT",
+  "OTHER",
 ] as const;
 
 export const transactionTypes = [
@@ -30,11 +33,19 @@ export const dealKinds = [
 ] as const;
 
 export const locationPrecisions = ["DISTRICT", "STREET", "EXACT"] as const;
+export const geoPrecisions = ["exact", "street", "district", "city"] as const;
 
 export const PropertyTypeSchema = z.enum(propertyTypes);
 export const TransactionTypeSchema = z.enum(transactionTypes);
 export const DealKindSchema = z.enum(dealKinds);
 export const LocationPrecisionSchema = z.enum(locationPrecisions);
+export const GeoPrecisionSchema = z.enum(geoPrecisions);
+export const EntityLifecycleSchema = z.enum([
+  "active",
+  "hidden",
+  "departed",
+  "redirected",
+]);
 
 export const publicUrlIdSchema = z
   .string()
@@ -92,6 +103,15 @@ export const GarageBoxFactsSchema = z.object({
   lotAreaM2: z.number().nonnegative().optional(),
 });
 
+export const CommercialFactsSchema = z.object({
+  rooms: z.number().nonnegative().optional(),
+  floorsTotal: z.number().int().optional(),
+  ...areaFacts,
+});
+
+export const NewBuildUnitFactsSchema = ApartmentFactsSchema;
+export const OtherFactsSchema = CommercialFactsSchema;
+
 export const InventoryFactsSchema = z.union([
   ApartmentFactsSchema,
   RoomFactsSchema,
@@ -101,6 +121,9 @@ export const InventoryFactsSchema = z.union([
   CottageFactsSchema,
   TownhouseFactsSchema,
   GarageBoxFactsSchema,
+  CommercialFactsSchema,
+  NewBuildUnitFactsSchema,
+  OtherFactsSchema,
 ]);
 
 export const MediaRefSchema = z.object({
@@ -141,6 +164,9 @@ export const PublicInventoryDtoSchema = z
   .strictObject({
     uid: z.string().min(1),
     publicUrlId: publicUrlIdSchema,
+    slug: z.string().min(1).optional(),
+    slugHistory: z.array(z.string()).default([]),
+    lifecycle: EntityLifecycleSchema.optional(),
     propertyType: PropertyTypeSchema,
     transactionType: TransactionTypeSchema,
     dealKind: DealKindSchema.optional(),
@@ -148,7 +174,7 @@ export const PublicInventoryDtoSchema = z
     currency: z.string().length(3).optional(),
     addressPublic: z.string().min(1),
     geoPublic: GeoPublicSchema.optional(),
-    locationPrecision: LocationPrecisionSchema,
+    geoPrecision: GeoPrecisionSchema,
     facts: InventoryFactsSchema,
     agentUid: z.string().min(1).optional(),
     media: z.array(MediaRefSchema).default([]),
@@ -163,6 +189,8 @@ export const AgentPageDtoSchema = z
   .strictObject({
     uid: z.string().min(1),
     slug: z.string().min(1).optional(),
+    slugHistory: z.array(z.string()).default([]),
+    lifecycle: EntityLifecycleSchema.optional(),
     displayName: z.string().min(1),
     listingPresenceStatus: z.enum([
       "HAS_ACTIVE_LISTINGS",
@@ -187,9 +215,21 @@ export const DevelopmentDtoSchema = z
   .strictObject({
     uid: z.string().min(1),
     publicUrlId: publicUrlIdSchema.optional(),
+    slug: z.string().min(1).optional(),
+    slugHistory: z.array(z.string()).default([]),
+    lifecycle: EntityLifecycleSchema.optional(),
     name: z.string().min(1),
     developerUid: z.string().min(1).optional(),
     checkedAt: z.string().optional(),
+  })
+  .superRefine(rejectForbiddenPublicFields);
+
+export const GeoDtoSchema = z
+  .strictObject({
+    uid: z.string().min(1),
+    slug: z.string().min(1).optional(),
+    slugHistory: z.array(z.string()).default([]),
+    name: z.string().min(1),
   })
   .superRefine(rejectForbiddenPublicFields);
 
@@ -204,6 +244,7 @@ export const SnapshotFileSchema = z.object({
 export const SnapshotManifestSchema = z.object({
   schemaMajor: z.number().int().nonnegative(),
   schemaMinor: z.number().int().nonnegative(),
+  schemaPatch: z.number().int().nonnegative().optional(),
   projectId: z.string().min(1),
   publishSequence: z.number().int().nonnegative(),
   generatedAt: z.string().min(1),
@@ -212,7 +253,6 @@ export const SnapshotManifestSchema = z.object({
   sourceRevisions: z.array(z.string()).default([]),
   files: z.array(SnapshotFileSchema),
   keyId: z.string().min(1),
-  signature: z.string().min(1),
 });
 
 export type PublicInventoryDto = z.infer<typeof PublicInventoryDtoSchema>;

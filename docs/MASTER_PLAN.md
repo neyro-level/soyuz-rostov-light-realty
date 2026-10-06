@@ -1,386 +1,2588 @@
-# **Мастер-план SZ-ROSTOV-LITE-MAIN**
+# SOUZ MASTER PLAN
 
 ```text
-Plan ID: SZ-ROSTOV-LITE-MAIN
+Plan ID: SOUZ-TEMPLATE-FREEZE
 Canonical file: docs/MASTER_PLAN.md
-SourceCraft: integrator-p/soyuz-rostov-light-realty
-Version: v1.4
+Predecessor: SZ-ROSTOV-LITE-MAIN v1.4 APPROVED — archived, Beads graph not reused
+Version: v2
 Status: APPROVED
-Phase: F1_TEMPLATE_HARDENING
+Phase: APPROVAL_HANDOFF
 approved_by: owner
-approved_at: 2026-10-04T13:00:00+03:00
+approved_at: 2026-10-05T23:25:00+03:00
 PROJECT_CLASS: COMMERCIAL
 DELIVERY_PROFILE: COMMERCIAL
-AMS_PROFILE: REALTY_LITE
+AMS_PROFILE: REALTY
+DATA_MODE: snapshot | local
 delivery_mode: PR_ONLY
+Production: out of scope until explicit owner command
 ```
 
-**Проект:** «Союз Застройщиков», Ростов-на-Дону 
+**Проект:** Союз Застройщиков  
+**Цель:** привести текущий боевой репозиторий к новой AMS-конституции, реализовать полноценный UI-фундамент и главную страницу, после чего зафиксировать чистую точку для создания отдельного шаблонного репозитория
 
-**Домен:** [https://souz-home.ru/](https://souz-home.ru/) (работаем на текущем домене, перенос будет отдельным шагом) **Профиль:** `AMS_PROFILE=REALTY_LITE` 
-
-**Нормативы:** AMS REALTY LITE Core Standard 1.1.0, AMS Data Hub contract 3.1.2, AMS UI Core 5.0 
-
-**Цель:** довести `main` до состояния, в котором его можно скопировать как шаблон. Каждая заявленная функция должна реально работать, а не только проходить проверку. Дизайна, production и CMS в плане нет.
-
-Что изменилось относительно v1:
-
-* L0–L5 закрыты в `main`. Текущий эпик — F1 «Дочистка перед шаблоном». После merge статус `TEMPLATE_READY`.
-* Канон плана только здесь: `docs/MASTER_PLAN.md`. Стандарты только в `docs/standards/`.
-* Title/Description/robots резолвятся из SEO-реестра; заглушка «Realty Lite» запрещена.
-* `LEAD_TRANSPORT=none|smtp`, MemoryLeadSink только в тестах.
-* Next 16 `src/proxy.ts`, локальный Manrope, `pnpm verify`, лёгкая проверка на PR и ручной `merge-gate`.
-
----
-
-## **0\. Что лежит в репозитории до старта**
-
-Copy  
-/docs/standards/AMS\_REALTY\_LITE\_CORE\_STANDARD.md   (1.1.0)  
-/docs/standards/AMS\_DATA\_HUB\_CONTRACT.md           (3.1.2)  
-/docs/standards/AMS\_UI\_CORE\_v5.0\_FINAL.md  
-/docs/MASTER\_PLAN.md                               (этот документ)
-
-Title, Description и H1 берутся только из `docs/seo/SEO_REGISTRY_SEED.csv` и `src/project/seo.config.ts`. Менять их можно только через PR.
-
-## **1\. Правила для ИИ (AGENTS.md)**
-
-Документы читаются в таком порядке: AGENTS → MASTER\_PLAN → DELIVERY\_STATE → standards → PROJECT.md → задача. Если они противоречат друг другу, приоритет такой: ADR владельца → Lite Standard → Hub contract → MASTER\_PLAN → UI Core → код → чат.
-
-**Запрещено:**
-
-* БД, CMS, Payload, Prisma, Redis, брокеры, поисковые движки;  
-* ISR на каталожных маршрутах и wildcard-хосты для изображений;  
-* изменение grammar и `publicUrlId`;  
-* придуманные enum, поля Hub, тексты и пороги.
-
-**Как поступать при пробелах:**
-
-* Поля нет в контракте → пометка `REQUIRES HUB CONTRACT`.  
-* Нет решения → страница получает `noindex` или `disabled`, а вопрос записывается в `docs/OPEN_QUESTIONS.md`.
-
-**Правило слоёв:**
-
-* Всё, что относится к «Союзу» (названия, города, URL-сегменты, тексты, контакты, цвета), лежит только в `src/project/*` и `docs/seo/*`.  
-* Платформенный код читает это из конфигов и сам ничего такого не содержит.
-
-## **2\. Архитектура: платформа и проектный слой**
-
-| Слой | Где лежит | Что внутри | Меняется в следующем проекте |
-| :---- | :---- | :---- | :---- |
-| Платформа | `src/platform/**`, `src/app/**` (тонкие маршруты), `scripts/**` | Движок URL grammar, снапшот и контракты Hub, content gate, metadata resolver, robots и sitemap, JSON-LD, Lead API, медиа, безопасность, рендер каждого типа страницы, нейтральные UI-компоненты | Нет |
-| Проектный слой | `src/project/**`, `docs/seo/**`, `fixtures/fixture-sz-rostov/**` | Бренд, реквизиты, гео, категории, районы, навигация, флаги, SEO-реестр, редиректы, тема | Да, полностью |
-
-Состав проектного слоя:
-
-Copy  
-src/project/site.config.ts        бренд, реквизиты, контакты, режим работы  
-src/project/grammar.config.ts     geoMode, гео, категории, фасеты, районы  
-src/project/features.config.ts    флаги опциональных разделов  
-src/project/navigation.config.ts  шапка, подвал, PreFooter  
-src/project/seo.config.ts         правила бренда в Title, шаблоны переменных  
-src/project/static-pages.config.ts список статических страниц и их тип  
-src/project/redirects/legacy.ts   старые URL → 301 / 410  
-src/project/theme.css             токены темы (цвета, шрифты, радиусы, отступы, логотип)  
-docs/seo/SEO\_REGISTRY\_SEED.csv    Title / Description / H1 / robots по pageKey
-
-Разделение защищают guards:
-
-* `platform-no-project-literals` запрещает в платформенном коде строки вроде «Ростов», «Союз», `souz-home` и проектные slug;  
-* `no-literal-hrefs` запрещает ссылки строкой, ссылки строятся только через grammar;  
-* dependency-cruiser запрещает импорт из `src/platform` в `src/project` в обратную сторону.
-
-Если guards зелёные, следующий проект сводится к замене файлов проектного слоя.
-
-## **3\. Git-протокол**
-
-Канон: SourceCraft primary, `delivery_mode=PR_ONLY`. Direct push в `main` запрещён.
-
-* F1 делается в ветке `epic/F1-template-hardening` от свежего `origin/main`. Весь эпик — один PR.  
-* Коммиты оформляются как `F1.<k>: <описание>`.  
-* Перед PR локально: `pnpm install --frozen-lockfile && pnpm verify && pnpm build`.  
-* На PR автоматически идёт лёгкая проверка: `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm verify:layers`.  
-* На push CI не запускается.  
-* Перед merge — один ручной exact-head `merge-gate`: `pnpm install --frozen-lockfile && pnpm verify && pnpm build`.  
-* Production этим планом не делается и отдельной командой не подменяется.  
-* После merge source-ветка удаляется.  
-* Эпики L0→L5 идут по HARD-зависимостям контракта, а не потому что «так удобнее CI».
-
-## **4\. Стек**
-
-Все версии фиксируются в lockfile:
-
-* **Основа:** Node.js 24 LTS, corepack, pnpm, Next ≥ 16.3.8, React ≥ 19.2.4, TypeScript strict.  
-* **UI:** Tailwind 4.x, shadcn/ui, lucide-react.  
-* **Валидация и качество кода:** Zod, Biome, dependency-cruiser.  
-* **Тесты:** Vitest, Playwright.  
-* **Прочее:** tsx, `node:crypto` (Ed25519, sha256), libphonenumber-js, unified/remark \+ rehype-sanitize.
-
-Набор проверок соответствует Lite Standard: `verify:lite`, `verify:snapshot`, `verify:contracts`, `verify:seo-contracts`, `verify:ui-core`, `verify:journal`, `verify:security`, `verify:performance`, `verify:exit-mode`, а сводная `verify` запускает их все. Собственные проверки проекта (`verify:layers`, `template:check`) живут отдельно и в стандартный набор не подмешиваются.
-
-## **5\. Реквизиты и контакты (`src/project/site.config.ts`)**
-
-| Поле | Значение |
-| :---- | :---- |
-| Бренд | «Союз Застройщиков» |
-| Юр. лицо | Индивидуальный предприниматель Мормуль Екатерина Владимировна |
-| ИНН | 940400159853 |
-| Директор и основатель | Мормуль Екатерина Владимировна |
-| Телефон | \+7 (988) 555-20-27 (`tel:+79885552027`) |
-| E-mail | szrostov-promo@yandex.com |
-| Адрес офиса | г. Ростов-на-Дону, переулок Доломановский, 19, 1 этаж, офис 1 |
-| Режим работы | Ежедневно 9:00–18:00 (в разметке Schema `Mo-Su 09:00-18:00`) |
-| Сайт | [https\://souz-home.ru](https://souz-home.ru/) |
-
-Эти данные используют шапка, подвал, контакты, юридические страницы, JSON-LD и получатель заявок. Дублировать их в коде нельзя.
-
-## **6\. Зафиксированные решения**
-
-| ID | Решение |
-| :---- | :---- |
-| D1 | `geoMode=SINGLE_GEO`, гео-slug `rostov-na-donu`. Задаётся в `grammar.config.ts` |
-| D2 | Активные категории: `novostroyki`, `kvartiry`. Фасет `vtorichka` есть только у `kvartiry` |
-| D3 | Рынок `NEWBUILD` ставится только при `dealKind ∈ {PRIMARY_SALE, ASSIGNMENT}`. Привязка к ЖК (`developmentUid`) хранится отдельным атрибутом |
-| D4 | Цена старше 45 дней скрывается. При 120 днях content gate не проходит (FAIL). Тексты ЖК не проходят gate, если `checkedAt` старше 180 дней |
-| D5 | `publicUrlId` соответствует `^[a-z2-7]{5,8}$` |
-| D6 | `trailingSlash=true`, нормализация через 308\. Старые URL переводятся одним 301-переходом. Удалённые разделы отдают 410 |
-| D7 | В `main` стоит `INDEXING_MODE=staging`: все страницы `noindex`, в robots `Disallow: /` |
-| D8 | GEO\_HUB `/rostov-na-donu/` получает `noindex,follow`, чтобы не конкурировать с главной |
-| D9 | `LEADS_MODE=direct`. Транспорт: `LEAD_TRANSPORT=none` (по умолчанию, API 503) или `smtp`. MemoryLeadSink только в тестах |
-| D10 | Используется свой image loader и `MEDIA_ORIGIN`, без `remotePatterns` |
-| D11 | У каталожных и объектных страниц бренда в Title нет. У главной, услуг и страниц компании бренд в Title есть. Правило задаётся в `seo.config.ts` |
-| D12 | JSON-LD: `RealEstateAgent` с реквизитами из §5 плюс `BreadcrumbList`. `AggregateRating` и `Review` запрещены |
-| D13 | Флаги в `features.config.ts`: `journal: DISABLED`, `vtorichka: ON`, `yurist: ON`, `vacancies: ON`, `favorites: ON`, `search: ON`. Выключенный раздел отдаёт 404, не попадает в sitemap, меню и перелинковку. `verify:journal` проверяет именно состояние `DISABLED` |
-| D14 | Страниц «Строительство домов» и «Отзывы» нет: ни маршрутов, ни строк в реестре |
-| D15 | Групповые пункты меню («Недвижимость», «Услуги», «О компании») — это заголовки выпадающих списков, а не ссылки |
-| D16 | Компоненты берут цвета, шрифты, радиусы и отступы только из токенов `theme.css`. Произвольные цвета и значения в компонентах запрещены, это проверяет `verify:ui-core` |
-| D17 | UI-тексты лежат в `src/project/ui-text.config.ts`. В `src/app` и `src/platform` кириллицы в строках и JSX нет |
-| D18 | `PROJECT_CLASS=COMMERCIAL`, `DELIVERY_PROFILE=COMMERCIAL`: клиентский сайт, заявки, публичный домен |
-| D19 | Git: `PR_ONLY`, zero-CI на push, лёгкая проверка на PR, один ручной `merge-gate` перед merge |
-| D21 | Шрифт платформы по умолчанию — локальный Manrope (latin+cyrillic, 200–800), без Google Fonts |
-| D22 | Next 16: `src/proxy.ts` вместо `middleware.ts`; matcher не хардкодится, правила из `legacy.ts` |
-| D20 | Базы данных в проекте нет и не будет. Запрещены PostgreSQL, Payload, Prisma, CMS и `DATABASE_URL`. Оставшиеся Payload-секреты в Secret Master не читать и не подключать |
-
-## **7\. Карта страниц и SEO-реестр**
-
-Ограничения для реестра:
-
-* Title — 30–65 символов, Description — 70–170 символов, все значения уникальны.  
-* Переменные в `{}` подставляются из снапшота Hub. Если поля нет, используется вариант без него.  
-* Скрытая цена (D4) в Title и Description не выводится.
-
-### **7.1. Главная и каталог**
-
-| pageKey | URL | robots | Title | H1 | Description |
-| :---- | :---- | :---- | :---- | :---- | :---- |
-| home | `/` | index | Новостройки и квартиры в Ростове-на-Дону — Союз Застройщиков | Новостройки и квартиры в Ростове-на-Дону | Каталог новостроек и квартир Ростова-на-Дону: цены от застройщиков, планировки, сроки сдачи. Помощь с ипотекой и юридическая проверка сделки. |
-| geoHub | `/rostov-na-donu/` | noindex,follow | Недвижимость в Ростове-на-Дону: новостройки и квартиры | Недвижимость в Ростове-на-Дону | Новостройки и квартиры в Ростове-на-Дону: актуальные предложения от застройщиков и собственников, цены и планировки. |
-| catNovostroyki | `/rostov-na-donu/novostroyki/` | index | Новостройки Ростова-на-Дону — цены от застройщиков | Новостройки в Ростове-на-Дону | Новостройки Ростова-на-Дону от застройщиков: цены, планировки, сроки сдачи и расположение ЖК. Подбор квартиры и помощь с ипотекой. |
-| catKvartiry | `/rostov-na-donu/kvartiry/` | index | Купить квартиру в Ростове-на-Дону — цены и планировки | Квартиры в Ростове-на-Дону | Квартиры в Ростове-на-Дону в новостройках и на вторичном рынке: цены, площадь, этаж и планировки. Фильтры по району, комнатности и бюджету. |
-| facetVtorichka | `/rostov-na-donu/kvartiry/vtorichka/` | index (gate) | Вторичное жильё в Ростове-на-Дону — квартиры с ценами | Вторичные квартиры в Ростове-на-Дону | Квартиры на вторичном рынке Ростова-на-Дону: актуальные предложения с ценами, фото и планировками. Юридическая проверка объекта перед покупкой. |
-| distLeninskiy | `/rostov-na-donu/novostroyki/leninskiy/` | index (gate) | Новостройки Ленинского района Ростова-на-Дону — цены | Новостройки Ленинского района | Новостройки Ленинского района Ростова-на-Дону: ЖК от застройщиков, цены, планировки и сроки сдачи. Подбор квартиры и ипотека. |
-| distVoroshilovskiy | `/rostov-na-donu/novostroyki/voroshilovskiy/` | index (gate) | Новостройки Ворошиловского района Ростова — цены | Новостройки Ворошиловского района | Новостройки Ворошиловского района Ростова-на-Дону: жилые комплексы, цены от застройщиков, планировки и сроки сдачи домов. |
-| distSevernyy | `/rostov-na-donu/novostroyki/severnyy/` | index (gate) | Новостройки Северного микрорайона Ростова-на-Дону | Новостройки в Северном микрорайоне | Новостройки Северного микрорайона Ростова-на-Дону: ЖК, цены на квартиры, планировки и сроки сдачи. Помощь с ипотекой. |
-| distTsentr | `/rostov-na-donu/novostroyki/tsentr/` | index (gate) | Новостройки в центре Ростова-на-Дону — цены, ЖК | Новостройки в центре Ростова-на-Дону | Новостройки в центре Ростова-на-Дону: жилые комплексы бизнес- и комфорт-класса, цены, планировки и сроки сдачи. |
-| developers | `/zastroyshchiki/` | index | Застройщики Ростова-на-Дону — список и новостройки | Застройщики Ростова-на-Дону | Застройщики Ростова-на-Дону: список компаний, их жилые комплексы, сданные и строящиеся дома, актуальные предложения квартир. |
-| developer | `/zastroyshchiki/{slug}/` | index (gate) | {Застройщик} — новостройки в Ростове-на-Дону, цены | Застройщик {Застройщик} | Новостройки застройщика {Застройщик} в Ростове-на-Дону: жилые комплексы, цены на квартиры, планировки и сроки сдачи. |
-| development | `/novostroyki/zhk-{slug}/` | index (gate) | ЖК {Название} в Ростове-на-Дону — цены, планировки | ЖК {Название} | ЖК {Название} от {Застройщик}: квартиры от {minPrice} ₽, планировки, срок сдачи {deadline}, район {district}. Ипотека и проверка сделки. |
-| property | `/kvartiry/{semantic}-{id}/` | index (gate) | {N}-комнатная квартира {S} м² в {ЖК|район} — {price} ₽ | {N}-комнатная квартира, {S} м² | {N}-комнатная квартира {S} м², этаж {floor}/{floors}, {ЖК|адрес}, Ростов-на-Дону. Цена {price} ₽, планировка и фото. |
-
-Новые районы добавляются строкой в `grammar.config.ts` и в реестре по шаблону `distX`, через PR и только после того, как пройдут content gate.
-
-### **7.2. Услуги и компания**
-
-| pageKey | URL | robots | Title | H1 | Description |
-| :---- | :---- | :---- | :---- | :---- | :---- |
-| ipoteka | `/ipoteka/` | index | Ипотека на квартиру в Ростове-на-Дону — Союз Застройщиков | Ипотека на квартиру в Ростове-на-Дону | Помощь с ипотекой на новостройку и вторичное жильё в Ростове-на-Дону: подбор программы, подготовка документов и сопровождение до сделки. |
-| yurist | `/yurist-po-nedvizhimosti/` | index | Юрист по недвижимости в Ростове-на-Дону — Союз Застройщиков | Юрист по недвижимости в Ростове-на-Дону | Юридическое сопровождение сделок с недвижимостью в Ростове-на-Дону: проверка объекта и документов, ДДУ и договор купли-продажи, регистрация. |
-| about | `/o-kompanii/` | index | О компании «Союз Застройщиков» — недвижимость в Ростове | О компании «Союз Застройщиков» | «Союз Застройщиков» — подбор новостроек и квартир в Ростове-на-Дону, ипотека и юридическое сопровождение. Основатель и директор — Екатерина Мормуль. |
-| contacts | `/kontakty/` | index | Контакты «Союз Застройщиков» — офис в Ростове-на-Дону | Контакты | Офис «Союз Застройщиков»: Ростов-на-Дону, пер. Доломановский, 19, 1 этаж, офис 1\. Телефон \+7 (988) 555-20-27, ежедневно с 9:00 до 18:00. |
-| vacancies | `/vakansii/` | index | Вакансии «Союз Застройщиков» — работа в Ростове-на-Дону | Вакансии | Работа в сфере недвижимости в Ростове-на-Дону: актуальные вакансии «Союз Застройщиков», условия и контакты для отклика. |
-
-На странице ипотеки ставки и условия без названия банка не указываются.
-
-### **7.3. Служебные и юридические страницы**
-
-| pageKey | URL | robots | Title | H1 |
-| :---- | :---- | :---- | :---- | :---- |
-| privacy | `/politika-konfidencialnosti/` | noindex,follow | Политика обработки персональных данных — Союз Застройщиков | Политика обработки персональных данных |
-| consent | `/soglasie-na-obrabotku-personalnyh-dannyh/` | noindex,follow | Согласие на обработку персональных данных — Союз Застройщиков | Согласие на обработку персональных данных |
-| thanks | `/spasibo/` | noindex,nofollow | Заявка отправлена — Союз Застройщиков | Спасибо, заявка отправлена |
-| favorites | `/izbrannoe/` | noindex,nofollow | Избранное — Союз Застройщиков | Избранное |
-| search | `/poisk/` | noindex,follow | Поиск по каталогу — Союз Застройщиков | Поиск |
-| notFound | 404 | noindex | Страница не найдена — Союз Застройщиков | Страница не найдена |
-
-Оператором персональных данных указывается ИП Мормуль Е. В. с реквизитами из §5.
-
-### **7.4. Старые URL (`src/project/redirects/legacy.ts`)**
-
-| Старый URL | Что происходит |
-| :---- | :---- |
-| `/novostroyki-rostova/` | 301 на `/rostov-na-donu/novostroyki/` |
-| `/kvartiry-rostova/` | 301 на `/rostov-na-donu/kvartiry/` |
-| `/blog/**`, строительство домов, отзывы | 410 |
-
-Когда журнал включат, правило для `/blog/**` пересмотрят через ADR. Соответствие старых объектов новым `publicUrlId` строится через `externalId` и помечено `REQUIRES HUB CONTRACT`.
-
-## **8\. Навигация (`src/project/navigation.config.ts`)**
-
-Ссылки в навигации строятся через grammar. Страницы с `noindex` и выключенные флагом разделы в меню не попадают автоматически.
-
-**Шапка:** логотип, три выпадающих раздела, телефон и CTA «Оставить заявку».
-
-| Раздел | Пункты |
-| :---- | :---- |
-| Недвижимость | Новостройки, Квартиры |
-| Услуги | Ипотека, Юрист |
-| О компании | О компании, Контакты, Вакансии |
-
-В мобильной версии структура та же, разделы раскрываются аккордеоном.
-
-**Подвал:**
-
-| Колонка или блок | Содержимое |
-| :---- | :---- |
-| Недвижимость | Новостройки, Квартиры, Вторичное жильё, Застройщики |
-| Услуги | Ипотека, Юрист |
-| Компания | О компании, Контакты, Вакансии |
-| Документы | Политика ПДн, Согласие на обработку ПДн |
-| Реквизиты | ИП Мормуль Екатерина Владимировна, ИНН 940400159853, адрес, телефон, e-mail, режим работы |
-| Нижняя строка | «© {текущий год} Союз Застройщиков» |
-
-**Содержимое страниц:** H1 и один нейтральный контентный блок.
-
-## **9\. Эпики**
-
-| Эпик | Ветка | Что входит | Критерий приёмки |
-| :---- | :---- | :---- | :---- |
-| L0 Фундамент | `epic/L0-foundation` | Установка стека в репозиторий SourceCraft, Next App Router, структура слоёв по §2, AGENTS.md, DELIVERY\_STATE.yaml, docs/ADR, Zod `env.ts` без DATABASE_URL, `next.config.ts`, guards слоёв, `.sourcecraft/ci.yaml` только с ручными gate (без push/PR) | Локально зелёные `pnpm verify` и `pnpm build`; в зависимостях нет PostgreSQL/Payload/Prisma |
-| L1 Данные и снапшот | `epic/L1-data` | Hub-контракты 3.1.2, проверка подписи и хеша, хранилище, карантин, sync-воркер, DTO, `DATA_MODE=local`, фикстура `fixture-sz-rostov` (около 10 районов, 20 застройщиков, 300 квартир), тесты | Зелёные `verify:snapshot` и `verify:contracts` |
-| L2 Grammar и SEO | `epic/L2-grammar-seo` | Движок grammar, который читает `grammar.config.ts`, флаги из `features.config.ts` (D13), guards коллизий, legacy-редиректы и 410, SEO\_REGISTRY\_SEED.csv со всеми строками §7, metadata resolver с правилами из `seo.config.ts`, content gate (D4), robots.txt, sitemap, JSON-LD (D12), `site.config.ts` | Зелёные `verify:seo-contracts` и `verify:journal`, у каждой страницы корректные Title, Description и H1 |
-| L3 Каркас UI | `epic/L3-skeleton` | `theme.css` с токенами (D16), нейтральные компоненты (шапка, подвал, хлебные крошки, карточки квартиры и ЖК, сетка каталога, фильтры, пагинация, галерея, форма заявки), меню из `navigation.config.ts`, страницы по карте §7 (H1 и один блок), серверный рендер каталогов, Playwright smoke | Зелёный `verify:ui-core`, в коде компонентов нет произвольных цветов, в навигации нет выключенных разделов |
-| L4 Заявки, медиа, безопасность | `epic/L4-leads-media-security` | Lead API (direct) на e-mail из §5, формы с согласием на ПДн, Метрика только после согласия (opt-in), image loader, CSP и security headers, health endpoint | Зелёный `verify:security`, тестовая заявка доходит |
-| L5 Готовность к шаблону | `epic/L5-template-ready` | Минимальные Dockerfile и compose, exit bundle и exit-mode, бюджеты производительности (LCP ≤ 2,5 с, CLS ≤ 0,1), вторая фикстура `fixture-alt` с другим набором гео, категорий и флагов в рамках Lite Standard, `template:check` (сборка и `verify` на обеих фикстурах без правок платформы), черновик `docs/NEW_PROJECT.md` (какие файлы проектного слоя заменить и в каком порядке), тег `v1.0.0-skeleton` | Зелёные `verify:performance`, `verify:exit-mode`, `template:check` и полный `pnpm verify` |
-
-Порядок выполнения: L0 → L1 → L2 → L3 → L4 → L5. Это HARD-цепочка контрактов, не CI-очередь. Production в цепочку не входит.
-
-### 9.1. Контракты эпиков
-
-Общее для всех эпиков: Source of Truth — этот план + стандарты из §0; `delivery_mode=PR_ONLY`; repository `integrator-p/soyuz-rostov-light-realty`; rollback — закрыть PR / не merge; stop — production, новый секрет, БД/Payload, расширение scope.
-
-### EPIC-01 Фундамент
-
-
-Outcome: в репозитории есть Next App Router, слои `src/platform` и `src/project`, канонические docs и guards без базы данных.  
-Entry: чистый `origin/main`. Exit: `pnpm verify` и `pnpm build` зелёные, нет `payload`/`prisma`/`pg` в зависимостях, нет `DATABASE_URL` в `env.ts`.  
-Depends on: нет. Wave: foundation. Critical path: yes.  
-Verification: `pnpm verify`, `pnpm build`, `verify:layers`.
-
-### EPIC-02 Данные и снапшот
-
-
-Outcome: локальный подписанный снапшот Hub 3.1.2 читается из фикстуры, карантин и sync работают без БД.  
-Entry: L0 в `main`. Exit: `verify:snapshot` и `verify:contracts` зелёные, `DATA_MODE=local`.  
-Depends on: L0 HARD. Wave: data. Critical path: yes.  
-Verification: `verify:snapshot`, `verify:contracts`.
-
-### EPIC-03 Grammar и SEO
-
-
-Outcome: все URL и metadata из §7 строятся grammar+реестром, content gate D4 закрыт, journal=DISABLED доказан.  
-Entry: L1 в `main`. Exit: `verify:seo-contracts` и `verify:journal` зелёные; у каждой pageKey есть Title/Description/H1.  
-Depends on: L1 HARD. Wave: seo. Critical path: yes.  
-Verification: `verify:seo-contracts`, `verify:journal`.
-
-### EPIC-04 Каркас UI
-
-
-Outcome: страницы §7 серверно рендерятся нейтральным каркасом на токенах `theme.css`.  
-Entry: L2 в `main`. Exit: `verify:ui-core` зелёный, Playwright smoke по карте страниц, в компонентах нет произвольных цветов.  
-Depends on: L2 HARD. Wave: ui. Critical path: yes.  
-Verification: `verify:ui-core`, Playwright smoke.
-
-### EPIC-05 Заявки, медиа, безопасность
-
-
-Outcome: заявка уходит на e-mail §5 в `LEADS_MODE=direct`, медиа через свой loader, CSP/headers на месте.  
-Entry: L3 в `main`. Exit: `verify:security` зелёный; тестовая заявка доходит до проверяемого sink (тест/перехват, не production mailbox).  
-Depends on: L3 HARD. External: SMTP/e-mail preflight через project env без Secret Master Payload; fallback — mock sink + запись в OPEN_QUESTIONS; stop — live production mail.  
-Wave: leads. Critical path: yes.  
-Verification: `verify:security`, lead test.
-
-### EPIC-06 Готовность к шаблону
-
-Outcome: сборка проверяется на двух фикстурах, exit-mode и perf-бюджеты закрыты, тег `v1.0.0-skeleton` стоит, production не выкатывается.  
-Entry: L4 в `main`. Exit: `verify:performance`, `verify:exit-mode`, `template:check`, полный `pnpm verify`.  
-Depends on: L4 HARD. Wave: template-ready. Critical path: yes.  
-Verification: `verify:performance`, `verify:exit-mode`, `template:check`.
-
-Каждый эпик L0–L5 доставлен в `main`. Текущая работа — F1.
-
-### EPIC-F1 Дочистка перед шаблоном
-
-Outcome: `main` можно копировать как шаблон: Title/Description/robots из реестра, реальные DTO на страницах, sitemap, LEAD_TRANSPORT, proxy.ts, Manrope, `pnpm verify`, `template:check` на двух фикстурах.  
-Entry: L5 в `main` (`cf96aa5` и новее). Exit: критерии приёмки F1 1–10, `pnpm verify` и `pnpm build` зелёные.  
-Branch: `epic/F1-template-hardening`. Один PR. Коммиты `F1.<k>: …`.  
-Depends on: L5 HARD. Wave: template-hardening. Critical path: yes.  
-Verification: `pnpm verify`, `pnpm build`, `template:check`. Production не входит.
-
-Полное ТЗ F1:
-
-1. Удалить корневые стандарты и старый мастер-план. Канон — `docs/MASTER_PLAN.md` v1.4. AGENTS и DELIVERY_STATE обновить. `@types/node` ^24.
-2. `resolvePageMetadata(pageKey, params, snapshot)`: реестр, переменные, скрытие цены D4, canonical со слешем, robots (staging → noindex,nofollow; иначе реестр; FAIL → noindex). Подключить в `page.tsx`, `[...path]/page.tsx`, 404 и spasibo. Нет строки реестра → падает сборка и `verify:seo-contracts`.
-3. Данные страниц из DTO; нет объекта → 404; неверный semantic → 308; slug застройщика; gate D4 на ЖК/квартиры/районы/фасет; без «первых 3» в generateStaticParams; ISR каталога запрещён.
-4. Sitemap из grammar+снапшота: только indexable + PASS. Staging пустой.
-5. `LEAD_TRANSPORT=none|smtp`, SmtpLeadSink, none → 503 `lead_transport_disabled` без хранения.
-6. `src/proxy.ts`, UI-тексты в `ui-text.config.ts`, verify:layers без кириллицы в app/platform.
-7. Локальный Manrope, Geist удалить, Google Fonts нет.
-8. `pnpm verify` последовательный список; CI: pr-light + merge-gate.
-9. `PROJECT_FIXTURE`, `template:check` на обеих фикстурах без правок платформы под вторую фикстуру.
-
----
-
-Каждый эпик заканчивается delivery-task: PR в `main` без merge этим планом, пока владелец отдельно не сказал выводить в main.
-
-### 9.2. OWNER_DECISION_REGISTER
-
-| ID | Вопрос | Решение | Deadline | Status |
-| :---- | :---- | :---- | :---- | :---- |
-| OD1 | Профиль доставки | `DELIVERY_PROFILE=COMMERCIAL`, `PROJECT_CLASS=COMMERCIAL` | before APPROVAL | DECIDED |
-| OD2 | Git/CI | `PR_ONLY`, zero-CI, один ручной gate | before APPROVAL | DECIDED |
-| OD3 | База данных | Нет БД/CMS/Payload; старые Payload-секреты не использовать | before APPROVAL | DECIDED |
-
----
-
-## Architect revision history
+## Revision history
 
 | Version | Status | Date | Input | Result |
-| :---- | :---- | :---- | :---- | :---- |
-| v0 | DRAFT | 2026-10-03 | Owner: взять существующий мастер-план | Основа принята. |
-| v1 | APPROVED | 2026-10-03 | Owner: «План утвержден» | Snapshot v1 утверждён. Task Manager import разрешён. Production не разрешён. |
-| v1.4 | APPROVED | 2026-10-04 | Owner: ТЗ эпик F1 «Дочистка перед шаблоном» | Канон перенесён в `docs/MASTER_PLAN.md`. F1 — текущий эпик. Production не разрешён. |
+|---|---|---|---|---|
+| v0 | DRAFT | 2026-10-05 | owner: plan + design system | Architect bootstrap. |
+| v1 | REVIEW | 2026-10-05 | owner decisions + AMS SITE/REALTY/UI CORE | Canonical replace, old Lite/UI 5/Hub archived, grammar rule accepted, Beads Lite not touched. |
+| v2 | APPROVED | 2026-10-05 | owner: «План утвержден» | Exact v2 approved. Beads prefix souztf. Lite graph not reused. |
 
-### FINAL_AUDIT v1
+---
 
-MASTER PLAN MAP  
-Primary goal: чистая `main` REALTY_LITE без CMS/design/production.  
-Non-goals: БД, Payload, упаковка шаблона как отдельный продукт, перенос домена, production.  
-Epics: L0–L5.  
-Data: local Hub snapshot.  
-Security: PII в заявках L4, opt-in метрика.  
-Infrastructure: Dockerfile/compose в L5 как artifact, не rollout.
+## Task Manager anchors
 
-FINDING REGISTER: открытых BLOCKER нет. Sequential L0→L5 = HARD, ослабить нельзя: каждый слой читает контракт предыдущего.
+These IDs are the Beads/inventory source_anchor map for SOUZ-TEMPLATE-FREEZE v2.
 
-Night Run Readiness: READY_WITH_LIMITS — одна критическая цепочка эпиков, параллельных implementation waves нет; внутри эпика tasks могут идти пакетом в одной ветке. Production изолирован.
+EPIC-A1 TASK-A1-01 TASK-A1-DELIVERY EPIC-A2 TASK-A2-01 TASK-A2-02 TASK-A2-03 TASK-A2-DELIVERY EPIC-B1 TASK-B1-01 TASK-B1-02 TASK-B1-DELIVERY EPIC-B2 TASK-B2-01 TASK-B2-02 TASK-B2-DELIVERY EPIC-B3 TASK-B3-01 TASK-B3-DELIVERY EPIC-B4 TASK-B4-01 TASK-B4-DELIVERY EPIC-C1 TASK-C1-01 TASK-C1-DELIVERY EPIC-D1 TASK-D1-01 TASK-D1-DELIVERY EPIC-D2 TASK-D2-01 TASK-D2-DELIVERY EPIC-D3 TASK-D3-01 TASK-D3-DELIVERY EPIC-E1 TASK-E1-01 TASK-E1-DELIVERY EPIC-E2 TASK-E2-01 TASK-E2-DELIVERY EPIC-E3 TASK-E3-01 TASK-E3-DELIVERY EPIC-F1 TASK-F1-01 TASK-F1-DELIVERY EPIC-F2 TASK-F2-01 TASK-F2-DELIVERY EPIC-F3 TASK-F3-01 TASK-F3-DELIVERY EPIC-G1 TASK-G1-01 TASK-G1-02 TASK-G1-DELIVERY EPIC-H1 TASK-H1-01 TASK-H1-DELIVERY EPIC-H2 TASK-H2-01 TASK-H2-DELIVERY EPIC-H3 TASK-H3-01 TASK-H3-DELIVERY EPIC-H4 TASK-H4-01 TASK-H4-DELIVERY EPIC-H5 TASK-H5-01 TASK-H5-DELIVERY EPIC-I1 TASK-I1-01 TASK-I1-DELIVERY EPIC-I2 TASK-I2-01 TASK-I2-DELIVERY EPIC-I3 TASK-I3-01 TASK-I3-DELIVERY EPIC-I4 TASK-I4-01 TASK-I4-DELIVERY EPIC-I5 TASK-I5-01 TASK-I5-DELIVERY EPIC-I6 TASK-I6-01 TASK-I6-DELIVERY EPIC-J1 TASK-J1-01 TASK-J1-DELIVERY EPIC-J2 TASK-J2-01 TASK-J2-DELIVERY EPIC-J3 TASK-J3-01 TASK-J3-DELIVERY EPIC-K1 TASK-K1-01 TASK-K1-DELIVERY
+
+## 0. Цель плана
+
+Текущий проект должен стать одновременно:
+
+1. корректным рабочим проектом «Союз Застройщиков»;
+2. эталонной реализацией:
+   - AMS SITE CORE;
+   - AMS REALTY CORE;
+   - AMS UI CORE;
+   - SOUZ DESIGN SYSTEM;
+3. безопасной исходной точкой для будущего Realty Template.
+
+До Template Freeze необходимо:
+
+- завершить архитектурный фундамент;
+- убрать старые противоречия стандартов;
+- подключить настоящий Repository / Snapshot data path;
+- сделать provider-neutral snapshot architecture;
+- сделать надёжную доставку заявок через durable spool;
+- привести URL / lifecycle / SEO к новому Core;
+- перейти на shadcn/ui;
+- построить единый UI-layer;
+- сделать полноценные Header / Footer / Navigation;
+- полностью собрать главную;
+- обеспечить работоспособность всех маршрутов;
+- остальные страницы оставить как корректные noindex starter-pages;
+- выполнить полный verification gate.
+
+После этого проект можно разделить:
 
 ```text
-MASTER PLAN AUDIT
-Logic/completeness: blockers 0 / major 0
-Architecture/data/security: blockers 0 / major 0
-Dependency/autonomy: cycles 0 / hard L1←L0, L2←L1, L3←L2, L4←L3, L5←L4 / waves 1 serial
-Executability/evidence: 6/6 epics with acceptance+verification
-Owner decisions before approval: 0
-Night Run Readiness: READY_WITH_LIMITS
+SOUZ REFERENCE BASELINE
+        │
+        ├──► Soyuz Rostov — продолжение разработки
+        │
+        └──► AMS Realty Template — новый репозиторий
 ```
 
+---
+
+## 1. Source of Truth
+
+Перед работой AI читает в следующем порядке:
+
+1. `docs/standards/AMS_SITE_CORE.md`;
+2. `docs/standards/AMS_REALTY_CORE.md`;
+3. `docs/standards/AMS_UI_CORE.md`;
+4. `docs/SOUZ_DESIGN_SYSTEM.md` — единственная проектная дизайн-система;
+5. PROJECT / ADR проекта (`docs/adr/`);
+6. этот `docs/MASTER_PLAN.md`;
+7. `docs/DELIVERY_STATE.yaml`;
+8. текущую задачу.
+
+Конкурирующий канон не используется. Архив (не Source of Truth):
+
+- `docs/archive/MASTER_PLAN_SZ-ROSTOV-LITE-MAIN_v1.4.md`
+- `docs/archive/AMS_REALTY_LITE_CORE_STANDARD.md`
+- `docs/archive/AMS_DATA_HUB_CONTRACT.md`
+- `docs/archive/AMS_UI_CORE_v5.0_FINAL.md`
+- `docs/archive/task-manager-inventory.SZ-ROSTOV-LITE-MAIN.v1.json`
+
+Локальный Beads-граф предшественника не изменять и не импортировать поверх новым планом.
+
+---
+
+## 2. Зафиксированные решения владельца
+
+Следующие решения утверждены и не требуют повторного обсуждения до появления новых фактов или отдельного ADR.
+
+### 2.1. Главное меню
+
+Desktop header — двухуровневый.
+
+Основные группы:
+
+```text
+Недвижимость
+Услуги
+Компания
+```
+
+Группа `Недвижимость`:
+
+- Новостройки;
+- Квартиры;
+- Вторичная недвижимость;
+- Застройщики.
+
+Группа `Услуги`:
+
+- Ипотека;
+- Юрист по недвижимости.
+
+Группа `Компания`:
+
+- О компании;
+- Контакты;
+- Вакансии.
+
+`Журнал` до Template Freeze выключен и в меню не выводится.
+
+При `SINGLE_GEO` выбор города не показывается. Он появляется только при реальном `MULTI_GEO`.
+
+### 2.2. Основной CTA
+
+На глобальном уровне используется:
+
+```text
+Подобрать вариант
+```
+
+На Template Freeze предпочтительное действие — открытие общей LeadForm/Dialog, поэтому CTA работает с любой страницы и не требует отдельной посадочной страницы.
+
+### 2.3. Объём дизайна до Template Freeze
+
+Полностью проектируется только главная страница.
+
+Остальные маршруты получают общий Header/Footer и `StarterPageShell` с 1–2 смысловыми блоками. Каталожные страницы при этом обязаны работать на реальных Repository-данных.
+
+### 2.4. Референс BASTION
+
+Референс BASTION используется как эталон:
+
+- композиции главной;
+- плотности;
+- последовательности экранов;
+- сочетания каталога, сервисных блоков, доверия и заявки.
+
+Не копируются:
+
+- бренд;
+- бордовая палитра;
+- имена сотрудников;
+- цифры;
+- отзывы;
+- неподтверждённые преимущества.
+
+Все визуальные значения берутся из `docs/SOUZ_DESIGN_SYSTEM.md`. Другой проектной дизайн-системы нет.
+
+### 2.5. Решения сборки v1 (2026-10-05)
+
+| ID | Решение |
+|---|---|
+| S1 | Plan ID = `SOUZ-TEMPLATE-FREEZE`. Канон = `docs/MASTER_PLAN.md`. |
+| S2 | Предшественник `SZ-ROSTOV-LITE-MAIN` v1.4 архивирован. Его Beads/inventory не трогать и не импортировать поверх. |
+| S3 | Конституция: SITE / REALTY / UI CORE v1 в `docs/standards/`. Lite Standard, Hub 3.1.2 и UI Core 5.0 только в `docs/archive/`. |
+| S4 | Единственная дизайн-система — `docs/SOUZ_DESIGN_SYSTEM.md`. |
+| S5 | До первой публичной индексации grammar можно привести к REALTY CORE. Сайт владеет grammar. `publicUrlId` остаётся стабильной provider identity. Экспериментальные URL сохранять не обязательно. |
+| S6 | `TEMPLATE_READY` сброшен. Текущий статус доставки — `CONSTITUTION_ALIGNMENT`. |
+| S7 | Production этим планом не делается. |
+| S8 | Новый Beads prefix после approval: `souztf`. Это не Upgrade графа Lite. Закрытые szrl-issues не переоткрывать и не импортировать поверх. |
+| S9 | `INDEXING_MODE` до Freeze: `private` или `staging`. Переход в `public` — отдельная команда владельца, не этот план. |
+| S10 | Живой AMS Hub / production SMTP / production encryption key не требуются для Freeze. |
+| S11 | Физический UI-layer: `src/ui/**`. `src/platform/ui` перестаёт быть владельцем визуала после E3. |
+| S12 | Phase L (создание template-репозитория) вне implementation graph. Только явная команда владельца после Freeze. |
+| S13 | Git: SourceCraft, `PR_ONLY`, ветка `epic/<epic-id>-<slug>` от `origin/main`, один PR на эпик, direct push в `main` запрещён. Merge — команда владельца `Проводи review и выводи в main`. |
+| S14 | Freeze = зелёный Gate K1 в PR, merge в `main`, annotated tag на exact SHA. Не extra commit напрямую в `main`. |
+
+---
+
+## 3. Что сохраняется из текущего проекта
+
+Не переписывать без необходимости:
+
+- Next.js App Router;
+- React;
+- TypeScript strict;
+- Tailwind CSS 4;
+- pnpm;
+- Biome;
+- dependency-cruiser;
+- Playwright;
+- Docker standalone;
+- SourceCraft CI;
+- project/platform separation;
+- движок grammar и идентичность `publicUrlId` (сами path-классы можно привести к Core, S5);
+- SEO Registry;
+- Content Gate concept;
+- custom media loader;
+- fixtures;
+- template check concept;
+- signed snapshot concept;
+- publicUrlId;
+- no-DB / no-CMS architecture.
+
+Проект модернизируется, а не создаётся заново.
+
+---
+
+## 4. Что НЕ входит в Template Freeze
+
+До отделения шаблона НЕ требуется полностью проектировать:
+
+- все внутренние корпоративные страницы;
+- все SEO landing pages;
+- детальную страницу каждой услуги;
+- полноценный Journal content;
+- финальные тексты всех страниц;
+- реальные production data feeds;
+- production deployment;
+- сложную карту;
+- сложный mortgage calculator;
+- весь контент проекта «Союз».
+
+Это делается уже после разделения репозиториев.
+
+---
+
+## 3.1. Контракт исполнения (все эпики)
+
+Если эпик не повторяет поле, действует этот default.
+
+```text
+Source of Truth: SITE CORE, REALTY CORE, UI CORE, SOUZ DESIGN SYSTEM, этот план, ADR 0001
+Scope out: production deploy, INDEXING_MODE=public, journal content, Payload/DB, живой Hub, новый template repo
+Delivery mode: PR_ONLY
+Repository: integrator-p/soyuz-rostov-light-realty
+Beads prefix after approval: souztf
+Rollback: закрыть PR / не merge
+Stop: production, новый секрет с неизвестным value, БД/CMS, Phase L, INDEXING public, live Hub credential, изменение Core без ADR
+```
+
+Acceptance не может быть словами «работает/корректно» без команды или наблюдаемого факта. Verification — существующие `pnpm` scripts; новые `verify:*` добавляются в том эпике, который вводит правило.
+
+### Git
+
+- Канон: SourceCraft primary.
+- Рабочая ветка эпика: `epic/<epic-id>-<slug>` от свежего `origin/main`.
+- Коммиты: `<epic-id>.<n>: <описание>`.
+- Перед PR локально: `pnpm install --frozen-lockfile && pnpm verify && pnpm build`, если эпик не сузил proof.
+- На PR: лёгкая проверка; на push CI не запускается.
+- Merge только по команде владельца, exact-head `merge-gate`.
+- После merge source-ветка удаляется.
+
+### Секреты и EXTERNAL
+
+| Prerequisite | Для Freeze | Preflight | Fallback | Stop |
+|---|---|---|---|---|
+| Live Data Provider / Hub | не нужен | нет | local/snapshot fixtures + provider interface | не требовать credentials Hub |
+| `LEAD_TRANSPORT=smtp` live | не нужен | нет | `none` + mock transport в тестах C1 | не слать живую почту |
+| Lead encryption key | нужен только runtime/test env | Zod: имя переменной в `.env.example` без value | тесты: ephemeral key в test env | не коммитить ключ; production mint — OWNER |
+| Secret Master Payload leftovers | не читать | — | игнорировать | не подключать Payload secrets |
+
+### Общий Epic Contract
+
+| Поле | Default |
+|---|---|
+| Entry | prerequisite HARD/CONTRACT закрыт; ветка от `origin/main` |
+| Exit | acceptance + verification evidence в PR; `DELIVERY_STATE.yaml` обновлён |
+| Parallel-safe | см. матрицу §3.2 |
+| Evidence | commit, PR URL, команды verify/build, для UI — browser/Playwright по затронутым маршрутам |
+
+A1 закрыт в сборке плана. Implementation graph начинается с A2.
+
+---
+
+## 3.2. Зависимости и волны
+
+Классификация: `HARD` только если работу нельзя начать. `CONTRACT` — достаточно freeze интерфейса. `SOFT` — порядок, не блокирует ready. `EXTERNAL` / `OWNER` / `PRODUCTION` не стоят в обычной цепи.
+
+| Epic | Outcome | Depends on | Type | Blocking scope | Wave | Critical path |
+|---|---|---|---|---|---:|---|
+| A1 | Канон документов | — | — | closed | 0 | no |
+| A2 | Один config/env | A1 | SOFT (docs already in repo) | whole | 1 | yes |
+| B1 | Pages читают только Repository | A2 | HARD | whole: нужен config/data mode | 2 | yes |
+| B2 | Snapshot contract vNext | B1.1 interface | CONTRACT | B2 после freeze `RealtyRepository` + DTO | 2 | yes |
+| B3 | Immutable revisions + CURRENT | B2 | HARD | store после contract | 3 | yes |
+| B4 | Provider-neutral sync/ACK | B3 | HARD | sync после store | 4 | no |
+| C1 | Durable encrypted spool | A2 | HARD | env/leads flags | 2 | no |
+| D1 | Grammar Core | A2 | HARD | config | 2 | yes |
+| D2 | Lifecycle HTTP/robots | D1, B1 | HARD | parse identity | 3 | yes |
+| D3 | SEO runtime на Repository | D2, B1 | HARD | metadata/sitemap | 4 | yes |
+| E1 | shadcn primitives | A2 | HARD | — | 2 | yes |
+| E2 | SOUZ tokens | E1 | HARD | theme на primitives | 3 | yes |
+| E3 | `src/ui` layer | E2, B1 DTO freeze | CONTRACT | cards могут ждать DTO, не весь B4 | 4 | yes |
+| F1 Header | Header config-driven | E3, A2 nav | HARD | — | 5 | yes |
+| F2 Mobile | Sheet = та же IA | F1 | HARD | те же пункты | 6 | no |
+| F3 Footer | Footer config-driven | E3, A2 nav | HARD | parallel with F2 | 6 | yes |
+| G1 Home | Эталонная главная | F1, F3, E3, B1 DTO, C1 form API | HARD | DoR §5 | 7 | yes |
+| H1–H5 | Все маршруты starter | G1 shell + D3 + B1 | HARD | H3/H4 после catalog DTO | 8 | yes |
+| I1–I6 | Сводные verifiers | по мере фаз | SOFT | наращивать в B/C/D/E; I — консолидация | 8 | no |
+| J1–J3 | Dual fixture + no leak | H, I incremental | HARD | после маршрутов | 9 | yes |
+| K1 | Freeze tag | J | HARD | gate | 10 | yes |
+| L Split | Новый repo | K1 | OWNER + PRODUCTION-adjacent | вне graph | — | — |
+
+Почему HARD узкий:
+
+- E не ждёт D и B4: UI можно собирать на DTO-контракте и fixtures.
+- C1 не ждёт каталог: spool независим.
+- F2 не блокирует G1, если mobile sheet следует за F1; G1 DoR требует Header/Footer, не отдельный mobile epic как unique blocker — F2 всё же HARD от F1, G1 SOFT на F2 если Sheet уже в F1. **Уточнение:** mobile Sheet входит в F1 acceptance (keyboard/375); F2 — выделенная доработка. G1 HARD на F1, SOFT на F2.
+- B4 не на critical path Freeze web: сайт обязан работать без Provider. B4 нужен для Gate K1 «ACK retry», поэтому K1 HARD на B4, G1 нет.
+
+Shared-file owners (не параллелить без freeze):
+
+| Surface | Owner epic then freeze |
+|---|---|
+| `src/platform/env.ts` | A2 |
+| data/leads/index flags | A2 |
+| `RealtyRepository` + DTO | B1.1 then CONTRACT |
+| snapshot store paths | B3 |
+| grammar engine | D1 |
+| SEO registry/runtime | D3 |
+| `src/ui/**`, tokens | E1–E3 |
+| `navigation.config.ts` | F1 (читает A2 flags) |
+| `SitePage` / app routes | H после D/E |
+
+Если одна задача заблокирована, брать другую ready в той же или соседней волне (C1 vs B1, E1 vs D1, F2 vs F3).
+
+---
+
+# PHASE A — CONSTITUTION ALIGNMENT
+
+---
+
+## EPIC A1 — Канонизация стандартов и документации
+
+### Цель
+
+Сделать новую AMS-конституцию единственным источником архитектурных правил проекта.
+
+### Задачи
+
+#### A1.1
+
+Подключить в проект актуальные (сделано в сборке v1):
+
+- `docs/standards/AMS_SITE_CORE.md`
+- `docs/standards/AMS_REALTY_CORE.md`
+- `docs/standards/AMS_UI_CORE.md`
+- `docs/SOUZ_DESIGN_SYSTEM.md`
+
+#### A1.2
+
+Обновить AI-router / AGENTS (сделано в сборке v1).
+
+Порядок:
+
+```text
+Core
+→ Realty
+→ UI
+→ Project Design System
+→ Project
+→ Master Plan
+→ Delivery State
+→ Task
+```
+
+#### A1.3
+
+Удалить или явно архивировать старые конфликтующие стандарты (сделано в сборке v1).
+
+Нельзя оставлять два файла, которые одновременно называют себя UI Core или Realty Core. Корневые копии `01/02/03. AMS_*_CORE.md` и черновики `SOUZ_*.md` не являются каноном.
+
+#### A1.4
+
+Пересобрать PROJECT / architecture overview (сделано в `AGENTS.md` и этом плане; кодовые режимы — A2).
+
+Зафиксировать:
+
+```text
+PROJECT_CLASS = COMMERCIAL
+PROFILE = REALTY
+DATA_MODE = snapshot | local
+UI = AMS + SOUZ DESIGN SYSTEM
+DB = none
+CMS = none
+```
+
+#### A1.5
+
+Сбросить старый статус (сделано в сборке v1):
+
+```text
+TEMPLATE_READY → CONSTITUTION_ALIGNMENT
+```
+
+до прохождения Template Freeze Gate.
+
+### Acceptance
+
+Документационный контур A1 закрыт в сборке v1: один набор Core + одна дизайн-система, архив не является SoT, AGENTS и DELIVERY STATE согласованы.
+
+Остаток для Developer: вычистить старые имена режимов из кода/CI — это эпик A2, не повторная канонизация файлов.
+
+---
+
+## EPIC A2 — Единая конфигурационная модель
+
+### Цель
+
+Убрать старые и конкурирующие режимы.
+
+### Задачи
+
+#### A2.1 DATA_MODE
+
+Заменить:
+
+```text
+hub | local
+```
+
+на:
+
+```text
+snapshot | local
+```
+
+Сайт зависит от snapshot-контракта, а не от названия provider.
+
+#### A2.2 INDEXING_MODE
+
+Использовать:
+
+```text
+private | staging | public
+```
+
+Удалить старое:
+
+```text
+staging | live
+```
+
+#### A2.3 Leads
+
+Единая модель:
+
+```text
+LEADS_ROUTE = direct | service | dual
+
+LEAD_TRANSPORT =
+none | smtp | webhook | crm
+```
+
+#### A2.4 Modules
+
+Сделать независимые module flags.
+
+Минимум:
+
+```text
+leads
+catalog
+journal
+analytics
+indexNow
+```
+
+Journal до Template Freeze может быть выключен.
+
+#### A2.5 Env validation
+
+Все env проходят Zod.
+
+Production-required secret не получает тихий fallback.
+
+### Acceptance
+
+- один config source;
+- старых `LEADS_MODE`, `DATA_MODE=hub`, `INDEXING_MODE=live` нет;
+- build/test используют те же режимы, что runtime.
+
+---
+
+# PHASE B — DATA FOUNDATION
+
+---
+
+## EPIC B1 — Repository boundary
+
+### Цель
+
+Реализовать реальную цепочку:
+
+```text
+Source
+→ Adapter
+→ Repository
+→ DTO / ViewModel
+→ UI
+```
+
+### Сейчас
+
+Страницы напрямую получают snapshot-like fixture через project runtime.
+
+Это необходимо прекратить.
+
+### Задачи
+
+#### B1.1
+
+Определить интерфейс `RealtyRepository`.
+
+Минимальные операции:
+
+- getProjectContact;
+- getGeo;
+- listProperties;
+- getProperty;
+- listDevelopments;
+- getDevelopment;
+- listDevelopers;
+- getDeveloper;
+- listAgents;
+- getAgent.
+
+#### B1.2
+
+Реализовать `SnapshotRepository`.
+
+Он читает только активную local revision.
+
+#### B1.3
+
+Создать публичные DTO / ViewModel.
+
+Минимум:
+
+- PropertyCardDTO;
+- PropertyDetailsDTO;
+- DevelopmentCardDTO;
+- DevelopmentDetailsDTO;
+- DeveloperDTO;
+- AgentCardDTO;
+- AgentDetailsDTO;
+- ProjectContactDTO;
+- GeoDTO.
+
+#### B1.4
+
+Убрать чтение fixture из:
+
+- page components;
+- SitePage;
+- metadata;
+- sitemap;
+- generateStaticParams.
+
+#### B1.5
+
+Fixture использовать только как источник тестовой active revision / local mode.
+
+### Acceptance
+
+Ни одна page/section/domain UI не импортирует:
+
+- fixture loader;
+- snapshot raw model;
+- filesystem reader;
+- provider contract.
+
+---
+
+## EPIC B2 — Snapshot Contract vNext
+
+### Цель
+
+Привести snapshot к AMS REALTY CORE.
+
+### Задачи
+
+#### B2.1 Detached signature
+
+Перейти к:
+
+```text
+manifest.json
+manifest.sig
+```
+
+Подписываются точные UTF-8 bytes `manifest.json`.
+
+Не выполнять повторную сериализацию JSON перед verification.
+
+#### B2.2 Versioning
+
+Поддержать:
+
+```text
+schemaMajor
+schemaMinor
+schemaPatch?
+```
+
+Major:
+
+- breaking.
+
+Minor:
+
+- только backward-compatible additive.
+
+Patch:
+
+- без structural change.
+
+#### B2.3 Identity
+
+У каждой публичной сущности обеспечить переносимую identity:
+
+```text
+uid
+publicUrlId
+slug
+slugHistory
+lifecycle
+```
+
+где применимо.
+
+#### B2.4 Property taxonomy
+
+Привести типы к AMS REALTY CORE.
+
+Включить минимум:
+
+```text
+APARTMENT
+ROOM
+HOUSE
+HOUSE_PART
+COTTAGE
+TOWNHOUSE
+GARAGE_BOX
+LAND
+COMMERCIAL
+NEW_BUILD_UNIT
+OTHER
+```
+
+#### B2.5 Geo privacy
+
+Использовать:
+
+```text
+addressPublic
+geoPublic
+geoPrecision
+```
+
+Никакого повышения точности сайтом.
+
+#### B2.6 Quarantine
+
+Использовать:
+
+```text
+MAX_ENTITY_QUARANTINE_RATIO = 0.005
+```
+
+Базово 0,5%.
+
+#### B2.7 Dataset verification
+
+Проверять не только inventory, но все обязательные dataset:
+
+- project/contact;
+- geo;
+- inventory;
+- developments;
+- developers;
+- agents;
+- media metadata;
+- redirects;
+- lifecycle.
+
+#### B2.8 Relations
+
+Проверять связи:
+
+```text
+property → development
+property → agent
+development → developer
+redirect → entity
+lifecycle → entity
+```
+
+### Acceptance
+
+`verify:snapshot` покрывает:
+
+- signature;
+- hashes;
+- schema;
+- privacy;
+- identity;
+- relations;
+- quarantine;
+- anti-replay.
+
+---
+
+## EPIC B3 — Revision Store и Last-Good
+
+### Цель
+
+Сделать snapshot storage production-safe.
+
+### Target
+
+```text
+/data/
+  revisions/
+    <sequence>/
+  CURRENT
+  pending-ack/
+  quarantine/
+```
+
+### Задачи
+
+#### B3.1
+
+Убрать модель mutable:
+
+```text
+current/
+last-good/
+```
+
+в пользу immutable revisions.
+
+#### B3.2
+
+Активная revision выбирается атомарным `CURRENT`.
+
+#### B3.3
+
+Хранить минимум:
+
+- current;
+- previous known-good.
+
+#### B3.4
+
+Временные downloads:
+
+```text
+<sequence>.tmp
+```
+
+не видны web process.
+
+#### B3.5
+
+Web process read-only.
+
+Sync process — single writer.
+
+### Acceptance
+
+Crash на любом этапе не оставляет web с частичным dataset.
+
+---
+
+## EPIC B4 — Provider-neutral Sync + ACK
+
+### Цель
+
+Подключить Data Provider, не привязывая сайт к AMS Hub.
+
+### Задачи
+
+#### B4.1
+
+Создать provider interface.
+
+Provider отвечает только за:
+
+- manifest;
+- signature;
+- files;
+- ACK.
+
+#### B4.2
+
+AMS Hub реализовать как один adapter.
+
+#### B4.3
+
+Trigger:
+
+- POST;
+- authenticated;
+- rate-limited;
+- signal-only;
+- без snapshot payload;
+- без arbitrary URL.
+
+#### B4.4
+
+Sync worker:
+
+```text
+signal
+→ lock
+→ manifest
+→ verify
+→ files
+→ verify
+→ revision
+→ CURRENT
+→ pending ACK
+→ ACK
+```
+
+#### B4.5
+
+ACK:
+
+- idempotent;
+- retry;
+- persisted pending state.
+
+Повтор текущего sequence:
+
+- не применяет snapshot заново;
+- может повторить ACK.
+
+### Acceptance
+
+Отключение Provider не останавливает web.
+
+Live Hub не входит в Freeze: обязательны interface, один Hub adapter, fixture/local trigger-path и ACK retry на локальном контуре. Credentials внешнего Hub — EXTERNAL stop, не task.
+
+---
+
+# PHASE C — LEADS
+
+---
+
+## EPIC C1 — Durable Lead Spool
+
+### Цель
+
+Принятая сервером заявка не теряется при временном падении внешнего транспорта.
+
+### Target
+
+```text
+Form
+→ validation
+→ consent
+→ anti-spam
+→ encrypted local spool
+→ accepted
+→ delivery worker
+→ ACK
+→ delete
+```
+
+### Задачи
+
+#### C1.1
+
+Создать unique `leadId`.
+
+#### C1.2
+
+До внешней отправки атомарно записать lead в persistent volume.
+
+#### C1.3
+
+PII шифровать at rest.
+
+Encryption key:
+
+- server env only;
+- имя в `.env.example` без value;
+- не Git;
+- не log;
+- тесты: ephemeral key в test env;
+- production mint ключа — OWNER, не Freeze.
+
+#### C1.4
+
+Создать delivery status.
+
+Например:
+
+```text
+pending
+delivered
+failed-retryable
+```
+
+#### C1.5
+
+Retry:
+
+- простой scheduled process;
+- backoff;
+- idempotent `leadId`;
+- без Redis;
+- без DB.
+
+#### C1.6
+
+Transport adapters:
+
+минимум:
+
+- SMTP;
+- webhook interface.
+
+CRM можно добавить позднее.
+
+#### C1.7
+
+Health показывает:
+
+```text
+leadSpoolPending
+```
+
+без содержимого заявок.
+
+#### C1.8
+
+Добавить cleanup/retention.
+
+### Acceptance
+
+Тест с mock transport, без живой почты:
+
+```text
+transport down
+→ form accepted after spool write
+→ lead remains
+→ transport restored
+→ retry delivers once
+→ spool cleaned
+```
+
+Verification: `pnpm verify:leads` + сценарий spool. `LEAD_TRANSPORT=none` допустим для Freeze.
+
+---
+
+# PHASE D — URL / LIFECYCLE / SEO
+
+---
+
+## EPIC D1 — Canonical URL Grammar
+
+### Цель
+
+До публикации привести URL к итоговой модели без legacy-компромиссов.
+
+Сайт ещё не индексируется, поэтому сейчас разрешено исправить grammar идеально.
+
+Owner S5: grammar можно привести к REALTY CORE до `INDEXING_MODE=public`. `publicUrlId` не менять как identity. Старые экспериментальные URL не обязаны сохраняться; для новой системы — 308.
+
+### Задачи
+
+#### D1.1
+
+Зафиксировать entity URL по REALTY CORE:
+
+Property:
+
+```text
+/{objectNamespace}/{slug}-{publicUrlId}/
+```
+
+Development:
+
+```text
+/novostroyki/zhk-{slug}/
+```
+
+Точный набор классов — проектный, в рамках Core.
+
+Главное:
+
+- сайт владеет grammar;
+- slug provider-owned, история в `slugHistory`;
+- `publicUrlId` opaque и stable.
+
+#### D1.2
+
+Developer / Agent:
+
+использовать provider identity + site grammar.
+
+#### D1.3
+
+`buildUrl` и `parseUrl` сделать строгими обратными функциями.
+
+#### D1.4
+
+Reserved roots проверяются автоматически.
+
+#### D1.5
+
+Permanent redirect policy:
+
+```text
+308
+```
+
+для новой системы.
+
+Так как production URL ещё нет, старые экспериментальные URL не обязаны сохраняться.
+
+### Acceptance
+
+`verify:grammar` зелёный на main + alt fixtures.
+
+---
+
+## EPIC D2 — Lifecycle Pipeline
+
+### Target
+
+```text
+parse route
+→ entity identity
+→ slugHistory
+→ explicit migration
+→ lifecycle
+→ 308 / 410 / 404
+→ render
+→ Content Gate
+```
+
+### Задачи
+
+Реализовать:
+
+```text
+VISIBLE
+ARCHIVED_VISIBLE
+REDIRECTED
+GONE
+```
+
+Поведение:
+
+| Lifecycle | HTTP | Robots |
+|---|---:|---|
+| VISIBLE | 200 | Content Gate |
+| ARCHIVED_VISIBLE | 200 | noindex,follow |
+| REDIRECTED | 308 | — |
+| GONE | 410 | — |
+
+### Acceptance
+
+Content Gate никогда не превращает отсутствующую entity в 200.
+
+---
+
+## EPIC D3 — SEO Runtime
+
+### Цель
+
+Сохранить сильную SEO-архитектуру проекта, но подключить её к Repository.
+
+### Задачи
+
+#### D3.1
+
+SEO Registry оставить единым владельцем intents.
+
+#### D3.2
+
+Metadata получает ViewModel / Repository, не fixture.
+
+#### D3.3
+
+Content Gate обновить под новые entities.
+
+#### D3.4
+
+Price freshness оставить:
+
+```text
+45 days hide
+120 days fail
+```
+
+если проектным решением не будет изменено.
+
+#### D3.5
+
+Sitemap:
+
+- runtime;
+- current revision;
+- only canonical;
+- only 200;
+- only Gate PASS;
+- only `INDEXING_MODE=public`.
+
+#### D3.6
+
+Robots:
+
+```text
+private
+staging
+public
+```
+
+#### D3.7
+
+`lastmod` только фактический.
+
+### Acceptance
+
+Смена CURRENT revision отражается в sitemap без rebuild.
+
+---
+
+# PHASE E — UI FOUNDATION
+
+---
+
+## EPIC E1 — shadcn/ui Foundation
+
+### Цель
+
+Перестроить UI-фундамент согласно AMS UI CORE.
+
+### Задачи
+
+#### E1.1
+
+Инициализировать shadcn/ui.
+
+Primitive base:
+
+```text
+Radix
+```
+
+#### E1.2
+
+Подключать только реально используемые primitives.
+
+На Template Freeze понадобятся минимум:
+
+- Button;
+- Input;
+- Label;
+- Checkbox;
+- Card;
+- Badge;
+- Sheet;
+- Dialog;
+- Accordion;
+- NavigationMenu или DropdownMenu;
+- Breadcrumb;
+- Skeleton;
+- Separator.
+
+#### E1.3
+
+Lucide — единственный icon set.
+
+#### E1.4
+
+Удалить raw styled controls из sections/domain.
+
+#### E1.5
+
+Добавить `cn()` и CVA там, где нужны variants.
+
+### Acceptance
+
+`verify:ui-core` ловит raw styled button/input вне primitive layer.
+
+---
+
+## EPIC E2 — SOUZ Design Tokens
+
+### Цель
+
+Реализовать SOUZ DESIGN SYSTEM в Tailwind 4.
+
+### Задачи
+
+#### E2.1 Colors
+
+Зафиксировать palette:
+
+```text
+#014EBA
+#003B8D
+#002E75
+
+#FFFFFF
+#F8FAFC
+#F2F5F8
+#F4F7FD
+#EAF2FF
+
+#1F2937
+#5B6472
+#8A93A3
+
+#0F1F3A
+#E5EAF1
+#D8E3F3
+#B7CAE8
+```
+
+#### E2.2 Radius
+
+Системный radius:
+
+```text
+≈ 5px
+```
+
+#### E2.3 Typography
+
+Manrope.
+
+Основной H2:
+
+```text
+24 mobile
+28 tablet
+30 desktop
+weight 600
+line-height 1.2
+```
+
+#### E2.4 Layout tokens
+
+```text
+container 1360
+padding 20 / 32 / 48
+section rhythm
+grid gap 32
+```
+
+#### E2.5 Shadows / focus / motion.
+
+#### E2.6
+
+Запретить случайные:
+
+- hex в JSX;
+- `rounded-xl`;
+- `rounded-2xl`;
+- random arbitrary values.
+
+### Acceptance
+
+Design values берутся только из tokens.
+
+---
+
+## EPIC E3 — UI Layer
+
+### Target
+
+```text
+src/ui/
+├── primitives
+├── shared
+├── layout
+├── domain
+└── sections
+```
+
+### Shared
+
+Создать:
+
+- Container;
+- Section;
+- SectionHeader;
+- ImageFrame;
+- CTA;
+- EmptyState;
+- ErrorState.
+
+### Layout
+
+- Header;
+- Footer;
+- MobileNavigation;
+- PageShell.
+
+### Domain
+
+- PropertyCard;
+- DevelopmentCard;
+- DeveloperCard optional;
+- AgentCard;
+- PriceDisplay;
+- CatalogGrid;
+- CatalogToolbar;
+- FilterBar;
+- Gallery;
+- DecisionSidebar.
+
+### Acceptance
+
+`platform` больше не является владельцем визуального слоя.
+
+UI не импортирует Repository.
+
+---
+
+# PHASE F — GLOBAL NAVIGATION
+
+---
+
+## EPIC F1 — Header / Menu
+
+### Цель
+
+Сделать полноценный reusable header по композиционной логике BASTION, но полностью в визуальном языке SOUZ DESIGN SYSTEM.
+
+### Desktop
+
+Использовать двухуровневый header.
+
+#### Utility row
+
+Содержит:
+
+- logo;
+- phone;
+- search — только если `search=true`;
+- favorites — только если `favorites=true`;
+- primary CTA.
+
+Primary CTA:
+
+```text
+Подобрать вариант
+```
+
+#### Main navigation
+
+```text
+Недвижимость
+Услуги
+Компания
+```
+
+##### Недвижимость
+
+```text
+Новостройки
+Квартиры
+Вторичная недвижимость
+Застройщики
+```
+
+Дополнительные пункты выводятся только если для них существует активный route/module.
+
+##### Услуги
+
+```text
+Ипотека
+Юрист по недвижимости
+```
+
+##### Компания
+
+```text
+О компании
+Контакты
+Вакансии
+```
+
+Если позже включён `team`:
+
+```text
+Команда
+```
+
+### Journal
+
+До Template Freeze:
+
+```text
+JOURNAL = off
+```
+
+В Header/Footer и главной журнал не показывать.
+
+### City selector
+
+При:
+
+```text
+SINGLE_GEO
+```
+
+не выводится.
+
+При реальном `MULTI_GEO` подключается как отдельный navigation control.
+
+### CTA behavior
+
+`Подобрать вариант` открывает общую lead-dialog/form.
+
+CTA не должен вести на фиктивную страницу или дублировать формы по каждой странице.
+
+### Acceptance
+
+- ни одного literal href;
+- выключенные routes отсутствуют;
+- keyboard navigation;
+- focus-visible;
+- desktop/laptop responsive;
+- mobile 375;
+- touch targets не меньше 44px;
+- на 375 доступен тот же набор групп (минимум через Sheet в F1, доработка — F2).
+
+---
+
+## EPIC F2 — Mobile Navigation
+
+Использовать shadcn `Sheet`.
+
+Содержит:
+
+- logo;
+- close;
+- те же группы `Недвижимость / Услуги / Компания`;
+- phone;
+- CTA `Подобрать вариант`.
+
+Не создавать отдельную мобильную информационную архитектуру.
+
+G1 не HARD-блокируется F2, если F1 уже даёт доступ ко всем группам на 375.
+
+### Acceptance
+
+- Sheet открывается/закрывается с клавиатуры и focus trap;
+- те же группы, что desktop;
+- CTA и телефон доступны;
+- проверка 375.
+
+---
+
+## EPIC F3 — Footer
+
+### Состав
+
+- logo / brand;
+- Недвижимость;
+- Услуги;
+- Компания;
+- contacts;
+- legal;
+- requisites;
+- copyright.
+
+Surface:
+
+```text
+#0F1F3A
+```
+
+Footer строится из project navigation/site config и не хранит второй ручной набор URL.
+
+### Acceptance
+
+- project config является источником ссылок;
+- legal routes присутствуют;
+- responsive 375/768/1440;
+- нет конкурирующей дизайн-системы.
+
+---
+
+# PHASE G — HOME PAGE REFERENCE IMPLEMENTATION
+
+---
+
+## EPIC G1 — Главная как эталон Template UI
+
+### Цель
+
+Полностью реализовать одну качественную страницу. Главная становится визуальным и компонентным reference для всех будущих проектов.
+
+Референс BASTION используется по композиции и плотности. Брендовые значения и контент принадлежат Союзу.
+
+---
+
+## G1.1 Hero
+
+Pattern:
+
+```text
+split hero
+```
+
+### Левая сторона
+
+Eyebrow:
+
+```text
+НЕДВИЖИМОСТЬ В РОСТОВЕ-НА-ДОНУ
+```
+
+H1 draft:
+
+```text
+Новостройки и квартиры
+в Ростове-на-Дону
+```
+
+Supporting text draft:
+
+```text
+Помогаем сравнить предложения рынка, выбрать подходящий объект
+и пройти путь сделки с понятным сопровождением.
+```
+
+Primary CTA:
+
+```text
+Подобрать вариант
+```
+
+Второй сильный CTA по умолчанию не нужен.
+
+### Trust chips
+
+До появления подтверждённых количественных доказательств использовать только безопасные направления:
+
+```text
+Новостройки
+Вторичная недвижимость
+Ипотека
+```
+
+Не использовать без источника:
+
+- количество клиентов;
+- годы работы;
+- рейтинг;
+- количество сделок;
+- награды;
+- гарантии.
+
+### Правая сторона
+
+Содержательный real-estate visual:
+
+- жилой интерьер;
+- ЖК;
+- архитектура;
+- реальный объект.
+
+Не использовать стоковую семью с ключами, рукопожатия и fake luxury.
+
+### UI
+
+- SOUZ colors;
+- radius около 5px;
+- H1 не более 2–3 визуальных строк;
+- mobile-first;
+- без декоративной перегрузки.
+
+---
+
+## G1.2 Быстрые маршруты
+
+Compact service strip по логике референса.
+
+Максимум 6 элементов:
+
+```text
+Посмотреть новостройки
+Подобрать квартиру
+Вторичная недвижимость
+Ипотека
+Застройщики
+Помощь специалиста
+```
+
+Каждый item:
+
+- Lucide icon;
+- короткий label;
+- реальный route/action.
+
+Если route/module отсутствует, item не выводится.
+
+Без длинных описаний.
+
+---
+
+## G1.3 Новостройки
+
+Section heading:
+
+```text
+Новостройки Ростова-на-Дону
+```
+
+Heading может вести в каталог новостроек.
+
+### Grid
+
+Рекомендуемо:
+
+```text
+до 6 DevelopmentCard
++
+1 SelectionServiceCard
+```
+
+Число карточек адаптивно.
+
+### DevelopmentCard
+
+Показывает только реальные данные Repository:
+
+- photo;
+- name;
+- geo;
+- developer optional;
+- срок сдачи optional;
+- свежая минимальная цена optional.
+
+### SelectionServiceCard
+
+Heading draft:
+
+```text
+Поможем подобрать новостройку
+```
+
+Text draft:
+
+```text
+Сравним подходящие варианты по вашим параметрам
+и поможем разобраться в условиях покупки.
+```
+
+CTA:
+
+```text
+Получить подборку
+```
+
+---
+
+## G1.4 Вас может заинтересовать
+
+Section heading:
+
+```text
+Вас может заинтересовать
+```
+
+До полноценной filter model допустима серверная подборка из Repository.
+
+Tabs/chips выводятся только если реально работают и имеют URL/filter semantics.
+
+### Grid
+
+Пример композиции:
+
+```text
+PropertyCard
+PropertyCard
+PropertyCard
+PropertyCard
+ServiceLeadCard
+PropertyCard
+PropertyCard
+PropertyCard
+```
+
+Точное число элементов не является контрактом.
+
+### ServiceLeadCard
+
+Heading:
+
+```text
+Не нашли подходящий вариант?
+```
+
+Text:
+
+```text
+Расскажите, какую недвижимость ищете.
+Подберём предложения под вашу задачу.
+```
+
+CTA:
+
+```text
+Получить подборку
+```
+
+---
+
+## G1.5 Сервисный блок
+
+Split banner по логике BASTION.
+
+Eyebrow:
+
+```text
+СОПРОВОЖДЕНИЕ СДЕЛКИ
+```
+
+H2 draft:
+
+```text
+Поможем разобраться
+в документах перед сделкой
+```
+
+Text draft:
+
+```text
+Поможем проверить доступные документы и условия объекта,
+объясним важные моменты и подскажем, на что обратить внимание
+до принятия решения.
+```
+
+Primary CTA:
+
+```text
+Разобрать ситуацию
+```
+
+Secondary CTA optional:
+
+```text
+Узнать об услуге
+```
+
+Перед production реальный состав юридической услуги должен быть подтверждён.
+
+Запрещены без доказательств формулировки:
+
+- «гарантируем безопасность»;
+- «100% проверка»;
+- «исключаем все риски».
+
+---
+
+## G1.6 Trust / Company Statement
+
+Композиция по директорскому блоку референса, но без копирования фактов BASTION.
+
+Eyebrow:
+
+```text
+О СОЮЗЕ ЗАСТРОЙЩИКОВ
+```
+
+H2 draft:
+
+```text
+Помогаем выбрать недвижимость
+без лишней сложности
+```
+
+Paragraph 1 draft:
+
+```text
+Недвижимость — это не только цена и квадратные метры.
+Важно сравнить предложения, понять условия покупки
+и выбрать вариант, который подходит именно под вашу задачу.
+```
+
+Paragraph 2 draft:
+
+```text
+Мы помогаем пройти этот путь последовательно:
+от подбора объектов и сравнения условий
+до вопросов по ипотеке и сопровождению сделки.
+```
+
+### Visual
+
+Использовать:
+
+- утверждённое фото руководителя;
+- либо нейтральный проектный visual.
+
+Не придумывать ФИО и должность.
+
+### Stats
+
+До подтверждения реальных метрик:
+
+```text
+не выводить
+```
+
+Компонент может иметь optional stats API.
+
+Запрещено переносить референсные цифры BASTION.
+
+---
+
+## G1.7 Lead Expert Section
+
+Horizontal split lead section.
+
+Eyebrow:
+
+```text
+ПОМОЩЬ СПЕЦИАЛИСТА
+```
+
+H2:
+
+```text
+Нужна помощь
+с выбором недвижимости?
+```
+
+Text:
+
+```text
+Расскажите, что ищете и что для вас важно.
+Свяжемся с вами и поможем определить подходящие варианты.
+```
+
+Fields:
+
+```text
+Ваше имя
+Номер телефона
+Consent
+```
+
+CTA:
+
+```text
+Подобрать вариант
+```
+
+Если утверждённого специалиста нет:
+
+- не придумывать имя;
+- не придумывать должность;
+- использовать neutral visual.
+
+Lead проходит через durable encrypted spool.
+
+---
+
+## G1.8 Journal
+
+До Template Freeze:
+
+```text
+JOURNAL = off
+```
+
+Секция не показывается.
+
+Не создавать fake article cards ради заполнения страницы.
+
+---
+
+## G1.9 Часто ищут
+
+Последняя светлая content-section перед Footer.
+
+H2:
+
+```text
+Часто ищут
+```
+
+Источник ссылок:
+
+- SEO Registry;
+- approved route/navigation registry.
+
+Не поддерживать второй ручной список URL.
+
+Рекомендуемые группы:
+
+```text
+Новостройки
+Квартиры
+Застройщики
+Услуги
+```
+
+Layout:
+
+- 4 columns desktop;
+- 2 tablet;
+- 1 mobile;
+- line-based links;
+- без тяжёлых карточек.
+
+---
+
+## G1.10 Home Responsive / Accessibility
+
+Проверить:
+
+```text
+375
+768
+1024
+1440
+```
+
+Отдельно:
+
+- длинный русский H1;
+- Header;
+- Mobile Sheet;
+- quick routes;
+- DevelopmentCard;
+- PropertyCard;
+- ServiceLeadCard;
+- service split;
+- trust split;
+- LeadForm;
+- popular searches;
+- Footer.
+
+Accessibility:
+
+- один H1;
+- корректная heading hierarchy;
+- keyboard;
+- visible focus;
+- form labels;
+- dialog focus trap;
+- meaningful alt;
+- decorative `alt=""`;
+- contrast;
+- touch targets;
+- reduced motion.
+
+### Acceptance G1
+
+Главная должна выглядеть как законченный коммерческий сайт, а не как технический starter.
+
+Она является эталонной reference page будущего шаблона.
+
+---
+
+# PHASE H — ROUTE COMPLETENESS
+
+---
+
+## EPIC H1 — Starter Page Shell
+
+### Цель
+
+Все архитектурно существующие маршруты открываются, но не требуют полной дизайн-разработки до Template Freeze.
+
+### Создать общий StarterPageShell
+
+Состоит максимум из двух смысловых блоков.
+
+### Block 1 — Intro
+
+- Breadcrumbs;
+- H1;
+- short lead;
+- optional CTA.
+
+### Block 2 — Starter Content
+
+Один из:
+
+- краткое neutral explanation;
+- compact catalog preview;
+- contact CTA;
+- EmptyState;
+- service placeholder.
+
+Никаких fake facts.
+
+---
+
+## EPIC H2 — Статические starter pages
+
+Привести к StarterPageShell:
+
+- Ипотека;
+- Юрист;
+- О компании;
+- Контакты;
+- Вакансии.
+
+Контент минимальный.
+
+До полноценного наполнения:
+
+```text
+NOINDEX_AUTO
+```
+
+---
+
+## EPIC H3 — Catalog entry pages
+
+Маршруты:
+
+- geo hub;
+- новостройки;
+- квартиры;
+- вторичка;
+- утверждённые районы/facets.
+
+Каждая страница должна:
+
+- иметь H1;
+- показать настоящий CatalogGrid;
+- иметь filters только если они реально работают;
+- использовать Content Gate.
+
+Полный post-catalog marketing content не нужен до Template Freeze.
+
+---
+
+## EPIC H4 — Entity pages
+
+### Property
+
+До Freeze:
+
+- Breadcrumbs;
+- H1;
+- Gallery / media shell;
+- core facts;
+- price if fresh;
+- CTA / contact;
+- minimal detail section.
+
+### Development
+
+- Breadcrumbs;
+- H1;
+- Gallery;
+- core facts;
+- min price if fresh;
+- CTA.
+
+### Developer
+
+- Breadcrumbs;
+- H1;
+- краткие факты;
+- связанные ЖК.
+
+### Team / Agent
+
+Подготовить архитектурно:
+
+```text
+/komanda/
+/komanda/{slug}/
+```
+
+Если `team=false`, routes скрыты согласно registry/module policy.
+
+Если включено:
+
+Team page:
+
+- Breadcrumbs;
+- H1;
+- AgentCard grid.
+
+Agent page:
+
+- Breadcrumbs;
+- H1;
+- public role / bio optional;
+- active listings optional;
+- ProjectPublicContact fallback.
+
+Не требуется финальный маркетинговый дизайн.
+
+---
+
+## EPIC H5 — Utility pages
+
+Обязательно:
+
+- 404;
+- Error Boundary;
+- Thanks/Success state, если route остаётся;
+- Privacy;
+- Consent;
+- Search;
+- Favorites.
+
+Search / Favorites:
+
+```text
+noindex
+```
+
+Legal pages:
+
+- readable narrow layout;
+- реальные тексты, если они уже утверждены;
+- иначе production gate закрыт.
+
+---
+
+# PHASE I — TESTS AND VERIFIERS
+
+---
+
+## EPIC I1 — Architecture Verification
+
+Обновить:
+
+```text
+verify:layers
+```
+
+Проверяет:
+
+- platform не импортирует project;
+- UI не импортирует data source;
+- app не читает snapshot/files напрямую;
+- Repository boundary соблюдается;
+- project literals отсутствуют в platform.
+
+---
+
+## EPIC I2 — UI Verification
+
+Новый `verify:ui-core` должен проверять минимум:
+
+- shadcn primitive layer существует;
+- второй UI kit отсутствует;
+- второй icon set отсутствует;
+- raw styled buttons/inputs вне primitives запрещены;
+- raw project hex в TSX отсутствуют;
+- random radii отсутствуют;
+- `rounded-xl/2xl/3xl` блокируются без exception;
+- client boundaries;
+- required shared/domain components.
+
+---
+
+## EPIC I3 — Snapshot Verification
+
+Покрыть:
+
+- detached signature;
+- bad signature;
+- hash mismatch;
+- wrong project;
+- replay;
+- unsupported major;
+- incompatible minor;
+- privacy leak;
+- duplicate ID;
+- broken relation;
+- quarantine;
+- atomic switch;
+- crash recovery;
+- last-good;
+- ACK retry.
+
+---
+
+## EPIC I4 — Lead Verification
+
+Покрыть:
+
+- validation;
+- honeypot;
+- consent;
+- rate limit;
+- spool atomic write;
+- encryption;
+- transport down;
+- retry;
+- duplicate delivery protection;
+- cleanup.
+
+---
+
+## EPIC I5 — SEO Verification
+
+Проверить:
+
+- one intent → one owner;
+- canonical;
+- one H1;
+- lifecycle;
+- 404/410;
+- no redirect chains;
+- runtime sitemap;
+- noindex starter pages;
+- private/staging/public;
+- structured data facts only.
+
+---
+
+## EPIC I6 — E2E
+
+Playwright smoke минимум:
+
+- home;
+- menu desktop;
+- menu mobile;
+- catalog;
+- property;
+- development;
+- contacts;
+- lead success-to-spool;
+- 404;
+- 410 fixture;
+- redirect fixture;
+- sitemap;
+- robots.
+
+---
+
+# PHASE J — TEMPLATE HARDENING
+
+---
+
+## EPIC J1 — Dual-fixture Template Check
+
+Сохранить идею текущего `fixture-alt`, но расширить.
+
+### Primary fixture
+
+Soyuz-like.
+
+### Alt fixture
+
+Обязательно отличается:
+
+- brand;
+- geo;
+- contacts;
+- colors optionally;
+- routes/features;
+- dataset.
+
+### Проверка
+
+Без изменения:
+
+```text
+platform
+ui primitives/shared
+repository
+```
+
+должны успешно собираться оба проекта.
+
+---
+
+## EPIC J2 — Remove Project Leakage
+
+Проверить generic layers на:
+
+- Союз;
+- Ростов;
+- souz;
+- конкретные телефоны;
+- emails;
+- city slug;
+- brand color literals;
+- project H1;
+- legal details.
+
+Они допустимы только в project/design data.
+
+---
+
+## EPIC J3 — New Project Readiness
+
+Подготовить короткую инструкцию нового проекта.
+
+Меняются:
+
+- site config;
+- design tokens;
+- navigation;
+- grammar;
+- SEO Registry;
+- content;
+- project media;
+- provider settings;
+- lead destination.
+
+Не меняются:
+
+- platform;
+- Repository contracts;
+- primitives;
+- shared layout;
+- core verification.
+
+---
+
+# PHASE K — TEMPLATE FREEZE
+
+---
+
+## EPIC K1 — Template Freeze Gate
+
+Это точка, после которой можно создавать новый репозиторий шаблона.
+
+### Gate 1 — Architecture
+
+- [ ] Core docs актуальны.
+- [ ] Repository boundary реализован.
+- [ ] Runtime не читает fixture напрямую.
+- [ ] Provider-neutral snapshot работает.
+- [ ] last-good работает.
+- [ ] ACK retry работает.
+- [ ] lifecycle работает.
+
+### Gate 2 — Leads
+
+- [ ] durable encrypted spool;
+- [ ] retry;
+- [ ] direct transport;
+- [ ] accepted lead не теряется.
+
+### Gate 3 — SEO
+
+- [ ] URL grammar final;
+- [ ] canonical final;
+- [ ] Content Gate;
+- [ ] runtime sitemap;
+- [ ] robots;
+- [ ] 404 / 410 / redirect.
+
+### Gate 4 — UI
+
+- [ ] shadcn;
+- [ ] Lucide;
+- [ ] SOUZ tokens;
+- [ ] radius ≈5px;
+- [ ] Header;
+- [ ] Mobile Menu;
+- [ ] Footer;
+- [ ] Home complete;
+- [ ] starter pages;
+- [ ] responsive;
+- [ ] accessibility.
+
+### Gate 5 — Quality
+
+- [ ] `pnpm lint`;
+- [ ] `pnpm typecheck`;
+- [ ] `pnpm verify`;
+- [ ] `pnpm build`;
+- [ ] `pnpm test:e2e`;
+- [ ] primary fixture;
+- [ ] alt fixture;
+- [ ] Exit Mode smoke.
+
+### Gate 6 — Cleanliness
+
+- [ ] no DB;
+- [ ] no CMS;
+- [ ] no unused UI kit;
+- [ ] no obsolete standards;
+- [ ] no secrets;
+- [ ] no fake facts.
+
+---
+
+## K1.1 Freeze tag
+
+После зелёного Gate: PR эпика K1 → merge в `main` командой владельца → annotated tag на exact SHA.
+
+Рекомендуемый смысл тега/сообщения:
+
+```text
+REFERENCE BASELINE — TEMPLATE FREEZE
+```
+
+Источник будущего template repository — этот SHA в `main`. Direct push в `main` запрещён.
+
+---
+
+# PHASE L — SPLIT AFTER FREEZE
+
+Phase L **не входит** в implementation graph и в Beads. Выполняется только по отдельной команде владельца после Freeze.
+
+---
+
+## После Freeze
+
+Текущий repository:
+
+```text
+Soyuz Rostov
+```
+
+продолжает развитие:
+
+- полноценные внутренние страницы;
+- настоящий контент;
+- Data Provider;
+- production;
+- SEO launch.
+
+Новый repository:
+
+```text
+AMS Realty Template
+```
+
+создаётся строго из Freeze commit.
+
+В template затем удаляются/заменяются:
+
+- бренд Союза;
+- контакты;
+- legal;
+- Soyuz media;
+- project SEO texts;
+- real client data.
+
+Сохраняются:
+
+- platform;
+- Repository;
+- snapshot;
+- lead spool;
+- UI primitives;
+- shared components;
+- domain components;
+- page composition patterns;
+- verification;
+- generic fixtures;
+- template documentation.
+
+---
+
+# 4. Очерёдность выполнения
+
+Канон — матрица §3.2, не одна длинная очередь. Рекомендуемые волны:
+
+```text
+0  A1 docs (закрыт)
+1  A2 config
+2  B1 + C1 + D1 + E1
+3  B2/B3 + D2 + E2
+4  B4 + D3 + E3
+5  F1
+6  F2 ∥ F3
+7  G1
+8  H1–H5 + I incremental
+9  J1–J3
+10 K1 Freeze tag after owner merge
+—  L Split только по команде владельца
+```
+
+Не начинать массовую дизайн-разработку внутренних страниц до Template Freeze.
+
+---
+
+# 5. Definition of Ready для главной
+
+Перед визуальной сборкой Home должны быть готовы:
+
+- shadcn primitives;
+- tokens;
+- Container;
+- Section;
+- SectionHeader;
+- Button;
+- Card;
+- ImageFrame;
+- Header;
+- Footer;
+- Repository card DTO;
+- DevelopmentCard;
+- PropertyCard;
+- LeadForm;
+- navigation config.
+
+Главная не должна создавать эти системы внутри самой себя.
+
+---
+
+# 6. Definition of Done всего плана
+
+Проект готов к отделению Template, когда:
+
+```text
+архитектура соответствует новым AMS Core;
+данные читаются через Repository;
+Hub заменяем;
+сайт работает без Provider;
+snapshot защищён и имеет last-good;
+заявки durable;
+URL/SEO финальны;
+shadcn является UI primitive layer;
+дизайн соответствует SOUZ DESIGN SYSTEM;
+Header/Footer/Menu завершены;
+главная завершена;
+все остальные маршруты работают как starter pages;
+проверки зелёные;
+оба fixtures собираются;
+Exit Mode доказан.
+```
+
+Только после этого текущий commit считается безопасной основой для нового коммерческого шаблона.
+
+---
+
+# 7. Финальный принцип
+
+```text
+Не строить весь Союз до создания шаблона.
+
+Сначала довести общий фундамент до эталона.
+
+Полностью реализовать:
+архитектуру,
+данные,
+SEO,
+заявки,
+UI-систему,
+Header,
+Footer,
+главную.
+
+Остальные страницы должны быть
+корректными,
+доступными,
+SEO-безопасными
+и минимальными.
+
+После этого заморозить baseline,
+создать Template,
+а Союз продолжать отдельно.
+```

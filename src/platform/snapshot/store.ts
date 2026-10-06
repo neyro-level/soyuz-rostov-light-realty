@@ -1,4 +1,5 @@
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -12,33 +13,71 @@ import { DEFAULT_LOCK_TTL_MS } from "./constants";
 
 export type SnapshotStore = {
   root: string;
-  currentDir: string;
-  lastGoodDir: string;
+  revisionsDir: string;
+  currentPointerPath: string;
+  pendingAckDir: string;
   quarantineDir: string;
-  stagingDir: string;
   lockPath: string;
 };
 
 export function openSnapshotStore(root: string): SnapshotStore {
   mkdirSync(root, { recursive: true });
+  const revisionsDir = join(root, "revisions");
+  mkdirSync(revisionsDir, { recursive: true });
+  mkdirSync(join(root, "pending-ack"), { recursive: true });
+  mkdirSync(join(root, "quarantine"), { recursive: true });
   return {
     root,
-    currentDir: join(root, "current"),
-    lastGoodDir: join(root, "last-good"),
+    revisionsDir,
+    currentPointerPath: join(root, "CURRENT"),
+    pendingAckDir: join(root, "pending-ack"),
     quarantineDir: join(root, "quarantine"),
-    stagingDir: join(root, "staging"),
     lockPath: join(root, "apply.lock"),
   };
+}
+
+export function revisionDir(store: SnapshotStore, sequence: number): string {
+  return join(store.revisionsDir, String(sequence));
+}
+
+export function revisionTmpDir(store: SnapshotStore, sequence: number): string {
+  return join(store.revisionsDir, `${sequence}.tmp`);
+}
+
+export function readCurrentSequence(store: SnapshotStore): number | null {
+  if (!existsSync(store.currentPointerPath)) {
+    return null;
+  }
+  const raw = readFileSync(store.currentPointerPath, "utf8").trim();
+  const sequence = Number.parseInt(raw, 10);
+  if (!Number.isInteger(sequence) || sequence < 0) {
+    return null;
+  }
+  return sequence;
+}
+
+export function resolveCurrentRevisionDir(store: SnapshotStore): string | null {
+  const sequence = readCurrentSequence(store);
+  if (sequence === null) {
+    return null;
+  }
+  const dir = revisionDir(store, sequence);
+  if (!existsSync(join(dir, "manifest.json"))) {
+    return null;
+  }
+  return dir;
 }
 
 export function readCurrentManifest(
   store: SnapshotStore,
 ): SnapshotManifest | null {
-  const path = join(store.currentDir, "manifest.json");
-  if (!existsSync(path)) {
+  const dir = resolveCurrentRevisionDir(store);
+  if (!dir) {
     return null;
   }
-  return JSON.parse(readFileSync(path, "utf8")) as SnapshotManifest;
+  return JSON.parse(
+    readFileSync(join(dir, "manifest.json"), "utf8"),
+  ) as SnapshotManifest;
 }
 
 export function acquireLock(
@@ -65,28 +104,36 @@ export function releaseLock(store: SnapshotStore): void {
   }
 }
 
-function replaceDir(from: string, to: string): void {
-  if (existsSync(to)) {
-    rmSync(to, { recursive: true, force: true });
-  }
-  renameSync(from, to);
+function writeCurrentPointer(store: SnapshotStore, sequence: number): void {
+  const tmp = `${store.currentPointerPath}.tmp`;
+  writeFileSync(tmp, `${sequence}\n`);
+  renameSync(tmp, store.currentPointerPath);
 }
 
-export function activateStaging(store: SnapshotStore): void {
-  if (!existsSync(join(store.stagingDir, "manifest.json"))) {
+export function prepareStaging(
+  store: SnapshotStore,
+  candidateDir: string,
+  sequence: number,
+): void {
+  const tmp = revisionTmpDir(store, sequence);
+  if (existsSync(tmp)) {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+  mkdirSync(store.revisionsDir, { recursive: true });
+  cpSync(candidateDir, tmp, { recursive: true });
+}
+
+export function activateStaging(store: SnapshotStore, sequence: number): void {
+  const tmp = revisionTmpDir(store, sequence);
+  const dest = revisionDir(store, sequence);
+  if (!existsSync(join(tmp, "manifest.json"))) {
     throw new Error("activation failure");
   }
-  if (existsSync(store.currentDir)) {
-    replaceDir(store.currentDir, store.lastGoodDir);
+  if (existsSync(dest)) {
+    throw new Error("activation failure");
   }
-  try {
-    replaceDir(store.stagingDir, store.currentDir);
-  } catch (error) {
-    if (existsSync(store.lastGoodDir) && !existsSync(store.currentDir)) {
-      replaceDir(store.lastGoodDir, store.currentDir);
-    }
-    throw error;
-  }
+  renameSync(tmp, dest);
+  writeCurrentPointer(store, sequence);
 }
 
 export function quarantineCandidate(

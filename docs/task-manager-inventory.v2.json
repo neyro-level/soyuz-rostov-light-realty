@@ -1,0 +1,5090 @@
+{
+  "schema_version": 2,
+  "beads_prefix": "souztf",
+  "source": {
+    "plan_id": "SOUZ-TEMPLATE-FREEZE",
+    "path": "docs/MASTER_PLAN.md",
+    "version": "v2",
+    "status": "APPROVED",
+    "approved_by": "owner",
+    "approved_at": "2026-10-05T23:25:00+03:00",
+    "sha256": "fc1bd5cac52ee0b9dda244a24ec299414d8ca8844c9ae082ec40ea1d45a37394",
+    "epic_anchors": [
+      "EPIC-A1",
+      "EPIC-A2",
+      "EPIC-B1",
+      "EPIC-B2",
+      "EPIC-B3",
+      "EPIC-B4",
+      "EPIC-C1",
+      "EPIC-D1",
+      "EPIC-D2",
+      "EPIC-D3",
+      "EPIC-E1",
+      "EPIC-E2",
+      "EPIC-E3",
+      "EPIC-F1",
+      "EPIC-F2",
+      "EPIC-F3",
+      "EPIC-G1",
+      "EPIC-H1",
+      "EPIC-H2",
+      "EPIC-H3",
+      "EPIC-H4",
+      "EPIC-H5",
+      "EPIC-I1",
+      "EPIC-I2",
+      "EPIC-I3",
+      "EPIC-I4",
+      "EPIC-I5",
+      "EPIC-I6",
+      "EPIC-J1",
+      "EPIC-J2",
+      "EPIC-J3",
+      "EPIC-K1"
+    ]
+  },
+  "repositories": [
+    {
+      "key": "soyuz-rostov-light-realty",
+      "remote": "https://git.sourcecraft.dev/integrator-p/soyuz-rostov-light-realty.git",
+      "default_branch": "main"
+    }
+  ],
+  "nodes": [
+    {
+      "key": "EPIC-A1",
+      "title": "A1 Canon docs",
+      "type": "epic",
+      "source_anchor": "EPIC-A1",
+      "goal": "One AMS constitution set and SOUZ design system are the only live SoT.",
+      "scope": [
+        "docs/standards",
+        "docs/SOUZ_DESIGN_SYSTEM.md",
+        "AGENTS.md",
+        "docs/archive"
+      ],
+      "acceptance_criteria": [
+        "SITE/REALTY/UI CORE live in docs/standards",
+        "Lite/UI5/Hub only in archive",
+        "AGENTS points to SOUZ-TEMPLATE-FREEZE"
+      ],
+      "depends_on": [],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:0"
+      ]
+    },
+    {
+      "key": "TASK-A1-01",
+      "title": "Verify live canon paths",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-A1",
+      "source_anchor": "EPIC-A1",
+      "goal": "Live Core and design system paths match the plan.",
+      "scope": [
+        "docs/standards",
+        "docs/archive",
+        "AGENTS.md",
+        "docs/README.md"
+      ],
+      "acceptance_criteria": [
+        "exactly three live cores",
+        "archive README present",
+        "no competing UI Core in docs/standards"
+      ],
+      "required_checks": [
+        "dir listing docs/standards"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-A1-DELIVERY",
+      "title": "Open A1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-A1",
+      "source_anchor": "EPIC-A1",
+      "goal": "Canon docs delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/A1-constitution",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-A1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-A2",
+      "title": "A2 Config model",
+      "type": "epic",
+      "source_anchor": "EPIC-A2",
+      "goal": "Runtime uses snapshot|local, private|staging|public, LEADS_ROUTE/TRANSPORT and module flags.",
+      "scope": [
+        "src/platform/env.ts",
+        "src/project configs"
+      ],
+      "acceptance_criteria": [
+        "no LEADS_MODE, DATA_MODE=hub, INDEXING_MODE=live",
+        "Zod env, no silent production secret fallback"
+      ],
+      "depends_on": [
+        "EPIC-A1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:1"
+      ]
+    },
+    {
+      "key": "TASK-A2-01",
+      "title": "Replace DATA_MODE and INDEXING_MODE",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-A2",
+      "source_anchor": "EPIC-A2",
+      "goal": "Config uses Core mode names.",
+      "scope": [
+        "env",
+        "data.config",
+        "CI/test env"
+      ],
+      "acceptance_criteria": [
+        "DATA_MODE snapshot|local",
+        "INDEXING_MODE private|staging|public"
+      ],
+      "required_checks": [
+        "rg old mode names",
+        "pnpm typecheck or verify:layers"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-A2-02",
+      "title": "Leads route/transport and module flags",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-A2",
+      "source_anchor": "EPIC-A2",
+      "goal": "Leads and modules match SITE CORE.",
+      "scope": [
+        "lead config",
+        "features flags"
+      ],
+      "acceptance_criteria": [
+        "LEADS_ROUTE and LEAD_TRANSPORT exist",
+        "journal can stay off"
+      ],
+      "required_checks": [
+        "inspect configs"
+      ],
+      "depends_on": [
+        "TASK-A2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-A2-03",
+      "title": "Zod env without silent secret fallback",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-A2",
+      "source_anchor": "EPIC-A2",
+      "goal": "Env schema matches Core.",
+      "scope": [
+        "src/platform/env.ts",
+        ".env.example"
+      ],
+      "acceptance_criteria": [
+        "Zod validates all env",
+        "production-required secret has no silent fallback",
+        ".env.example has names only"
+      ],
+      "required_checks": [
+        "inspect env.ts"
+      ],
+      "depends_on": [
+        "TASK-A2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-A2-DELIVERY",
+      "title": "Open A2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-A2",
+      "source_anchor": "EPIC-A2",
+      "goal": "Config model delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/A2-config",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-A2-01",
+        "TASK-A2-02",
+        "TASK-A2-03"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-B1",
+      "title": "B1 Repository boundary",
+      "type": "epic",
+      "source_anchor": "EPIC-B1",
+      "goal": "Pages read catalog only through RealtyRepository DTOs.",
+      "scope": [
+        "src/platform repository",
+        "pages",
+        "metadata",
+        "sitemap"
+      ],
+      "acceptance_criteria": [
+        "no page/section imports fixture/snapshot/fs/provider"
+      ],
+      "depends_on": [
+        "EPIC-A2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:2"
+      ]
+    },
+    {
+      "key": "TASK-B1-01",
+      "title": "Freeze RealtyRepository and DTOs",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B1",
+      "source_anchor": "EPIC-B1",
+      "goal": "Repository interface and public DTOs exist.",
+      "scope": [
+        "RealtyRepository",
+        "DTO files"
+      ],
+      "acceptance_criteria": [
+        "operations from plan B1.1 exist",
+        "card/details DTOs exist"
+      ],
+      "required_checks": [
+        "typecheck"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-B1-02",
+      "title": "SnapshotRepository and page cutover",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B1",
+      "source_anchor": "EPIC-B1",
+      "goal": "UI/pages do not import fixtures.",
+      "scope": [
+        "SnapshotRepository",
+        "SitePage",
+        "metadata",
+        "sitemap",
+        "generateStaticParams"
+      ],
+      "acceptance_criteria": [
+        "pages use repository",
+        "fixture only as local revision source"
+      ],
+      "required_checks": [
+        "verify:layers",
+        "rg fixture imports in app/ui"
+      ],
+      "depends_on": [
+        "TASK-B1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-B1-DELIVERY",
+      "title": "Open B1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B1",
+      "source_anchor": "EPIC-B1",
+      "goal": "Repository boundary delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/B1-repository",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-B1-01",
+        "TASK-B1-02"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-B2",
+      "title": "B2 Snapshot contract vNext",
+      "type": "epic",
+      "source_anchor": "EPIC-B2",
+      "goal": "Snapshot matches REALTY CORE: detached sig, identity, taxonomy, quarantine.",
+      "scope": [
+        "snapshot verify",
+        "fixtures"
+      ],
+      "acceptance_criteria": [
+        "verify:snapshot covers sig/hash/schema/privacy/identity/relations/quarantine/anti-replay"
+      ],
+      "depends_on": [
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:3"
+      ]
+    },
+    {
+      "key": "TASK-B2-01",
+      "title": "Detached signature and versioning",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B2",
+      "source_anchor": "EPIC-B2",
+      "goal": "manifest.json + manifest.sig, UTF-8 bytes, schemaMajor/Minor.",
+      "scope": [
+        "snapshot verify",
+        "fixture manifests"
+      ],
+      "acceptance_criteria": [
+        "detached signature verified without reserialize"
+      ],
+      "required_checks": [
+        "pnpm verify:snapshot"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-B2-02",
+      "title": "Identity taxonomy geo quarantine relations",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B2",
+      "source_anchor": "EPIC-B2",
+      "goal": "Core identity and dataset checks are enforced.",
+      "scope": [
+        "snapshot datasets"
+      ],
+      "acceptance_criteria": [
+        "uid/publicUrlId/slugHistory where applicable",
+        "property types from Core",
+        "geo privacy fields",
+        "quarantine 0.005"
+      ],
+      "required_checks": [
+        "pnpm verify:snapshot"
+      ],
+      "depends_on": [
+        "TASK-B2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-B2-DELIVERY",
+      "title": "Open B2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B2",
+      "source_anchor": "EPIC-B2",
+      "goal": "Snapshot contract delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/B2-snapshot",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-B2-01",
+        "TASK-B2-02"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-B3",
+      "title": "B3 Revision store",
+      "type": "epic",
+      "source_anchor": "EPIC-B3",
+      "goal": "Immutable revisions + atomic CURRENT + last-good.",
+      "scope": [
+        "/data/revisions",
+        "CURRENT"
+      ],
+      "acceptance_criteria": [
+        "crash does not leave partial web dataset"
+      ],
+      "depends_on": [
+        "EPIC-B2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:3"
+      ]
+    },
+    {
+      "key": "TASK-B3-01",
+      "title": "Immutable revisions and CURRENT",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B3",
+      "source_anchor": "EPIC-B3",
+      "goal": "Store uses revisions/CURRENT not mutable current/last-good.",
+      "scope": [
+        "snapshot store"
+      ],
+      "acceptance_criteria": [
+        "CURRENT atomic",
+        "previous known-good kept",
+        "tmp not visible to web"
+      ],
+      "required_checks": [
+        "pnpm verify:snapshot"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-B3-DELIVERY",
+      "title": "Open B3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B3",
+      "source_anchor": "EPIC-B3",
+      "goal": "Revision store delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/B3-revisions",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-B3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-B4",
+      "title": "B4 Provider-neutral sync ACK",
+      "type": "epic",
+      "source_anchor": "EPIC-B4",
+      "goal": "Sync/ACK works on local/fixture contour without live Hub.",
+      "scope": [
+        "provider interface",
+        "hub adapter",
+        "sync worker"
+      ],
+      "acceptance_criteria": [
+        "web runs if provider down",
+        "ACK retry on local contour"
+      ],
+      "depends_on": [
+        "EPIC-B3"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:4"
+      ]
+    },
+    {
+      "key": "TASK-B4-01",
+      "title": "Provider interface Hub adapter local ACK",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B4",
+      "source_anchor": "EPIC-B4",
+      "goal": "Interface + Hub adapter + local ACK retry, no live credentials.",
+      "scope": [
+        "sync",
+        "ACK pending"
+      ],
+      "acceptance_criteria": [
+        "signal-only trigger",
+        "idempotent ACK",
+        "no Hub credentials required"
+      ],
+      "required_checks": [
+        "pnpm verify:snapshot"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-B4-DELIVERY",
+      "title": "Open B4 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-B4",
+      "source_anchor": "EPIC-B4",
+      "goal": "Sync/ACK delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/B4-sync",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-B4-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-C1",
+      "title": "C1 Durable lead spool",
+      "type": "epic",
+      "source_anchor": "EPIC-C1",
+      "goal": "Accepted leads persist encrypted and retry without Redis/DB.",
+      "scope": [
+        "leads handler",
+        "spool",
+        "transports"
+      ],
+      "acceptance_criteria": [
+        "transport-down test accepts after spool write and delivers once later"
+      ],
+      "depends_on": [
+        "EPIC-A2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:2"
+      ]
+    },
+    {
+      "key": "TASK-C1-01",
+      "title": "Encrypted spool retry mock transport",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-C1",
+      "source_anchor": "EPIC-C1",
+      "goal": "Spool + encrypt + retry with mock transport and ephemeral test key.",
+      "scope": [
+        "leads",
+        "spool volume",
+        "SMTP/webhook adapters"
+      ],
+      "acceptance_criteria": [
+        "leadId unique",
+        "PII encrypted at rest",
+        "LEAD_TRANSPORT=none allowed",
+        "no key in git"
+      ],
+      "required_checks": [
+        "pnpm verify:leads"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-C1-DELIVERY",
+      "title": "Open C1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-C1",
+      "source_anchor": "EPIC-C1",
+      "goal": "Lead spool delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/C1-leads",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-C1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-D1",
+      "title": "D1 URL grammar",
+      "type": "epic",
+      "source_anchor": "EPIC-D1",
+      "goal": "Grammar matches REALTY CORE; publicUrlId stable.",
+      "scope": [
+        "grammar engine",
+        "project grammar config"
+      ],
+      "acceptance_criteria": [
+        "buildUrl/parseUrl inverses",
+        "verify:grammar green on both fixtures"
+      ],
+      "depends_on": [
+        "EPIC-A2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:2"
+      ]
+    },
+    {
+      "key": "TASK-D1-01",
+      "title": "Bring grammar to Core classes",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-D1",
+      "source_anchor": "EPIC-D1",
+      "goal": "Entity URLs follow Core; experimental URLs need not be preserved.",
+      "scope": [
+        "grammar.config",
+        "engine",
+        "legacy redirects"
+      ],
+      "acceptance_criteria": [
+        "property slug-publicUrlId",
+        "development /novostroyki/zhk-{slug}/",
+        "308 for new system"
+      ],
+      "required_checks": [
+        "pnpm verify:layers / grammar script"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-D1-DELIVERY",
+      "title": "Open D1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-D1",
+      "source_anchor": "EPIC-D1",
+      "goal": "Grammar delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/D1-grammar",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-D1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-D2",
+      "title": "D2 Lifecycle pipeline",
+      "type": "epic",
+      "source_anchor": "EPIC-D2",
+      "goal": "VISIBLE/ARCHIVED_VISIBLE/REDIRECTED/GONE map to 200/308/410.",
+      "scope": [
+        "lifecycle",
+        "content gate"
+      ],
+      "acceptance_criteria": [
+        "missing entity is never 200 via Content Gate"
+      ],
+      "depends_on": [
+        "EPIC-D1",
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:3"
+      ]
+    },
+    {
+      "key": "TASK-D2-01",
+      "title": "Implement lifecycle HTTP/robots",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-D2",
+      "source_anchor": "EPIC-D2",
+      "goal": "Lifecycle table from the plan is enforced.",
+      "scope": [
+        "route pipeline"
+      ],
+      "acceptance_criteria": [
+        "ARCHIVED noindex,follow",
+        "REDIRECTED 308",
+        "GONE 410"
+      ],
+      "required_checks": [
+        "lifecycle fixture tests"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-D2-DELIVERY",
+      "title": "Open D2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-D2",
+      "source_anchor": "EPIC-D2",
+      "goal": "Lifecycle delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/D2-lifecycle",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-D2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-D3",
+      "title": "D3 SEO runtime",
+      "type": "epic",
+      "source_anchor": "EPIC-D3",
+      "goal": "SEO Registry + metadata/sitemap/robots use Repository and INDEXING_MODE.",
+      "scope": [
+        "seo runtime",
+        "registry"
+      ],
+      "acceptance_criteria": [
+        "CURRENT revision reflected in sitemap without rebuild",
+        "public sitemap only if INDEXING public — not in this plan"
+      ],
+      "depends_on": [
+        "EPIC-D2",
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:4"
+      ]
+    },
+    {
+      "key": "TASK-D3-01",
+      "title": "Wire SEO to Repository",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-D3",
+      "source_anchor": "EPIC-D3",
+      "goal": "Metadata/sitemap/robots/content gate use ViewModel/Repository.",
+      "scope": [
+        "metadata",
+        "sitemap",
+        "robots",
+        "content gate"
+      ],
+      "acceptance_criteria": [
+        "no fixture reads",
+        "price freshness 45/120 unless ADR",
+        "starter pages noindex"
+      ],
+      "required_checks": [
+        "pnpm verify:seo-contracts"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-D3-DELIVERY",
+      "title": "Open D3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-D3",
+      "source_anchor": "EPIC-D3",
+      "goal": "SEO runtime delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/D3-seo",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-D3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-E1",
+      "title": "E1 shadcn foundation",
+      "type": "epic",
+      "source_anchor": "EPIC-E1",
+      "goal": "shadcn/Radix primitives exist; Lucide only icon set.",
+      "scope": [
+        "shadcn",
+        "primitives"
+      ],
+      "acceptance_criteria": [
+        "verify:ui-core catches raw styled controls outside primitives"
+      ],
+      "depends_on": [
+        "EPIC-A2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:2"
+      ]
+    },
+    {
+      "key": "TASK-E1-01",
+      "title": "Init shadcn primitives used by Freeze",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-E1",
+      "source_anchor": "EPIC-E1",
+      "goal": "Required primitives installed in project-owned UI code.",
+      "scope": [
+        "components.json",
+        "src/ui/primitives"
+      ],
+      "acceptance_criteria": [
+        "Button Input Label Checkbox Card Badge Sheet Dialog Accordion Nav Breadcrumb Skeleton Separator",
+        "cn/CVA where needed"
+      ],
+      "required_checks": [
+        "pnpm verify:ui-core or script exists"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-E1-DELIVERY",
+      "title": "Open E1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-E1",
+      "source_anchor": "EPIC-E1",
+      "goal": "shadcn foundation delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/E1-shadcn",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-E1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-E2",
+      "title": "E2 SOUZ tokens",
+      "type": "epic",
+      "source_anchor": "EPIC-E2",
+      "goal": "SOUZ DESIGN SYSTEM tokens live in Tailwind 4.",
+      "scope": [
+        "theme tokens"
+      ],
+      "acceptance_criteria": [
+        "no random hex/rounded-xl in components"
+      ],
+      "depends_on": [
+        "EPIC-E1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:3"
+      ]
+    },
+    {
+      "key": "TASK-E2-01",
+      "title": "Implement SOUZ tokens",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-E2",
+      "source_anchor": "EPIC-E2",
+      "goal": "Colors radius typography layout from design system.",
+      "scope": [
+        "docs/SOUZ_DESIGN_SYSTEM.md",
+        "token source"
+      ],
+      "acceptance_criteria": [
+        "primary #014EBA",
+        "radius ~5px",
+        "Manrope",
+        "container 1360"
+      ],
+      "required_checks": [
+        "pnpm verify:ui-core"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-E2-DELIVERY",
+      "title": "Open E2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-E2",
+      "source_anchor": "EPIC-E2",
+      "goal": "Tokens delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/E2-tokens",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-E2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-E3",
+      "title": "E3 UI layer src/ui",
+      "type": "epic",
+      "source_anchor": "EPIC-E3",
+      "goal": "Visual layer is src/ui; platform is not visual owner; UI does not import Repository.",
+      "scope": [
+        "src/ui"
+      ],
+      "acceptance_criteria": [
+        "primitives/shared/layout/domain/sections exist",
+        "platform/ui not owner"
+      ],
+      "depends_on": [
+        "EPIC-E2",
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:4"
+      ]
+    },
+    {
+      "key": "TASK-E3-01",
+      "title": "Move visual layer to src/ui",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-E3",
+      "source_anchor": "EPIC-E3",
+      "goal": "Shared/layout/domain components live under src/ui.",
+      "scope": [
+        "src/ui",
+        "src/platform/ui migration"
+      ],
+      "acceptance_criteria": [
+        "required shared and domain components from plan",
+        "UI does not import repository"
+      ],
+      "required_checks": [
+        "verify:layers",
+        "verify:ui-core"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-E3-DELIVERY",
+      "title": "Open E3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-E3",
+      "source_anchor": "EPIC-E3",
+      "goal": "UI layer delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/E3-ui-layer",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-E3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-F1",
+      "title": "F1 Header",
+      "type": "epic",
+      "source_anchor": "EPIC-F1",
+      "goal": "Config-driven two-level header, CTA lead dialog, no literal hrefs.",
+      "scope": [
+        "header",
+        "navigation.config"
+      ],
+      "acceptance_criteria": [
+        "menu groups from plan",
+        "375 access to groups",
+        "CTA Подобрать вариант"
+      ],
+      "depends_on": [
+        "EPIC-E3",
+        "EPIC-A2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:5"
+      ]
+    },
+    {
+      "key": "TASK-F1-01",
+      "title": "Build desktop header and nav",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-F1",
+      "source_anchor": "EPIC-F1",
+      "goal": "Header matches owner menu and flags.",
+      "scope": [
+        "Header",
+        "navigation.config",
+        "lead dialog"
+      ],
+      "acceptance_criteria": [
+        "no literal hrefs",
+        "disabled routes hidden",
+        "focus-visible",
+        "touch 44px"
+      ],
+      "required_checks": [
+        "Playwright or browser header 375/1440"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-F1-DELIVERY",
+      "title": "Open F1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-F1",
+      "source_anchor": "EPIC-F1",
+      "goal": "Header delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/F1-header",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-F1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-F2",
+      "title": "F2 Mobile navigation",
+      "type": "epic",
+      "source_anchor": "EPIC-F2",
+      "goal": "Sheet reuses the same IA.",
+      "scope": [
+        "Sheet"
+      ],
+      "acceptance_criteria": [
+        "keyboard close/open",
+        "same groups as desktop"
+      ],
+      "depends_on": [
+        "EPIC-F1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:6"
+      ]
+    },
+    {
+      "key": "TASK-F2-01",
+      "title": "Mobile Sheet navigation",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-F2",
+      "source_anchor": "EPIC-F2",
+      "goal": "Mobile menu is Sheet with same groups.",
+      "scope": [
+        "MobileNavigation"
+      ],
+      "acceptance_criteria": [
+        "375 Sheet",
+        "phone and CTA present"
+      ],
+      "required_checks": [
+        "Playwright mobile menu"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-F2-DELIVERY",
+      "title": "Open F2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-F2",
+      "source_anchor": "EPIC-F2",
+      "goal": "Mobile nav delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/F2-mobile",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-F2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-F3",
+      "title": "F3 Footer",
+      "type": "epic",
+      "source_anchor": "EPIC-F3",
+      "goal": "Footer from site/nav config on dark surface.",
+      "scope": [
+        "Footer"
+      ],
+      "acceptance_criteria": [
+        "legal routes present",
+        "no second URL list"
+      ],
+      "depends_on": [
+        "EPIC-E3",
+        "EPIC-A2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:6"
+      ]
+    },
+    {
+      "key": "TASK-F3-01",
+      "title": "Build footer",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-F3",
+      "source_anchor": "EPIC-F3",
+      "goal": "Footer columns from config.",
+      "scope": [
+        "Footer",
+        "navigation.config"
+      ],
+      "acceptance_criteria": [
+        "surface #0F1F3A",
+        "375/768/1440"
+      ],
+      "required_checks": [
+        "browser/Playwright footer"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-F3-DELIVERY",
+      "title": "Open F3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-F3",
+      "source_anchor": "EPIC-F3",
+      "goal": "Footer delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/F3-footer",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-F3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-G1",
+      "title": "G1 Home reference",
+      "type": "epic",
+      "source_anchor": "EPIC-G1",
+      "goal": "Home is a finished commercial reference page from SOUZ DS and BASTION composition only.",
+      "scope": [
+        "home sections"
+      ],
+      "acceptance_criteria": [
+        "DoR components reused",
+        "no fake facts",
+        "journal off"
+      ],
+      "depends_on": [
+        "EPIC-F1",
+        "EPIC-F3",
+        "EPIC-E3",
+        "EPIC-B1",
+        "EPIC-C1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:7"
+      ]
+    },
+    {
+      "key": "TASK-G1-01",
+      "title": "Assemble home sections",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-G1",
+      "source_anchor": "EPIC-G1",
+      "goal": "Hero through popular searches implemented without journal.",
+      "scope": [
+        "home page",
+        "sections"
+      ],
+      "acceptance_criteria": [
+        "split hero",
+        "routes strip",
+        "developments",
+        "interest",
+        "service",
+        "trust",
+        "lead",
+        "часто ищут"
+      ],
+      "required_checks": [
+        "browser home 375/1440"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-G1-02",
+      "title": "Home a11y and responsive proof",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-G1",
+      "source_anchor": "EPIC-G1",
+      "goal": "Home a11y and breakpoints from plan.",
+      "scope": [
+        "home"
+      ],
+      "acceptance_criteria": [
+        "one H1",
+        "focus trap dialog",
+        "reduced motion"
+      ],
+      "required_checks": [
+        "Playwright home a11y smoke"
+      ],
+      "depends_on": [
+        "TASK-G1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-G1-DELIVERY",
+      "title": "Open G1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-G1",
+      "source_anchor": "EPIC-G1",
+      "goal": "Home delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/G1-home",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-G1-01",
+        "TASK-G1-02"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-H1",
+      "title": "H1 StarterPageShell",
+      "type": "epic",
+      "source_anchor": "EPIC-H1",
+      "goal": "Shared starter shell with at most two blocks.",
+      "scope": [
+        "StarterPageShell"
+      ],
+      "acceptance_criteria": [
+        "breadcrumbs H1 lead optional CTA"
+      ],
+      "depends_on": [
+        "EPIC-G1",
+        "EPIC-D3",
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-H1-01",
+      "title": "Create StarterPageShell",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H1",
+      "source_anchor": "EPIC-H1",
+      "goal": "Shell exists and is reused.",
+      "scope": [
+        "StarterPageShell"
+      ],
+      "acceptance_criteria": [
+        "max two meaning blocks",
+        "no fake facts"
+      ],
+      "required_checks": [
+        "typecheck"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-H1-DELIVERY",
+      "title": "Open H1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H1",
+      "source_anchor": "EPIC-H1",
+      "goal": "Starter shell delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/H1-shell",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-H1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-H2",
+      "title": "H2 Static starter pages",
+      "type": "epic",
+      "source_anchor": "EPIC-H2",
+      "goal": "Ipoteka/yurist/about/contacts/vacancies use shell and NOINDEX_AUTO until filled.",
+      "scope": [
+        "static pages"
+      ],
+      "acceptance_criteria": [
+        "pages open",
+        "noindex auto"
+      ],
+      "depends_on": [
+        "EPIC-H1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-H2-01",
+      "title": "Static pages on StarterPageShell",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H2",
+      "source_anchor": "EPIC-H2",
+      "goal": "Five static routes use shell.",
+      "scope": [
+        "ipoteka yurist about contacts vacancies"
+      ],
+      "acceptance_criteria": [
+        "H1 present",
+        "minimal content"
+      ],
+      "required_checks": [
+        "route smoke"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-H2-DELIVERY",
+      "title": "Open H2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H2",
+      "source_anchor": "EPIC-H2",
+      "goal": "Static starters delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/H2-static",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-H2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-H3",
+      "title": "H3 Catalog entry pages",
+      "type": "epic",
+      "source_anchor": "EPIC-H3",
+      "goal": "Geo/catalog/facet pages show real CatalogGrid and Content Gate.",
+      "scope": [
+        "catalog routes"
+      ],
+      "acceptance_criteria": [
+        "real repository data",
+        "filters only if working"
+      ],
+      "depends_on": [
+        "EPIC-H1",
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-H3-01",
+      "title": "Catalog entry pages",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H3",
+      "source_anchor": "EPIC-H3",
+      "goal": "Catalog routes render CatalogGrid from repository.",
+      "scope": [
+        "geo hub",
+        "novostroyki",
+        "kvartiry",
+        "vtorichka",
+        "districts"
+      ],
+      "acceptance_criteria": [
+        "H1",
+        "Content Gate"
+      ],
+      "required_checks": [
+        "catalog smoke"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-H3-DELIVERY",
+      "title": "Open H3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H3",
+      "source_anchor": "EPIC-H3",
+      "goal": "Catalog entries delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/H3-catalog",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-H3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-H4",
+      "title": "H4 Entity pages",
+      "type": "epic",
+      "source_anchor": "EPIC-H4",
+      "goal": "Property/development/developer/team shells work; team hidden if flag off.",
+      "scope": [
+        "entity pages"
+      ],
+      "acceptance_criteria": [
+        "core facts + gallery + CTA",
+        "no final marketing design required"
+      ],
+      "depends_on": [
+        "EPIC-H1",
+        "EPIC-B1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-H4-01",
+      "title": "Entity detail shells",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H4",
+      "source_anchor": "EPIC-H4",
+      "goal": "Entity pages have required Freeze shells.",
+      "scope": [
+        "property development developer team/agent"
+      ],
+      "acceptance_criteria": [
+        "team routes hidden if team=false"
+      ],
+      "required_checks": [
+        "entity smoke"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-H4-DELIVERY",
+      "title": "Open H4 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H4",
+      "source_anchor": "EPIC-H4",
+      "goal": "Entity pages delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/H4-entities",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-H4-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-H5",
+      "title": "H5 Utility pages",
+      "type": "epic",
+      "source_anchor": "EPIC-H5",
+      "goal": "404, error boundary, thanks, privacy, consent, search, favorites exist.",
+      "scope": [
+        "utility routes"
+      ],
+      "acceptance_criteria": [
+        "search/favorites noindex",
+        "legal readable"
+      ],
+      "depends_on": [
+        "EPIC-H1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-H5-01",
+      "title": "Utility and legal pages",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H5",
+      "source_anchor": "EPIC-H5",
+      "goal": "Required utility routes exist.",
+      "scope": [
+        "404 error thanks privacy consent search favorites"
+      ],
+      "acceptance_criteria": [
+        "legal texts if already approved else production gate remains closed"
+      ],
+      "required_checks": [
+        "404 smoke"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-H5-DELIVERY",
+      "title": "Open H5 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-H5",
+      "source_anchor": "EPIC-H5",
+      "goal": "Utility pages delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/H5-utility",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-H5-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-I1",
+      "title": "I1 Architecture verification",
+      "type": "epic",
+      "source_anchor": "EPIC-I1",
+      "goal": "verify:layers covers repository and UI data rules.",
+      "scope": [
+        "scripts/verify-layers"
+      ],
+      "acceptance_criteria": [
+        "guards green"
+      ],
+      "depends_on": [
+        "EPIC-B1",
+        "EPIC-E3"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-I1-01",
+      "title": "Update verify:layers",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I1",
+      "source_anchor": "EPIC-I1",
+      "goal": "Layer verifier matches new boundaries.",
+      "scope": [
+        "verify:layers"
+      ],
+      "acceptance_criteria": [
+        "platform no project",
+        "UI no data source",
+        "app no snapshot files"
+      ],
+      "required_checks": [
+        "pnpm verify:layers"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-I1-DELIVERY",
+      "title": "Open I1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I1",
+      "source_anchor": "EPIC-I1",
+      "goal": "Architecture verifier delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/I1-verify-layers",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-I1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-I2",
+      "title": "I2 UI verification",
+      "type": "epic",
+      "source_anchor": "EPIC-I2",
+      "goal": "verify:ui-core enforces shadcn/tokens/radius/icons.",
+      "scope": [
+        "verify:ui-core"
+      ],
+      "acceptance_criteria": [
+        "raw hex/radius blocked"
+      ],
+      "depends_on": [
+        "EPIC-E3"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-I2-01",
+      "title": "Expand verify:ui-core",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I2",
+      "source_anchor": "EPIC-I2",
+      "goal": "UI verifier matches plan I2 list.",
+      "scope": [
+        "verify:ui-core"
+      ],
+      "acceptance_criteria": [
+        "no second kit/icon set",
+        "no rounded-xl/2xl/3xl without exception"
+      ],
+      "required_checks": [
+        "pnpm verify:ui-core"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-I2-DELIVERY",
+      "title": "Open I2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I2",
+      "source_anchor": "EPIC-I2",
+      "goal": "UI verifier delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/I2-verify-ui",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-I2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-I3",
+      "title": "I3 Snapshot verification",
+      "type": "epic",
+      "source_anchor": "EPIC-I3",
+      "goal": "Snapshot cases from plan I3 are covered.",
+      "scope": [
+        "verify:snapshot"
+      ],
+      "acceptance_criteria": [
+        "bad sig, replay, quarantine, ACK"
+      ],
+      "depends_on": [
+        "EPIC-B4"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-I3-01",
+      "title": "Expand snapshot tests",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I3",
+      "source_anchor": "EPIC-I3",
+      "goal": "I3 cases exist as tests.",
+      "scope": [
+        "verify:snapshot"
+      ],
+      "acceptance_criteria": [
+        "atomic switch and last-good covered"
+      ],
+      "required_checks": [
+        "pnpm verify:snapshot"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-I3-DELIVERY",
+      "title": "Open I3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I3",
+      "source_anchor": "EPIC-I3",
+      "goal": "Snapshot verifier delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/I3-verify-snapshot",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-I3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-I4",
+      "title": "I4 Lead verification",
+      "type": "epic",
+      "source_anchor": "EPIC-I4",
+      "goal": "Lead cases from plan I4 are covered.",
+      "scope": [
+        "verify:leads"
+      ],
+      "acceptance_criteria": [
+        "spool encrypt retry no dup delivery"
+      ],
+      "depends_on": [
+        "EPIC-C1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-I4-01",
+      "title": "Expand lead tests",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I4",
+      "source_anchor": "EPIC-I4",
+      "goal": "I4 cases exist as tests.",
+      "scope": [
+        "verify:leads"
+      ],
+      "acceptance_criteria": [
+        "honeypot consent rate-limit cleanup"
+      ],
+      "required_checks": [
+        "pnpm verify:leads"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-I4-DELIVERY",
+      "title": "Open I4 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I4",
+      "source_anchor": "EPIC-I4",
+      "goal": "Lead verifier delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/I4-verify-leads",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-I4-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-I5",
+      "title": "I5 SEO verification",
+      "type": "epic",
+      "source_anchor": "EPIC-I5",
+      "goal": "SEO cases from plan I5 are covered.",
+      "scope": [
+        "verify:seo-contracts"
+      ],
+      "acceptance_criteria": [
+        "one H1 lifecycle sitemap robots"
+      ],
+      "depends_on": [
+        "EPIC-D3"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-I5-01",
+      "title": "Expand SEO tests",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I5",
+      "source_anchor": "EPIC-I5",
+      "goal": "I5 cases exist as tests.",
+      "scope": [
+        "verify:seo-contracts"
+      ],
+      "acceptance_criteria": [
+        "no redirect chains",
+        "starter noindex"
+      ],
+      "required_checks": [
+        "pnpm verify:seo-contracts"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-I5-DELIVERY",
+      "title": "Open I5 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I5",
+      "source_anchor": "EPIC-I5",
+      "goal": "SEO verifier delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/I5-verify-seo",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-I5-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-I6",
+      "title": "I6 Playwright smoke",
+      "type": "epic",
+      "source_anchor": "EPIC-I6",
+      "goal": "E2E list from plan I6 is green on local.",
+      "scope": [
+        "Playwright"
+      ],
+      "acceptance_criteria": [
+        "home menus catalog property development contacts lead 404 410 redirect sitemap robots"
+      ],
+      "depends_on": [
+        "EPIC-H5",
+        "EPIC-G1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:8"
+      ]
+    },
+    {
+      "key": "TASK-I6-01",
+      "title": "Playwright Freeze smoke",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I6",
+      "source_anchor": "EPIC-I6",
+      "goal": "I6 smoke paths exist.",
+      "scope": [
+        "test:e2e"
+      ],
+      "acceptance_criteria": [
+        "listed routes covered"
+      ],
+      "required_checks": [
+        "pnpm test:e2e"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-I6-DELIVERY",
+      "title": "Open I6 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-I6",
+      "source_anchor": "EPIC-I6",
+      "goal": "E2E smoke delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/I6-e2e",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-I6-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-J1",
+      "title": "J1 Dual-fixture template check",
+      "type": "epic",
+      "source_anchor": "EPIC-J1",
+      "goal": "Primary and alt fixtures build without changing platform/ui primitives/repository.",
+      "scope": [
+        "template:check",
+        "fixture-alt"
+      ],
+      "acceptance_criteria": [
+        "both fixtures assemble"
+      ],
+      "depends_on": [
+        "EPIC-H5"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:9"
+      ]
+    },
+    {
+      "key": "TASK-J1-01",
+      "title": "Expand dual-fixture check",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-J1",
+      "source_anchor": "EPIC-J1",
+      "goal": "template:check covers brand/geo/contacts/routes differences.",
+      "scope": [
+        "template-check.ts",
+        "fixtures"
+      ],
+      "acceptance_criteria": [
+        "no platform/ui primitives/repository edits to switch fixture"
+      ],
+      "required_checks": [
+        "pnpm template:check"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-J1-DELIVERY",
+      "title": "Open J1 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-J1",
+      "source_anchor": "EPIC-J1",
+      "goal": "Dual fixture delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/J1-fixtures",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-J1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-J2",
+      "title": "J2 Remove project leakage",
+      "type": "epic",
+      "source_anchor": "EPIC-J2",
+      "goal": "Generic layers have no Soyuz/Rostov literals.",
+      "scope": [
+        "platform",
+        "src/ui primitives/shared"
+      ],
+      "acceptance_criteria": [
+        "literals only in project/design data"
+      ],
+      "depends_on": [
+        "EPIC-J1"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:9"
+      ]
+    },
+    {
+      "key": "TASK-J2-01",
+      "title": "Scan and remove generic-layer leakage",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-J2",
+      "source_anchor": "EPIC-J2",
+      "goal": "platform-no-project-literals covers new UI layer.",
+      "scope": [
+        "guards"
+      ],
+      "acceptance_criteria": [
+        "no brand color literals in generic layers"
+      ],
+      "required_checks": [
+        "pnpm verify:layers"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-J2-DELIVERY",
+      "title": "Open J2 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-J2",
+      "source_anchor": "EPIC-J2",
+      "goal": "Leakage cleanup delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/J2-leakage",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-J2-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-J3",
+      "title": "J3 New project readiness",
+      "type": "epic",
+      "source_anchor": "EPIC-J3",
+      "goal": "NEW_PROJECT.md lists only project-layer swaps.",
+      "scope": [
+        "docs/NEW_PROJECT.md"
+      ],
+      "acceptance_criteria": [
+        "platform/repository/primitives unchanged for a new project"
+      ],
+      "depends_on": [
+        "EPIC-J2"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:9"
+      ]
+    },
+    {
+      "key": "TASK-J3-01",
+      "title": "Update NEW_PROJECT.md",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-J3",
+      "source_anchor": "EPIC-J3",
+      "goal": "Instruction matches Freeze architecture.",
+      "scope": [
+        "docs/NEW_PROJECT.md"
+      ],
+      "acceptance_criteria": [
+        "lists config tokens nav grammar SEO content media provider leads"
+      ],
+      "required_checks": [
+        "file review"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-J3-DELIVERY",
+      "title": "Open J3 pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-J3",
+      "source_anchor": "EPIC-J3",
+      "goal": "New-project docs delivered as PR_ONLY.",
+      "scope": [
+        "PR source epic/J3-new-project",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "source/target/head SHA recorded",
+        "no merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-J3-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    },
+    {
+      "key": "EPIC-K1",
+      "title": "K1 Template Freeze gate",
+      "type": "epic",
+      "source_anchor": "EPIC-K1",
+      "goal": "Freeze PR records green gate; tag happens after owner merge of that SHA.",
+      "scope": [
+        "K1 checklists"
+      ],
+      "acceptance_criteria": [
+        "architecture leads SEO UI quality cleanliness checklists evidenced"
+      ],
+      "depends_on": [
+        "EPIC-J3",
+        "EPIC-B4",
+        "EPIC-I6"
+      ],
+      "propagate_dependencies_to_children": true,
+      "delivery_mode": "PR_ONLY",
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "plan"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": [
+        "wave:10"
+      ]
+    },
+    {
+      "key": "TASK-K1-01",
+      "title": "Collect Freeze gate evidence",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "implementation",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-K1",
+      "source_anchor": "EPIC-K1",
+      "goal": "Gate 1-6 evidenced in PR description/docs without production.",
+      "scope": [
+        "verify build e2e dual fixture exit-mode"
+      ],
+      "acceptance_criteria": [
+        "no secrets",
+        "no fake facts",
+        "no DB/CMS"
+      ],
+      "required_checks": [
+        "pnpm lint typecheck verify build",
+        "pnpm test:e2e",
+        "template:check",
+        "verify:exit-mode"
+      ],
+      "depends_on": [],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "edit",
+        "test",
+        "commit",
+        "push"
+      ],
+      "stop_conditions": [
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split",
+        "merge without owner command"
+      ],
+      "priority": 1,
+      "labels": "role:implementation"
+    },
+    {
+      "key": "TASK-K1-DELIVERY",
+      "title": "Open K1 Freeze pull request",
+      "type": "task",
+      "role": "implementation",
+      "work_kind": "delivery",
+      "repository_key": "soyuz-rostov-light-realty",
+      "parent_key": "EPIC-K1",
+      "source_anchor": "EPIC-K1",
+      "goal": "Freeze evidence PR opened. Tag only after owner merge on exact SHA.",
+      "scope": [
+        "PR source epic/K1-freeze",
+        "target main"
+      ],
+      "acceptance_criteria": [
+        "PR exists",
+        "head SHA recorded",
+        "do not tag before merge",
+        "do not merge"
+      ],
+      "required_checks": [
+        "PR URL and head SHA"
+      ],
+      "depends_on": [
+        "TASK-K1-01"
+      ],
+      "required_context": [
+        "docs/MASTER_PLAN.md",
+        "docs/standards/AMS_SITE_CORE.md",
+        "docs/standards/AMS_REALTY_CORE.md",
+        "docs/standards/AMS_UI_CORE.md",
+        "docs/SOUZ_DESIGN_SYSTEM.md"
+      ],
+      "allowed_actions": [
+        "read",
+        "commit",
+        "push",
+        "create_pr"
+      ],
+      "stop_conditions": [
+        "merge",
+        "production",
+        "production",
+        "new secret value",
+        "database",
+        "payload",
+        "INDEXING_MODE=public",
+        "live Hub credential",
+        "Phase L split"
+      ],
+      "priority": 1,
+      "labels": [
+        "work:delivery",
+        "delivery:pr-only"
+      ]
+    }
+  ]
+}

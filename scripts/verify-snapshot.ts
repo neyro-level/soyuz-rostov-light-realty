@@ -1,29 +1,43 @@
 import { createHash, generateKeyPairSync, sign } from "node:crypto";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { env } from "../src/platform/env";
+import { PropertyTypeSchema } from "../src/platform/hub/contract";
+import { listPendingAcks } from "../src/platform/snapshot/ack";
 import { REQUIRED_DATASET_KINDS } from "../src/platform/snapshot/constants";
+import {
+  createHubAdapter,
+  parseSyncTrigger,
+} from "../src/platform/snapshot/provider";
 import {
   acquireLock,
   activateStaging,
   openSnapshotStore,
+  prepareStaging,
   readCurrentManifest,
   releaseLock,
+  revisionDir,
+  revisionTmpDir,
 } from "../src/platform/snapshot/store";
 import {
   applyLocalSnapshot,
   loadCurrentSnapshot,
-  prepareStaging,
 } from "../src/platform/snapshot/sync";
 import { TrustSet } from "../src/platform/snapshot/trust";
-import { canonicalManifestPayload } from "../src/platform/snapshot/verify";
+import { verifyCandidate } from "../src/platform/snapshot/verify";
+import {
+  flushPendingAcks,
+  runProviderSync,
+} from "../src/platform/snapshot/worker";
 
 const PROJECT_ID = "lite-demo";
 let failed = 0;
@@ -41,16 +55,27 @@ function sha256(bytes: Buffer): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
+function publicUrlIdFromIndex(index: number): string {
+  const alphabet = "abcdefghijklmnopqrstuvwxyz234567";
+  let value = index + 1;
+  let out = "";
+  for (let i = 0; i < 6; i += 1) {
+    out = alphabet[value % alphabet.length] + out;
+    value = Math.floor(value / alphabet.length);
+  }
+  return out;
+}
+
 function listing(index: number, extra: Record<string, unknown> = {}) {
-  const token = "234567abc"[index] ?? "a";
   return {
     uid: `uid-${index}`,
-    publicUrlId: `abcde${token}`,
+    publicUrlId: publicUrlIdFromIndex(index),
     propertyType: "APARTMENT",
     transactionType: "SALE",
     dealKind: "SECONDARY_SALE",
     addressPublic: "Public street",
-    locationPrecision: "STREET",
+    geoPrecision: "street",
+    slugHistory: [],
     facts: { rooms: 1 },
     media: [],
     status: "ACTIVE",
@@ -76,6 +101,8 @@ function writeCandidate(input: {
   inventory?: unknown[];
   projectId?: string;
   schemaMajor?: number;
+  schemaPatch?: number;
+  pretty?: boolean;
   omitKind?: string;
   corruptHash?: boolean;
   corruptBytes?: boolean;
@@ -110,6 +137,9 @@ function writeCandidate(input: {
   const unsigned = {
     schemaMajor: input.schemaMajor ?? 3,
     schemaMinor: 1,
+    ...(input.schemaPatch === undefined
+      ? {}
+      : { schemaPatch: input.schemaPatch }),
     projectId: input.projectId ?? PROJECT_ID,
     publishSequence: input.sequence,
     generatedAt: "2026-10-03T00:00:00Z",
@@ -118,18 +148,19 @@ function writeCandidate(input: {
     sourceRevisions: ["src-1"],
     files,
     keyId: input.keyId,
-    signature: "",
   };
-  const signature = sign(
-    null,
-    canonicalManifestPayload(unsigned),
-    input.privateKey,
+  const manifestBytes = Buffer.from(
+    input.pretty
+      ? `${JSON.stringify(unsigned, null, 2)}\n`
+      : JSON.stringify(unsigned),
+    "utf8",
   );
+  const signature = sign(null, manifestBytes, input.privateKey);
   if (input.corruptSignature) {
     signature[0] = signature[0] ^ 0xff;
   }
-  unsigned.signature = signature.toString("base64");
-  writeFileSync(join(dir, "manifest.json"), JSON.stringify(unsigned));
+  writeFileSync(join(dir, "manifest.json"), manifestBytes);
+  writeFileSync(join(dir, "manifest.sig"), signature);
   return dir;
 }
 
@@ -321,7 +352,7 @@ check(
   ).status === "rejected",
 );
 
-const underThreshold = Array.from({ length: 10 }, (_, index) =>
+const underThreshold = Array.from({ length: 200 }, (_, index) =>
   index === 0 ? { broken: true } : listing(index),
 );
 const warned = apply(
@@ -338,8 +369,8 @@ check(
   warned.status === "rejected" ? warned.reason : "",
 );
 
-const overThreshold = Array.from({ length: 10 }, (_, index) =>
-  index < 3 ? { broken: true } : listing(index),
+const overThreshold = Array.from({ length: 200 }, (_, index) =>
+  index < 2 ? { broken: true } : listing(index),
 );
 check(
   "quarantine-over-threshold-reject",
@@ -353,17 +384,40 @@ check(
   ).status === "rejected",
 );
 
+check(
+  "core-property-types-accepted",
+  PropertyTypeSchema.safeParse("COMMERCIAL").success &&
+    PropertyTypeSchema.safeParse("NEW_BUILD_UNIT").success &&
+    PropertyTypeSchema.safeParse("OTHER").success,
+);
+
+check(
+  "duplicate-publicUrlId-reject",
+  apply(
+    writeCandidate({
+      sequence: 4,
+      keyId: "trusted",
+      privateKey: trusted.privateKey,
+      inventory: [
+        listing(0),
+        listing(1, { publicUrlId: listing(0).publicUrlId }),
+      ],
+    }),
+  ).status === "rejected",
+);
+
 const store = openSnapshotStore(storeRoot);
 const seqBeforeCrash = readCurrentManifest(store)?.publishSequence;
+const crashSeq = (seqBeforeCrash ?? 1) + 1;
 const crashDir = writeCandidate({
-  sequence: (seqBeforeCrash ?? 1) + 1,
+  sequence: crashSeq,
   keyId: "trusted",
   privateKey: trusted.privateKey,
 });
-prepareStaging(store, crashDir);
-rmSync(store.stagingDir, { recursive: true, force: true });
+prepareStaging(store, crashDir, crashSeq);
+rmSync(revisionTmpDir(store, crashSeq), { recursive: true, force: true });
 try {
-  activateStaging(store);
+  activateStaging(store, crashSeq);
   check("activation-failure-throws", false);
 } catch {
   check("activation-failure-throws", true);
@@ -371,6 +425,22 @@ try {
 check(
   "last-good-untouched",
   loadCurrentSnapshot(storeRoot)?.publishSequence === seqBeforeCrash,
+);
+function isDir(path: string): boolean {
+  return existsSync(path) && statSync(path).isDirectory();
+}
+
+check(
+  "tmp-not-visible-to-web",
+  !isDir(join(storeRoot, "current")) &&
+    !isDir(join(storeRoot, "last-good")) &&
+    !isDir(join(storeRoot, "staging")) &&
+    !existsSync(revisionTmpDir(store, crashSeq)) &&
+    loadCurrentSnapshot(storeRoot)?.publishSequence === seqBeforeCrash,
+);
+check(
+  "previous-known-good-kept",
+  existsSync(join(revisionDir(store, seqBeforeCrash ?? 1), "manifest.json")),
 );
 
 check(
@@ -406,6 +476,65 @@ check(
   stale.status === "activated",
   stale.status === "rejected" ? stale.reason : "",
 );
+
+const prettyDir = writeCandidate({
+  sequence: 99,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+  pretty: true,
+  schemaPatch: 0,
+});
+try {
+  const pretty = verifyCandidate({
+    candidateDir: prettyDir,
+    trust,
+    expectedProjectId: PROJECT_ID,
+  });
+  check(
+    "detached-utf8-bytes-no-reserialize",
+    pretty.manifest.schemaPatch === 0,
+  );
+} catch (error) {
+  check(
+    "detached-utf8-bytes-no-reserialize",
+    false,
+    error instanceof Error ? error.message : "",
+  );
+}
+
+const compactReplay = writeCandidate({
+  sequence: 100,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+  pretty: true,
+});
+const prettyBytes = readFileSync(join(compactReplay, "manifest.json"));
+const compactBytes = Buffer.from(
+  JSON.stringify(JSON.parse(prettyBytes.toString("utf8"))),
+  "utf8",
+);
+writeFileSync(
+  join(compactReplay, "manifest.sig"),
+  sign(null, compactBytes, trusted.privateKey),
+);
+try {
+  verifyCandidate({
+    candidateDir: compactReplay,
+    trust,
+    expectedProjectId: PROJECT_ID,
+  });
+  check("reserialize-payload-reject", false);
+} catch {
+  check("reserialize-payload-reject", true);
+}
+
+const missingSig = writeCandidate({
+  sequence: 101,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+});
+rmSync(join(missingSig, "manifest.sig"), { force: true });
+check("missing-detached-sig-reject", apply(missingSig).status === "rejected");
 
 const fixtureDir = join(process.cwd(), "fixtures", "fixture-sz-rostov");
 const fixtureTrust = JSON.parse(
@@ -443,6 +572,111 @@ check(
     fixtureDevelopers.length === 20 &&
     fixtureInventory.length === 300,
   `geo=${fixtureGeo.length} developers=${fixtureDevelopers.length} inventory=${fixtureInventory.length}`,
+);
+
+try {
+  parseSyncTrigger({});
+  parseSyncTrigger({ at: "2026-10-06T00:00:00Z" });
+  check("signal-only-trigger-accept", true);
+} catch {
+  check("signal-only-trigger-accept", false);
+}
+try {
+  parseSyncTrigger({ url: "https://evil.example/snapshot" });
+  check("signal-only-trigger-reject-url", false);
+} catch {
+  check("signal-only-trigger-reject-url", true);
+}
+
+const providerStore = mkdtempSync(join(tmpdir(), "sz-provider-"));
+const origin = writeCandidate({
+  sequence: 1,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+});
+const synced = runProviderSync({
+  storeRoot: providerStore,
+  provider: createHubAdapter(origin),
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "hub-adapter-local-sync",
+  synced.status === "activated",
+  synced.status === "rejected" || synced.status === "provider-unavailable"
+    ? synced.reason
+    : "",
+);
+
+const replay = runProviderSync({
+  storeRoot: providerStore,
+  provider: createHubAdapter(origin),
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "idempotent-ack-same-sequence",
+  replay.status === "already-current" &&
+    loadCurrentSnapshot(providerStore)?.publishSequence === 1,
+  replay.status,
+);
+
+let ackFails = 1;
+const flakyOrigin = writeCandidate({
+  sequence: 2,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+});
+const flaky = createHubAdapter(flakyOrigin);
+const flakyProvider = {
+  ...flaky,
+  ack() {
+    if (ackFails > 0) {
+      ackFails -= 1;
+      throw new Error("ack transport down");
+    }
+  },
+};
+const pendingSync = runProviderSync({
+  storeRoot: providerStore,
+  provider: flakyProvider,
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "ack-retry-pending",
+  pendingSync.status === "activated" &&
+    pendingSync.ack === "pending" &&
+    listPendingAcks(openSnapshotStore(providerStore)).length === 1,
+  JSON.stringify(pendingSync),
+);
+flushPendingAcks(providerStore, flakyProvider);
+check(
+  "ack-retry-flush",
+  listPendingAcks(openSnapshotStore(providerStore)).length === 0,
+);
+
+const down = runProviderSync({
+  storeRoot: providerStore,
+  provider: {
+    fetchManifest() {
+      throw new Error("hub down");
+    },
+    fetchSignature() {
+      throw new Error("hub down");
+    },
+    fetchFile() {
+      throw new Error("hub down");
+    },
+    ack() {},
+  },
+  trust,
+  expectedProjectId: PROJECT_ID,
+});
+check(
+  "provider-down-keeps-current",
+  down.status === "provider-unavailable" &&
+    loadCurrentSnapshot(providerStore)?.publishSequence === 2,
 );
 
 if (failed) {

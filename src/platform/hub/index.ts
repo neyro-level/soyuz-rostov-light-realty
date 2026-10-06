@@ -11,6 +11,7 @@ export {
   DevelopmentDtoSchema,
   dealKinds,
   FORBIDDEN_PUBLIC_FIELDS,
+  geoPrecisions,
   HUB_CONTRACT_VERSION,
   isSupportedSchema,
   MoneyValueSchema,

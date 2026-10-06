@@ -128,11 +128,14 @@ check(
   !hidden.includes("8500000") && !hidden.includes("₽"),
 );
 
-const exampleEnv = readFileSync(join(root, ".env.example"), "utf8");
+const exampleEnv = readFileSync(join(root, ".env.example"), "utf8").replaceAll(
+  "\r\n",
+  "\n",
+);
 const envSource = readFileSync(join(root, "src/platform/env.ts"), "utf8");
 check(
   "INDEXING_MODE=staging",
-  exampleEnv.includes("INDEXING_MODE=staging") &&
+  /^INDEXING_MODE$/m.test(exampleEnv) &&
     envSource.includes('.default("staging")'),
 );
 
@@ -158,8 +161,8 @@ check("legacy-410-blog", gone?.status === 410);
 const moved = matchLegacy("/novostroyki-rostova/", legacyRules);
 const novostroykiHref = buildHref(grammar, features, "catNovostroyki");
 check(
-  "legacy-301-novostroyki",
-  moved?.status === 301 &&
+  "legacy-308-novostroyki",
+  moved?.status === 308 &&
     Boolean(novostroykiHref) &&
     legacyLocation(moved, grammar, features) === novostroykiHref,
 );
@@ -194,8 +197,8 @@ if (listing) {
   const propertyMeta = resolvePageMetadata(
     "property",
     {
-      semantic: `${"rooms" in listing.facts ? listing.facts.rooms : 1}k`,
-      id: listing.publicUrlId,
+      slug: listing.slug || listing.publicUrlId,
+      publicUrlId: listing.publicUrlId,
     },
     snapshot,
     context,
@@ -216,11 +219,11 @@ if (listing) {
 
 const liveEntries = buildSitemapEntries(snapshot, {
   ...context,
-  indexingMode: "live",
+  indexingMode: "public",
 });
-check("sitemap-live-not-empty", liveEntries.length > 0);
+check("sitemap-public-not-empty", liveEntries.length > 0);
 check(
-  "sitemap-live-no-noindex-thanks",
+  "sitemap-public-no-noindex-thanks",
   liveEntries.every((item) => !String(item.url).includes("/spasibo/")),
 );
 const stagingEntries = buildSitemapEntries(snapshot, {

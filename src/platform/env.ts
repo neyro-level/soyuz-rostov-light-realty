@@ -3,15 +3,26 @@ import { z } from "zod";
 const emptyToUndefined = (value: unknown) =>
   value === "" || value === undefined ? undefined : value;
 
+const PLACEHOLDER_SECRETS = new Set([
+  "changeme",
+  "change-me",
+  "password",
+  "secret",
+  "todo",
+  "placeholder",
+]);
+
+const SECRET_KEYS = ["SMTP_PASS", "LEAD_SPOOL_KEY"] as const;
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
   APP_ENV: z.enum(["local", "staging", "production"]).default("local"),
-  INDEXING_MODE: z.enum(["staging", "live"]).default("staging"),
-  DATA_MODE: z.enum(["hub", "local"]).default("local"),
-  LEADS_MODE: z.enum(["direct", "hub"]).default("direct"),
-  LEAD_TRANSPORT: z.enum(["none", "smtp"]).default("none"),
+  INDEXING_MODE: z.enum(["private", "staging", "public"]).default("staging"),
+  DATA_MODE: z.enum(["snapshot", "local"]).default("local"),
+  LEADS_ROUTE: z.enum(["direct", "service", "dual"]).default("direct"),
+  LEAD_TRANSPORT: z.enum(["none", "smtp", "webhook", "crm"]).default("none"),
   PROJECT_FIXTURE: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   MEDIA_ORIGIN: z.preprocess(emptyToUndefined, z.string().url().optional()),
   ANALYTICS_METRIKA_ID: z.preprocess(
@@ -30,14 +41,21 @@ const envSchema = z.object({
   SMTP_USER: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   SMTP_PASS: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   SMTP_FROM: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  LEAD_SPOOL_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  LEAD_SPOOL_DIR: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
 });
 
 export type AppEnv = Omit<z.infer<typeof envSchema>, "SMTP_SECURE"> & {
   SMTP_SECURE?: boolean;
 };
 
-export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
-  const parsed = envSchema.parse(source);
+function assertNoSilentSecretFallback(parsed: z.infer<typeof envSchema>): void {
+  for (const key of SECRET_KEYS) {
+    const value = parsed[key];
+    if (value !== undefined && PLACEHOLDER_SECRETS.has(value.toLowerCase())) {
+      throw new Error(`${key} must not use a silent fallback or placeholder`);
+    }
+  }
   if (parsed.LEAD_TRANSPORT === "smtp") {
     const required = [
       "SMTP_HOST",
@@ -53,6 +71,11 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
       }
     }
   }
+}
+
+export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
+  const parsed = envSchema.parse(source);
+  assertNoSilentSecretFallback(parsed);
   return {
     ...parsed,
     SMTP_SECURE:

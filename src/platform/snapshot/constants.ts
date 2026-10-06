@@ -10,5 +10,5 @@ export const REQUIRED_DATASET_KINDS = [
   "lifecycle",
 ] as const;
 
-export const QUARANTINE_RATIO_THRESHOLD = 0.2;
+export const QUARANTINE_RATIO_THRESHOLD = 0.005;
 export const DEFAULT_LOCK_TTL_MS = 30_000;

@@ -3,7 +3,6 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { REQUIRED_DATASET_KINDS } from "../src/platform/snapshot/constants";
-import { canonicalManifestPayload } from "../src/platform/snapshot/verify";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "fixtures", "fixture-sz-rostov");
@@ -56,6 +55,8 @@ mkdirSync(join(outDir, "keys"), { recursive: true });
 
 const geo = DISTRICTS.map((name, index) => ({
   uid: `geo-${index + 1}`,
+  slug: `geo-${index + 1}`,
+  slugHistory: [],
   name,
 }));
 
@@ -67,6 +68,8 @@ const developers = Array.from({ length: 20 }, (_, index) => ({
 const developments = developers.map((developer, index) => ({
   uid: `dvl-${index + 1}`,
   publicUrlId: publicUrlId(1000 + index),
+  slug: `zhk-${index + 1}`,
+  slugHistory: [],
   name: `Жилой комплекс ${index + 1}`,
   developerUid: developer.uid,
   checkedAt: "2026-09-01T00:00:00Z",
@@ -75,6 +78,7 @@ const developments = developers.map((developer, index) => ({
 const agents = Array.from({ length: 8 }, (_, index) => ({
   uid: `agt-${index + 1}`,
   slug: `agent-${index + 1}`,
+  slugHistory: [],
   displayName: `Агент ${index + 1}`,
   listingPresenceStatus: "HAS_ACTIVE_LISTINGS",
 }));
@@ -105,7 +109,10 @@ const inventory = Array.from({ length: 300 }, (_, index) => {
       scale: 2,
     },
     addressPublic: `${district.name}, дом ${1 + (index % 40)}`,
-    locationPrecision: "STREET",
+    geoPrecision: "street",
+    slug: `listing-${index + 1}`,
+    slugHistory: [],
+    lifecycle: "active",
     facts: {
       rooms: 1 + (index % 4),
       floor: 1 + (index % 16),
@@ -155,7 +162,6 @@ const unsigned = {
   sourceRevisions: ["local-fixture"],
   files,
   keyId: KEY_ID,
-  signature: "",
 };
 
 const privateKey = createPrivateKey({
@@ -163,13 +169,12 @@ const privateKey = createPrivateKey({
   format: "der",
   type: "pkcs8",
 });
-unsigned.signature = sign(
-  null,
-  canonicalManifestPayload(unsigned),
-  privateKey,
-).toString("base64");
-
-writeJson("manifest.json", unsigned);
+const manifestBytes = Buffer.from(`${JSON.stringify(unsigned)}\n`, "utf8");
+writeFileSync(join(outDir, "manifest.json"), manifestBytes);
+writeFileSync(
+  join(outDir, "manifest.sig"),
+  sign(null, manifestBytes, privateKey),
+);
 writeJson("trust.json", {
   keyId: KEY_ID,
   publicKeySpkiBase64: PUBLIC_SPKI_B64,
