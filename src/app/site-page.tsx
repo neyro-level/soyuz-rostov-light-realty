@@ -8,9 +8,15 @@ import {
   PageBlock,
   PropertyCard,
 } from "@/platform/ui";
+import { buildHomeModel } from "@/project/build-home-model";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
-import { getRealtyRepository, resolveAppMetadata } from "@/project/runtime";
+import {
+  getRealtyRepository,
+  loadRegistry,
+  resolveAppMetadata,
+} from "@/project/runtime";
+import { HomePage } from "@/ui/sections/home-page";
 import { uiText } from "@/project/ui-text.config";
 
 function formatPrice(price: MoneyDTO | null): string | undefined {
@@ -78,24 +84,37 @@ export async function SitePage({
   const thanksUrl = hasRoute("thanks")
     ? (buildHref(grammar, features, "thanks") ?? "/")
     : "/";
+  const leadForm = {
+    actionUrl: "/api/public/leads/",
+    consentHref,
+    consentLabel: uiText.form.consentLabel,
+    consentLinkLabel: uiText.form.consentLinkLabel,
+    nameLabel: uiText.form.nameLabel,
+    pageKey,
+    phoneLabel: uiText.form.phoneLabel,
+    retryMessage: uiText.form.retryMessage,
+    submitLabel: uiText.form.submitLabel,
+    thanksUrl,
+    transportDisabledMessage: uiText.form.transportDisabledMessage,
+  };
+  if (pageKey === "home") {
+    const model = await buildHomeModel(
+      grammar,
+      features,
+      loadRegistry(),
+    );
+    return (
+      <HomePage
+        leadForm={leadForm}
+        leadFormPageKey="home"
+        model={model}
+      />
+    );
+  }
   return (
     <PageBlock body={contextResolved.description} heading={contextResolved.h1}>
       <CatalogSlot hidePrice={contextResolved.hidePrice} pageKey={pageKey} />
-      {pageKey === "contacts" ? (
-        <LeadForm
-          actionUrl="/api/public/leads/"
-          consentHref={consentHref}
-          consentLabel={uiText.form.consentLabel}
-          consentLinkLabel={uiText.form.consentLinkLabel}
-          nameLabel={uiText.form.nameLabel}
-          pageKey={pageKey}
-          phoneLabel={uiText.form.phoneLabel}
-          retryMessage={uiText.form.retryMessage}
-          submitLabel={uiText.form.submitLabel}
-          thanksUrl={thanksUrl}
-          transportDisabledMessage={uiText.form.transportDisabledMessage}
-        />
-      ) : null}
+      {pageKey === "contacts" ? <LeadForm {...leadForm} /> : null}
     </PageBlock>
   );
 }

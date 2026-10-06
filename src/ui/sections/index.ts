@@ -1,1 +1,1 @@
-/** Page sections land here in later epics (G1+). */
+export { HomePage } from "./home-page";
