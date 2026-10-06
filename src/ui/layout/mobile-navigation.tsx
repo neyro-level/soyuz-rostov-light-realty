@@ -45,7 +45,10 @@ export function MobileNavigation({
         <SheetHeader>
           <SheetTitle>{brand}</SheetTitle>
         </SheetHeader>
-        <nav aria-label="Mobile" className="flex flex-col gap-[var(--sr-space-lg)]">
+        <nav
+          aria-label="Mobile"
+          className="flex flex-col gap-[var(--sr-space-lg)]"
+        >
           {groups.map((group) => (
             <div key={group.title}>
               <p className="mb-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)]">

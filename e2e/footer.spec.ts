@@ -16,7 +16,9 @@ test.describe("footer", () => {
         footer.getByRole("link", { name: site.brand }),
       ).toBeVisible();
       for (const title of columnTitles) {
-        await expect(footer.getByRole("heading", { name: title })).toBeVisible();
+        await expect(
+          footer.getByRole("heading", { name: title }),
+        ).toBeVisible();
       }
       await expect(
         footer.getByRole("link", { name: site.phoneDisplay }),

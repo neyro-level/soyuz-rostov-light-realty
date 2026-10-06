@@ -24,11 +24,11 @@ export {
   type NavItem,
   PageBlock,
   PageShell,
-  StarterPageShell,
-  type StarterPageShellProps,
   Pagination,
   PriceDisplay,
   PropertyCard,
   Section,
   SectionHeader,
+  StarterPageShell,
+  type StarterPageShellProps,
 } from "@/ui";

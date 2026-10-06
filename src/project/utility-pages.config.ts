@@ -8,7 +8,9 @@ export const H5_UTILITY_PAGE_KEYS = [
 
 export type H5UtilityPageKey = (typeof H5_UTILITY_PAGE_KEYS)[number];
 
-export function isH5UtilityPageKey(pageKey: string): pageKey is H5UtilityPageKey {
+export function isH5UtilityPageKey(
+  pageKey: string,
+): pageKey is H5UtilityPageKey {
   return (H5_UTILITY_PAGE_KEYS as readonly string[]).includes(pageKey);
 }
 

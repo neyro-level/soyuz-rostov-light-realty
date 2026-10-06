@@ -23,7 +23,8 @@ test.describe("I6 Freeze smoke", () => {
 
   test("property detail from catalog", async ({ page }) => {
     const catalogPath =
-      buildHref(grammar, features, "catKvartiry") ?? "/rostov-na-donu/kvartiry/";
+      buildHref(grammar, features, "catKvartiry") ??
+      "/rostov-na-donu/kvartiry/";
     await page.goto(catalogPath, { waitUntil: "networkidle" });
     await page.getByTestId("catalog-grid").getByRole("link").first().click();
     await expect(page.getByTestId("entity-detail")).toBeVisible();
@@ -39,7 +40,8 @@ test.describe("I6 Freeze smoke", () => {
   });
 
   test("contacts lead form", async ({ page }) => {
-    const contactsPath = buildHref(grammar, features, "contacts") ?? "/kontakty/";
+    const contactsPath =
+      buildHref(grammar, features, "contacts") ?? "/kontakty/";
     await page.goto(contactsPath, { waitUntil: "networkidle" });
     await expect(
       page.getByRole("textbox", { name: uiText.form.phoneLabel }),

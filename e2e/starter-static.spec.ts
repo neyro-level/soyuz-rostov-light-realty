@@ -16,7 +16,9 @@ test.describe("H2 static starter pages", () => {
     test(`${path} renders shell with noindex`, async ({ page }) => {
       await page.goto(path, { waitUntil: "networkidle" });
       await expect(page.locator("h1")).toHaveCount(1);
-      await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
+      await expect(
+        page.getByRole("navigation", { name: "Breadcrumb" }),
+      ).toBeVisible();
       const robots = await page
         .locator('meta[name="robots"]')
         .getAttribute("content");
@@ -25,7 +27,8 @@ test.describe("H2 static starter pages", () => {
   }
 
   test("contacts exposes lead form in content block", async ({ page }) => {
-    const contactsPath = buildHref(grammar, features, "contacts") ?? "/kontakty/";
+    const contactsPath =
+      buildHref(grammar, features, "contacts") ?? "/kontakty/";
     await page.goto(contactsPath, { waitUntil: "networkidle" });
     await expect(
       page.getByRole("textbox", { name: uiText.form.phoneLabel }),

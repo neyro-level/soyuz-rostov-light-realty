@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { buildHref } from "../src/platform/grammar";
-import { H5_UTILITY_PAGE_KEYS } from "../src/project/utility-pages.config";
 import { features } from "../src/project/features.config";
 import { grammar } from "../src/project/grammar.config";
+import { H5_UTILITY_PAGE_KEYS } from "../src/project/utility-pages.config";
 
 test.describe("H5 utility pages", () => {
   test.describe.configure({ mode: "serial" });

@@ -10,7 +10,9 @@ const viewports = [
 
 test.describe("home reference page", () => {
   for (const viewport of viewports) {
-    test(`viewport ${viewport.width} renders core sections`, async ({ page }) => {
+    test(`viewport ${viewport.width} renders core sections`, async ({
+      page,
+    }) => {
       await page.setViewportSize(viewport);
       await page.goto("/");
       await expect(page.locator("h1")).toHaveCount(1);
@@ -53,8 +55,8 @@ test.describe("home reference page", () => {
   test("prefers-reduced-motion is honored globally", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    const matches = await page.evaluate(() =>
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    const matches = await page.evaluate(
+      () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     );
     expect(matches).toBe(true);
     const transitionMs = await page.locator("body").evaluate((el) => {

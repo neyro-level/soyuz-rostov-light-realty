@@ -90,7 +90,8 @@ check(
 
 const allDeps = {
   ...packageJson.dependencies,
-  ...(packageJson as { devDependencies?: Record<string, string> }).devDependencies,
+  ...(packageJson as { devDependencies?: Record<string, string> })
+    .devDependencies,
 };
 for (const pkg of [
   "@mui/material",

@@ -22,9 +22,7 @@ test.describe("header navigation", () => {
   test("mobile 375 exposes groups via sheet", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
-    await expect(
-      page.getByRole("navigation", { name: "Main" }),
-    ).toBeHidden();
+    await expect(page.getByRole("navigation", { name: "Main" })).toBeHidden();
     const menuButton = page.getByRole("button", { name: "Открыть меню" });
     await menuButton.scrollIntoViewIfNeeded();
     await menuButton.click();

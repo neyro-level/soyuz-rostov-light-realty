@@ -6,6 +6,8 @@ import { StarterPageShell } from "@/platform/ui";
 import { homeHref } from "@/project/home-href";
 import { uiText } from "@/project/ui-text.config";
 
+/** Next.js App Router error boundary — export name must be `Error`. */
+// biome-ignore lint/suspicious/noShadowRestrictedNames: required by Next.js error.tsx convention
 export default function Error({
   error,
   reset,

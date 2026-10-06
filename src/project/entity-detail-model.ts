@@ -11,6 +11,7 @@ function formatPrice(price: MoneyDTO | null): string | undefined {
   }
   return `${Math.round(major).toLocaleString("ru-RU")} ₽`;
 }
+
 import type { H4EntityPageKey } from "@/project/entity-pages.config";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
@@ -69,8 +70,12 @@ export async function loadEntityDetailModel(
       return null;
     }
     const facts = [
-      item.rooms !== null ? { label: "Комнат", value: String(item.rooms) } : null,
-      item.area !== null ? { label: "Площадь", value: `${item.area} м²` } : null,
+      item.rooms !== null
+        ? { label: "Комнат", value: String(item.rooms) }
+        : null,
+      item.area !== null
+        ? { label: "Площадь", value: `${item.area} м²` }
+        : null,
       item.floor !== null && item.floorsTotal !== null
         ? {
             label: "Этаж",

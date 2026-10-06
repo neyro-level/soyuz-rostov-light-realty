@@ -11,10 +11,7 @@ export function Breadcrumbs({
   className?: string;
 }) {
   return (
-    <nav
-      aria-label="Breadcrumb"
-      className={className ?? "px-md py-sm"}
-    >
+    <nav aria-label="Breadcrumb" className={className ?? "px-md py-sm"}>
       <ol className="flex flex-wrap gap-sm text-muted">
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`}>

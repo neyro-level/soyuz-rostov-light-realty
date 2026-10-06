@@ -28,18 +28,10 @@ export function Footer({
   copyright: string;
 }) {
   return (
-    <footer
-      className="mt-auto bg-[var(--sr-surface-dark)] text-[var(--sr-foreground-on-dark)]"
-    >
-      <Container
-        className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-      >
-        <div
-          className="grid gap-[var(--sr-space-xl)] py-[var(--sr-section-md-mobile)] md:py-[var(--sr-section-md-desktop)]"
-        >
-          <div
-            className="grid gap-[var(--sr-space-xl)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-          >
+    <footer className="mt-auto bg-[var(--sr-surface-dark)] text-[var(--sr-foreground-on-dark)]">
+      <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
+        <div className="grid gap-[var(--sr-space-xl)] py-[var(--sr-section-md-mobile)] md:py-[var(--sr-section-md-desktop)]">
+          <div className="grid gap-[var(--sr-space-xl)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
             <section className="sm:col-span-2 xl:col-span-1">
               <a
                 className="inline-flex min-h-11 items-center font-semibold text-[var(--sr-foreground-on-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-foreground-on-dark)]"
@@ -47,9 +39,7 @@ export function Footer({
               >
                 {brand}
               </a>
-              <address
-                className="mt-[var(--sr-space-md)] flex flex-col gap-[var(--sr-space-sm)] not-italic text-sm text-[var(--sr-muted-on-dark)]"
-              >
+              <address className="mt-[var(--sr-space-md)] flex flex-col gap-[var(--sr-space-sm)] not-italic text-sm text-[var(--sr-muted-on-dark)]">
                 <span>{address}</span>
                 <a className={footerLinkClass} href={`tel:${phoneTel}`}>
                   {phoneDisplay}
@@ -62,9 +52,7 @@ export function Footer({
             </section>
             {columns.map((column) => (
               <section key={column.title}>
-                <h2
-                  className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[var(--sr-label-on-dark)]"
-                >
+                <h2 className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[var(--sr-label-on-dark)]">
                   {column.title}
                 </h2>
                 <ul className="flex flex-col gap-[var(--sr-space-xs)]">
@@ -79,15 +67,11 @@ export function Footer({
               </section>
             ))}
           </div>
-          <div
-            className="border-t border-[var(--sr-border-dark)] pt-[var(--sr-space-lg)]"
-          >
+          <div className="border-t border-[var(--sr-border-dark)] pt-[var(--sr-space-lg)]">
             <p className="text-sm leading-relaxed text-[var(--sr-muted-on-dark)]">
               {requisites}
             </p>
-            <p
-              className="mt-[var(--sr-space-sm)] text-sm text-[var(--sr-label-on-dark)]"
-            >
+            <p className="mt-[var(--sr-space-sm)] text-sm text-[var(--sr-label-on-dark)]">
               {copyright}
             </p>
           </div>

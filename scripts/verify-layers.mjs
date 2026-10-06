@@ -73,9 +73,7 @@ function checkNoProjectLiterals(files, label) {
     const text = readFileSync(file, "utf8");
     for (const literal of forbiddenLiterals) {
       if (text.includes(literal)) {
-        fail(
-          `${label}: ${relative(root, file)} contains "${literal}"`,
-        );
+        fail(`${label}: ${relative(root, file)} contains "${literal}"`);
       }
     }
   }
@@ -86,9 +84,7 @@ function checkNoBrandHexes(files, hexes, label) {
     const text = readFileSync(file, "utf8").toLowerCase();
     for (const hex of hexes) {
       if (text.includes(hex)) {
-        fail(
-          `${label}: ${relative(root, file)} contains brand color ${hex}`,
-        );
+        fail(`${label}: ${relative(root, file)} contains brand color ${hex}`);
       }
     }
   }
@@ -160,11 +156,7 @@ for (const file of appAndPlatform) {
 }
 
 checkForbiddenImports(uiFiles, uiForbiddenImportFragments, "ui-no-data-source");
-checkForbiddenImports(
-  uiFiles,
-  ['@/platform/snapshot"'],
-  "ui-no-data-source",
-);
+checkForbiddenImports(uiFiles, ['@/platform/snapshot"'], "ui-no-data-source");
 
 const appFiles = walk(join(root, "src/app"));
 checkForbiddenImports(
@@ -184,7 +176,12 @@ checkForbiddenImports(
   appFiles,
   ['@/platform/snapshot"'],
   "app-no-snapshot-files",
-  { skipRelative: ["src\\app\\api\\internal\\sync", "src/app/api/internal/sync"] },
+  {
+    skipRelative: [
+      "src\\app\\api\\internal\\sync",
+      "src/app/api/internal/sync",
+    ],
+  },
 );
 
 if (process.exitCode) {

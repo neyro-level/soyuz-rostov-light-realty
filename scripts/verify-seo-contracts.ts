@@ -223,10 +223,12 @@ check(
 );
 check(
   "home-canonical-absolute",
-  homeMeta.canonical.startsWith("https://") &&
-    homeMeta.canonical.endsWith("/"),
+  homeMeta.canonical.startsWith("https://") && homeMeta.canonical.endsWith("/"),
 );
-check("home-single-h1", typeof homeMeta.h1 === "string" && homeMeta.h1.length > 0);
+check(
+  "home-single-h1",
+  typeof homeMeta.h1 === "string" && homeMeta.h1.length > 0,
+);
 
 const listing = snapshot.inventory[0];
 if (listing) {
@@ -254,12 +256,7 @@ if (listing) {
 }
 
 for (const pageKey of seo.noindexAutoPageKeys) {
-  const starterMeta = resolvePageMetadata(
-    pageKey,
-    {},
-    snapshot,
-    publicContext,
-  );
+  const starterMeta = resolvePageMetadata(pageKey, {}, snapshot, publicContext);
   check(
     `starter-noindex:${pageKey}`,
     starterMeta.robots.index === false && starterMeta.robots.follow === true,

@@ -39,10 +39,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       resolveNavGroup(group, grammar, features, registry, navigation.labels),
     )
     .filter((group) => group.items.length > 0);
-  const homeHref =
-    buildHref(grammar, features, "home") ?? "/";
-  const consentHref =
-    buildHref(grammar, features, "consent") ?? homeHref;
+  const homeHref = buildHref(grammar, features, "home") ?? "/";
+  const consentHref = buildHref(grammar, features, "consent") ?? homeHref;
   const thanksUrl = buildHref(grammar, features, "thanks") ?? homeHref;
   const searchHref = isFeatureEnabled(features, "search")
     ? buildHref(grammar, features, "search")

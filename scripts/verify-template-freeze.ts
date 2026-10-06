@@ -42,13 +42,24 @@ const envExample = readFileSync(join(root, ".env.example"), "utf8");
 check("gate6-no-database-url", !/DATABASE_URL/i.test(envExample));
 
 const verifyScript = packageJson.scripts?.verify ?? "";
-check("gate5-verify-includes-template-check", verifyScript.includes("template:check"));
-check("gate5-verify-includes-exit-mode", verifyScript.includes("verify:exit-mode"));
-check("gate5-verify-includes-e2e-chain", verifyScript.includes("verify:ui-core"));
+check(
+  "gate5-verify-includes-template-check",
+  verifyScript.includes("template:check"),
+);
+check(
+  "gate5-verify-includes-exit-mode",
+  verifyScript.includes("verify:exit-mode"),
+);
+check(
+  "gate5-verify-includes-e2e-chain",
+  verifyScript.includes("verify:ui-core"),
+);
 
 check(
   "gate1-new-project-doc",
-  readFileSync(join(root, "docs/NEW_PROJECT.md"), "utf8").includes("template:check"),
+  readFileSync(join(root, "docs/NEW_PROJECT.md"), "utf8").includes(
+    "template:check",
+  ),
 );
 check(
   "gate1-freeze-doc",
@@ -59,7 +70,9 @@ check(
 
 check(
   "gate6-no-payload-in-src",
-  !readFileSync(join(root, "src/platform/env.ts"), "utf8").includes("DATABASE_URL"),
+  !readFileSync(join(root, "src/platform/env.ts"), "utf8").includes(
+    "DATABASE_URL",
+  ),
 );
 
 if (failed) {

@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { site as altSite } from "../fixtures/fixture-alt/project/site.config";
 import { loadFixtureInventory } from "../src/platform/catalog/local";
 import {
   assertNoCollisions,
@@ -14,7 +15,6 @@ import { data } from "../src/project/data.config";
 import { features as primaryFeatures } from "../src/project/features.config";
 import { grammar as primaryGrammar } from "../src/project/grammar.config";
 import { site as primarySite } from "../src/project/site.config";
-import { site as altSite } from "../fixtures/fixture-alt/project/site.config";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const altDir = "fixtures/fixture-alt";

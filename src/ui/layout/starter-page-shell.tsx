@@ -24,9 +24,7 @@ export function StarterPageShell({
   return (
     <main className="flex-1">
       <Section>
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           {breadcrumbs && breadcrumbs.length > 0 ? (
             <Breadcrumbs
               className="mb-[var(--sr-space-md)] py-0"
@@ -46,9 +44,7 @@ export function StarterPageShell({
       </Section>
       {children ? (
         <Section tone="soft">
-          <Container
-            className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-          >
+          <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
             {children}
           </Container>
         </Section>
