@@ -8,6 +8,7 @@ import {
   PropertyCard,
   StarterPageShell,
 } from "@/platform/ui";
+import type { LeadFormConfig } from "@/ui/layout/header";
 import { site } from "@/project/site.config";
 import { buildHomeModel } from "@/project/build-home-model";
 import { features } from "@/project/features.config";
@@ -17,7 +18,14 @@ import {
   loadRegistry,
   resolveAppMetadata,
 } from "@/project/runtime";
+import { navigation } from "@/project/navigation.config";
+import {
+  type H2StaticPageKey,
+  h2StarterBodies,
+  isH2StaticPageKey,
+} from "@/project/starter-pages.config";
 import { HomePage } from "@/ui/sections/home-page";
+import { LeadDialog } from "@/ui/shared/lead-dialog";
 import { uiText } from "@/project/ui-text.config";
 
 function formatPrice(price: MoneyDTO | null): string | undefined {
@@ -117,14 +125,13 @@ export async function SitePage({
     { label: site.brand, href: homeHref },
     { label: contextResolved.h1 },
   ];
-  const starterContent = (
-    <>
-      <CatalogSlot hidePrice={contextResolved.hidePrice} pageKey={pageKey} />
-      {pageKey === "contacts" ? <LeadForm {...leadForm} /> : null}
-    </>
+  const starterContent = isH2StaticPageKey(pageKey) ? (
+    <StaticStarterSlot leadForm={leadForm} pageKey={pageKey} />
+  ) : (
+    <CatalogSlot hidePrice={contextResolved.hidePrice} pageKey={pageKey} />
   );
   const hasStarterContent =
-    pageKey === "contacts" ||
+    isH2StaticPageKey(pageKey) ||
     pageKey === "developers" ||
     pageKey === "team" ||
     pageKey === "catNovostroyki" ||
@@ -140,6 +147,31 @@ export async function SitePage({
     >
       {hasStarterContent ? starterContent : null}
     </StarterPageShell>
+  );
+}
+
+function StaticStarterSlot({
+  pageKey,
+  leadForm,
+}: {
+  pageKey: H2StaticPageKey;
+  leadForm: LeadFormConfig;
+}) {
+  if (pageKey === "contacts") {
+    return <LeadForm {...leadForm} />;
+  }
+  const body = h2StarterBodies[pageKey];
+  return (
+    <div className="flex max-w-2xl flex-col gap-[var(--sr-space-lg)]">
+      <p className="text-[length:var(--sr-body-size)] leading-relaxed text-[var(--sr-muted-foreground)]">
+        {body}
+      </p>
+      <LeadDialog
+        ctaLabel={navigation.ctaLabel}
+        leadForm={leadForm}
+        className="w-fit"
+      />
+    </div>
   );
 }
 
