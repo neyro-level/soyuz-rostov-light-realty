@@ -5,7 +5,6 @@ import { resolveNavGroup } from "@/platform/nav";
 import { buildRealEstateAgentJsonLd } from "@/platform/seo";
 import { JsonLdScript } from "@/platform/seo/json-ld-script";
 import { Footer, Header } from "@/platform/ui";
-import { manrope } from "@/platform/ui/fonts";
 import { analytics } from "@/project/analytics.config";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
@@ -13,6 +12,7 @@ import { navigation } from "@/project/navigation.config";
 import { loadRegistry } from "@/project/runtime";
 import { site } from "@/project/site.config";
 import { copyrightLine, legalLine, uiText } from "@/project/ui-text.config";
+import { manrope } from "@/ui/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {

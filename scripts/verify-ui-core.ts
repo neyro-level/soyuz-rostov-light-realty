@@ -17,17 +17,35 @@ function check(name: string, ok: boolean, detail = "") {
   console.error(`FAIL ${name}${detail ? `: ${detail}` : ""}`);
 }
 
-const requiredComponents = [
+const layoutComponents = [
   "header.tsx",
   "footer.tsx",
   "breadcrumbs.tsx",
+  "page-shell.tsx",
+  "mobile-navigation.tsx",
+];
+const domainComponents = [
   "property-card.tsx",
   "development-card.tsx",
+  "developer-card.tsx",
+  "agent-card.tsx",
   "catalog-grid.tsx",
-  "filters.tsx",
+  "filter-bar.tsx",
+  "catalog-toolbar.tsx",
   "pagination.tsx",
   "gallery.tsx",
   "lead-form.tsx",
+  "price-display.tsx",
+  "decision-sidebar.tsx",
+];
+const sharedComponents = [
+  "container.tsx",
+  "section.tsx",
+  "section-header.tsx",
+  "image-frame.tsx",
+  "cta.tsx",
+  "empty-state.tsx",
+  "error-state.tsx",
 ];
 
 const shadcnPrimitives = [
@@ -62,28 +80,50 @@ check(
   "components-json-ui-alias",
   componentsJson.aliases?.ui === "@/ui/primitives",
 );
-check(
-  "dep-lucide-react",
-  Boolean(packageJson.dependencies?.["lucide-react"]),
-);
-check(
-  "dep-radix-ui",
-  Boolean(packageJson.dependencies?.["radix-ui"]),
-);
+check("dep-lucide-react", Boolean(packageJson.dependencies?.["lucide-react"]));
+check("dep-radix-ui", Boolean(packageJson.dependencies?.["radix-ui"]));
 check(
   "dep-cva",
   Boolean(packageJson.dependencies?.["class-variance-authority"]),
 );
 
-for (const file of requiredComponents) {
-  const full = join(root, "src/platform/ui", file);
+for (const file of layoutComponents) {
+  const full = join(root, "src/ui/layout", file);
   try {
     statSync(full);
-    check(`component:${file}`, true);
+    check(`layout:${file}`, true);
   } catch {
-    check(`component:${file}`, false, "missing");
+    check(`layout:${file}`, false, "missing");
   }
 }
+for (const file of domainComponents) {
+  const full = join(root, "src/ui/domain", file);
+  try {
+    statSync(full);
+    check(`domain:${file}`, true);
+  } catch {
+    check(`domain:${file}`, false, "missing");
+  }
+}
+for (const file of sharedComponents) {
+  const full = join(root, "src/ui/shared", file);
+  try {
+    statSync(full);
+    check(`shared:${file}`, true);
+  } catch {
+    check(`shared:${file}`, false, "missing");
+  }
+}
+check("ui-sections-dir", statSync(join(root, "src/ui/sections")).isDirectory());
+const platformUiDir = join(root, "src/platform/ui");
+const platformVisual = readdirSync(platformUiDir).filter((name) =>
+  name.endsWith(".tsx"),
+);
+check(
+  "platform-ui-not-visual-owner",
+  platformVisual.length === 0,
+  platformVisual.join(", "),
+);
 
 const theme = readFileSync(join(root, "src/project/theme.css"), "utf8");
 const tokenNames = [
@@ -98,18 +138,9 @@ const tokenNames = [
 for (const token of tokenNames) {
   check(`token:${token}`, theme.includes(token));
 }
-check(
-  "souz-primary-014eba",
-  /--sr-primary:\s*#014eba/i.test(theme),
-);
-check(
-  "souz-radius-5px",
-  /--sr-radius-md:\s*5px/.test(theme),
-);
-check(
-  "souz-container-1360",
-  /--sr-container-max:\s*1360px/.test(theme),
-);
+check("souz-primary-014eba", /--sr-primary:\s*#014eba/i.test(theme));
+check("souz-radius-5px", /--sr-radius-md:\s*5px/.test(theme));
+check("souz-container-1360", /--sr-container-max:\s*1360px/.test(theme));
 check(
   "souz-h2-typography",
   theme.includes("--sr-text-h2-mobile") &&
@@ -131,6 +162,16 @@ function walk(dir: string, files: string[] = []): string[] {
     }
   }
   return files;
+}
+
+for (const file of walk(join(root, "src/ui"))) {
+  const text = readFileSync(file, "utf8");
+  check(
+    `ui-no-repository:${relative(root, file)}`,
+    !text.includes("@/platform/catalog") &&
+      !text.includes("RealtyRepository") &&
+      !text.includes("getRealtyRepository"),
+  );
 }
 
 for (const dir of ["src/platform/ui", "src/ui"]) {
@@ -161,23 +202,21 @@ const layout = readFileSync(join(root, "src/app/layout.tsx"), "utf8");
 check("no-google-fonts-import", !layout.includes("next/font/google"));
 check(
   "manrope-local-font",
-  readFileSync(join(root, "src/platform/ui/fonts.ts"), "utf8").includes(
+  readFileSync(join(root, "src/ui/lib/fonts.ts"), "utf8").includes(
     "Manrope-cyrillic.woff2",
   ) &&
-    readFileSync(join(root, "src/platform/ui/fonts.ts"), "utf8").includes(
+    readFileSync(join(root, "src/ui/lib/fonts.ts"), "utf8").includes(
       "Manrope-latin.woff2",
     ),
 );
 check(
   "manrope-files",
-  statSync(join(root, "src/platform/ui/fonts/Manrope-latin.woff2")).isFile() &&
-    statSync(
-      join(root, "src/platform/ui/fonts/Manrope-cyrillic.woff2"),
-    ).isFile(),
+  statSync(join(root, "src/ui/lib/fonts/Manrope-latin.woff2")).isFile() &&
+    statSync(join(root, "src/ui/lib/fonts/Manrope-cyrillic.woff2")).isFile(),
 );
 check(
   "manrope-license",
-  statSync(join(root, "src/platform/ui/fonts/OFL.txt")).isFile(),
+  statSync(join(root, "src/ui/lib/fonts/OFL.txt")).isFile(),
 );
 check(
   "no-googleapis-fonts",
