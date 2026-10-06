@@ -24,6 +24,10 @@ closed_epics:
   - C1
   - D1
   - D2
+pending_epic:
+  epic: D3
+  pr: 20
+  sha: fd348c8
 last_merged:
   epic: D2
   pr: 18
