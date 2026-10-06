@@ -1,9 +1,11 @@
 import { createHash, generateKeyPairSync, sign } from "node:crypto";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -15,13 +17,15 @@ import {
   acquireLock,
   activateStaging,
   openSnapshotStore,
+  prepareStaging,
   readCurrentManifest,
   releaseLock,
+  revisionDir,
+  revisionTmpDir,
 } from "../src/platform/snapshot/store";
 import {
   applyLocalSnapshot,
   loadCurrentSnapshot,
-  prepareStaging,
 } from "../src/platform/snapshot/sync";
 import { TrustSet } from "../src/platform/snapshot/trust";
 import { verifyCandidate } from "../src/platform/snapshot/verify";
@@ -395,15 +399,16 @@ check(
 
 const store = openSnapshotStore(storeRoot);
 const seqBeforeCrash = readCurrentManifest(store)?.publishSequence;
+const crashSeq = (seqBeforeCrash ?? 1) + 1;
 const crashDir = writeCandidate({
-  sequence: (seqBeforeCrash ?? 1) + 1,
+  sequence: crashSeq,
   keyId: "trusted",
   privateKey: trusted.privateKey,
 });
-prepareStaging(store, crashDir);
-rmSync(store.stagingDir, { recursive: true, force: true });
+prepareStaging(store, crashDir, crashSeq);
+rmSync(revisionTmpDir(store, crashSeq), { recursive: true, force: true });
 try {
-  activateStaging(store);
+  activateStaging(store, crashSeq);
   check("activation-failure-throws", false);
 } catch {
   check("activation-failure-throws", true);
@@ -411,6 +416,22 @@ try {
 check(
   "last-good-untouched",
   loadCurrentSnapshot(storeRoot)?.publishSequence === seqBeforeCrash,
+);
+function isDir(path: string): boolean {
+  return existsSync(path) && statSync(path).isDirectory();
+}
+
+check(
+  "tmp-not-visible-to-web",
+  !isDir(join(storeRoot, "current")) &&
+    !isDir(join(storeRoot, "last-good")) &&
+    !isDir(join(storeRoot, "staging")) &&
+    !existsSync(revisionTmpDir(store, crashSeq)) &&
+    loadCurrentSnapshot(storeRoot)?.publishSequence === seqBeforeCrash,
+);
+check(
+  "previous-known-good-kept",
+  existsSync(join(revisionDir(store, seqBeforeCrash ?? 1), "manifest.json")),
 );
 
 check(
