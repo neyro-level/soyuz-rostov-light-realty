@@ -5,9 +5,10 @@ import {
   CatalogGrid,
   DevelopmentCard,
   LeadForm,
-  PageBlock,
   PropertyCard,
+  StarterPageShell,
 } from "@/platform/ui";
+import { site } from "@/project/site.config";
 import { buildHomeModel } from "@/project/build-home-model";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
@@ -111,11 +112,34 @@ export async function SitePage({
       />
     );
   }
-  return (
-    <PageBlock body={contextResolved.description} heading={contextResolved.h1}>
+  const homeHref = buildHref(grammar, features, "home") ?? "/";
+  const breadcrumbs = [
+    { label: site.brand, href: homeHref },
+    { label: contextResolved.h1 },
+  ];
+  const starterContent = (
+    <>
       <CatalogSlot hidePrice={contextResolved.hidePrice} pageKey={pageKey} />
       {pageKey === "contacts" ? <LeadForm {...leadForm} /> : null}
-    </PageBlock>
+    </>
+  );
+  const hasStarterContent =
+    pageKey === "contacts" ||
+    pageKey === "developers" ||
+    pageKey === "team" ||
+    pageKey === "catNovostroyki" ||
+    pageKey === "catKvartiry" ||
+    pageKey === "facetVtorichka" ||
+    pageKey.startsWith("dist");
+
+  return (
+    <StarterPageShell
+      breadcrumbs={breadcrumbs}
+      lead={contextResolved.description}
+      title={contextResolved.h1}
+    >
+      {hasStarterContent ? starterContent : null}
+    </StarterPageShell>
   );
 }
 

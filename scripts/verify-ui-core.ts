@@ -22,6 +22,7 @@ const layoutComponents = [
   "footer.tsx",
   "breadcrumbs.tsx",
   "page-shell.tsx",
+  "starter-page-shell.tsx",
   "mobile-navigation.tsx",
 ];
 const domainComponents = [
