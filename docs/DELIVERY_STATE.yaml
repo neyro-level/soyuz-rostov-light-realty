@@ -1,14 +1,13 @@
 plan_id: SOUZ-TEMPLATE-FREEZE
 plan_version: v2
-status: IN_PROGRESS
+status: PENDING_OWNER_MERGE
 plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: J1
-next_ready:
-  - J2
-current_branch: epic/J1-fixtures
+current_epic: K1
+next_ready: []
+current_branch: epic/K1-freeze
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -36,6 +35,15 @@ closed_epics:
   - H2
   - H3
   - H4
+  - I1
+  - I2
+  - I3
+  - I4
+  - I5
+  - I6
+  - J1
+  - J2
+  - J3
 pending_epics:
   - epic: H5
     pr: 33
@@ -69,6 +77,18 @@ pending_epics:
     pr: 40
     branch: epic/J1-fixtures
     base: epic/I6-e2e
+  - epic: J2
+    pr: 41
+    branch: epic/J2-leakage
+    base: epic/J1-fixtures
+  - epic: J3
+    pr: 42
+    branch: epic/J3-new-project
+    base: epic/J2-leakage
+  - epic: K1
+    pr: 43
+    branch: epic/K1-freeze
+    base: epic/J3-new-project
 last_merged:
   epic: H4
   pr: 32
@@ -82,4 +102,5 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  PHASE I stack #33–#39 (I6 PR #39). Next: J1 dual-fixture template:check on epic/J1-fixtures.
+  Implementation graph delivered PR_ONLY #33–#43 (head epic/K1-freeze).
+  Merge stack in order; then tag REFERENCE BASELINE on owner merge SHA. No production.
