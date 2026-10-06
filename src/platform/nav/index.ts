@@ -1,4 +1,4 @@
 import { resolveNavGroup } from "./resolve";
 
 export { resolveNavGroup };
-export type { NavGroupConfig } from "./resolve";
+export type { NavGroup, NavGroupConfig, NavItem } from "./resolve";

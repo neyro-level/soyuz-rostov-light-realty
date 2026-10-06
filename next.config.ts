@@ -4,6 +4,7 @@ import { analytics } from "./src/project/analytics.config";
 import { media } from "./src/project/media.config";
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   trailingSlash: true,
   output: "standalone",
   outputFileTracingIncludes: {

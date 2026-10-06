@@ -1,6 +1,14 @@
 import { buildHref, type FeatureFlags, type GrammarConfig } from "../grammar";
 import type { SeoRegistryRow } from "../seo";
-import type { NavItem } from "../ui";
+export type NavItem = {
+  label: string;
+  href: string;
+};
+
+export type NavGroup = {
+  title: string;
+  items: NavItem[];
+};
 
 export type NavGroupConfig = {
   title: string;
@@ -18,7 +26,7 @@ export function resolveNavGroup(
   flags: FeatureFlags,
   registry: SeoRegistryRow[],
   labels: Record<string, string>,
-): { title: string; items: NavItem[] } {
+): NavGroup {
   const items: NavItem[] = [];
   for (const pageKey of group.pageKeys) {
     if (!grammar.routes.some((route) => route.pageKey === pageKey)) {
