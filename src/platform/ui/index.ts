@@ -24,6 +24,8 @@ export {
   type NavItem,
   PageBlock,
   PageShell,
+  StarterPageShell,
+  type StarterPageShellProps,
   Pagination,
   PriceDisplay,
   PropertyCard,

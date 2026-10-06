@@ -3,9 +3,18 @@ export type Crumb = {
   href?: string;
 };
 
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({
+  items,
+  className,
+}: {
+  items: Crumb[];
+  className?: string;
+}) {
   return (
-    <nav aria-label="Breadcrumb" className="px-md py-sm">
+    <nav
+      aria-label="Breadcrumb"
+      className={className ?? "px-md py-sm"}
+    >
       <ol className="flex flex-wrap gap-sm text-muted">
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`}>
