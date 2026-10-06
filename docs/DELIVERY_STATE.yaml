@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: I4
+current_epic: I5
 next_ready:
-  - I5
-current_branch: epic/I4-leads
+  - I6
+current_branch: epic/I5-seo
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -57,6 +57,9 @@ pending_epics:
     pr: 37
     branch: epic/I4-leads
     base: epic/I3-snapshot
+  - epic: I5
+    branch: epic/I5-seo
+    base: epic/I4-leads
 last_merged:
   epic: H4
   pr: 32
@@ -70,4 +73,4 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Stack: H5 #33 → I1 #34 → I2 #35 → I3 #36 → I4. I4 extends verify:leads (honeypot, rate limit, validation, atomic spool).
+  Stack merge #33→#37→I5. I5: legacy no redirect chains, canonical/H1, sitemap dedupe.
