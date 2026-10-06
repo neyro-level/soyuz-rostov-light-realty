@@ -3,6 +3,9 @@ import { dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const packageJson = JSON.parse(
+  readFileSync(join(root, "package.json"), "utf8"),
+) as { dependencies?: Record<string, string> };
 let failed = 0;
 
 function check(name: string, ok: boolean, detail = "") {
@@ -26,6 +29,51 @@ const requiredComponents = [
   "gallery.tsx",
   "lead-form.tsx",
 ];
+
+const shadcnPrimitives = [
+  "button.tsx",
+  "input.tsx",
+  "label.tsx",
+  "checkbox.tsx",
+  "card.tsx",
+  "badge.tsx",
+  "sheet.tsx",
+  "dialog.tsx",
+  "accordion.tsx",
+  "navigation-menu.tsx",
+  "breadcrumb.tsx",
+  "skeleton.tsx",
+  "separator.tsx",
+  "dropdown-menu.tsx",
+];
+for (const file of shadcnPrimitives) {
+  const full = join(root, "src/ui/primitives", file);
+  try {
+    statSync(full);
+    check(`primitive:${file}`, true);
+  } catch {
+    check(`primitive:${file}`, false, "missing");
+  }
+}
+const componentsJson = JSON.parse(
+  readFileSync(join(root, "components.json"), "utf8"),
+) as { aliases?: { ui?: string } };
+check(
+  "components-json-ui-alias",
+  componentsJson.aliases?.ui === "@/ui/primitives",
+);
+check(
+  "dep-lucide-react",
+  Boolean(packageJson.dependencies?.["lucide-react"]),
+);
+check(
+  "dep-radix-ui",
+  Boolean(packageJson.dependencies?.["radix-ui"]),
+);
+check(
+  "dep-cva",
+  Boolean(packageJson.dependencies?.["class-variance-authority"]),
+);
 
 for (const file of requiredComponents) {
   const full = join(root, "src/platform/ui", file);
