@@ -23,7 +23,7 @@ import {
   prepareStaging,
 } from "../src/platform/snapshot/sync";
 import { TrustSet } from "../src/platform/snapshot/trust";
-import { canonicalManifestPayload } from "../src/platform/snapshot/verify";
+import { verifyCandidate } from "../src/platform/snapshot/verify";
 
 const PROJECT_ID = "lite-demo";
 let failed = 0;
@@ -76,6 +76,8 @@ function writeCandidate(input: {
   inventory?: unknown[];
   projectId?: string;
   schemaMajor?: number;
+  schemaPatch?: number;
+  pretty?: boolean;
   omitKind?: string;
   corruptHash?: boolean;
   corruptBytes?: boolean;
@@ -110,6 +112,9 @@ function writeCandidate(input: {
   const unsigned = {
     schemaMajor: input.schemaMajor ?? 3,
     schemaMinor: 1,
+    ...(input.schemaPatch === undefined
+      ? {}
+      : { schemaPatch: input.schemaPatch }),
     projectId: input.projectId ?? PROJECT_ID,
     publishSequence: input.sequence,
     generatedAt: "2026-10-03T00:00:00Z",
@@ -118,18 +123,19 @@ function writeCandidate(input: {
     sourceRevisions: ["src-1"],
     files,
     keyId: input.keyId,
-    signature: "",
   };
-  const signature = sign(
-    null,
-    canonicalManifestPayload(unsigned),
-    input.privateKey,
+  const manifestBytes = Buffer.from(
+    input.pretty
+      ? `${JSON.stringify(unsigned, null, 2)}\n`
+      : JSON.stringify(unsigned),
+    "utf8",
   );
+  const signature = sign(null, manifestBytes, input.privateKey);
   if (input.corruptSignature) {
     signature[0] = signature[0] ^ 0xff;
   }
-  unsigned.signature = signature.toString("base64");
-  writeFileSync(join(dir, "manifest.json"), JSON.stringify(unsigned));
+  writeFileSync(join(dir, "manifest.json"), manifestBytes);
+  writeFileSync(join(dir, "manifest.sig"), signature);
   return dir;
 }
 
@@ -406,6 +412,65 @@ check(
   stale.status === "activated",
   stale.status === "rejected" ? stale.reason : "",
 );
+
+const prettyDir = writeCandidate({
+  sequence: 99,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+  pretty: true,
+  schemaPatch: 0,
+});
+try {
+  const pretty = verifyCandidate({
+    candidateDir: prettyDir,
+    trust,
+    expectedProjectId: PROJECT_ID,
+  });
+  check(
+    "detached-utf8-bytes-no-reserialize",
+    pretty.manifest.schemaPatch === 0,
+  );
+} catch (error) {
+  check(
+    "detached-utf8-bytes-no-reserialize",
+    false,
+    error instanceof Error ? error.message : "",
+  );
+}
+
+const compactReplay = writeCandidate({
+  sequence: 100,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+  pretty: true,
+});
+const prettyBytes = readFileSync(join(compactReplay, "manifest.json"));
+const compactBytes = Buffer.from(
+  JSON.stringify(JSON.parse(prettyBytes.toString("utf8"))),
+  "utf8",
+);
+writeFileSync(
+  join(compactReplay, "manifest.sig"),
+  sign(null, compactBytes, trusted.privateKey),
+);
+try {
+  verifyCandidate({
+    candidateDir: compactReplay,
+    trust,
+    expectedProjectId: PROJECT_ID,
+  });
+  check("reserialize-payload-reject", false);
+} catch {
+  check("reserialize-payload-reject", true);
+}
+
+const missingSig = writeCandidate({
+  sequence: 101,
+  keyId: "trusted",
+  privateKey: trusted.privateKey,
+});
+rmSync(join(missingSig, "manifest.sig"), { force: true });
+check("missing-detached-sig-reject", apply(missingSig).status === "rejected");
 
 const fixtureDir = join(process.cwd(), "fixtures", "fixture-sz-rostov");
 const fixtureTrust = JSON.parse(

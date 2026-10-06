@@ -3,7 +3,6 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { REQUIRED_DATASET_KINDS } from "../src/platform/snapshot/constants";
-import { canonicalManifestPayload } from "../src/platform/snapshot/verify";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "fixtures", "fixture-sz-rostov");
@@ -155,7 +154,6 @@ const unsigned = {
   sourceRevisions: ["local-fixture"],
   files,
   keyId: KEY_ID,
-  signature: "",
 };
 
 const privateKey = createPrivateKey({
@@ -163,13 +161,12 @@ const privateKey = createPrivateKey({
   format: "der",
   type: "pkcs8",
 });
-unsigned.signature = sign(
-  null,
-  canonicalManifestPayload(unsigned),
-  privateKey,
-).toString("base64");
-
-writeJson("manifest.json", unsigned);
+const manifestBytes = Buffer.from(`${JSON.stringify(unsigned)}\n`, "utf8");
+writeFileSync(join(outDir, "manifest.json"), manifestBytes);
+writeFileSync(
+  join(outDir, "manifest.sig"),
+  sign(null, manifestBytes, privateKey),
+);
 writeJson("trust.json", {
   keyId: KEY_ID,
   publicKeySpkiBase64: PUBLIC_SPKI_B64,

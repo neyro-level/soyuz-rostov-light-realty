@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import {
   FORBIDDEN_PUBLIC_FIELDS,
@@ -18,20 +18,32 @@ export type SnapshotIssue = {
   message: string;
 };
 
-export function canonicalManifestPayload(manifest: SnapshotManifest): Buffer {
-  const signed = {
-    schemaMajor: manifest.schemaMajor,
-    schemaMinor: manifest.schemaMinor,
-    projectId: manifest.projectId,
-    publishSequence: manifest.publishSequence,
-    generatedAt: manifest.generatedAt,
-    publishedAt: manifest.publishedAt,
-    catalogRevision: manifest.catalogRevision,
-    sourceRevisions: manifest.sourceRevisions,
-    files: manifest.files,
-    keyId: manifest.keyId,
-  };
-  return Buffer.from(JSON.stringify(signed), "utf8");
+function readDetachedManifest(candidateDir: string): {
+  bytes: Buffer;
+  keyId: string;
+  parsed: unknown;
+} {
+  const manifestPath = join(candidateDir, "manifest.json");
+  let bytes: Buffer;
+  try {
+    bytes = readFileSync(manifestPath);
+  } catch {
+    throw new Error("hard schema/envelope error");
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(bytes.toString("utf8"));
+  } catch {
+    throw new Error("hard schema/envelope error");
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("hard schema/envelope error");
+  }
+  const keyId = (parsed as { keyId?: unknown }).keyId;
+  if (typeof keyId !== "string" || keyId.length === 0) {
+    throw new Error("hard schema/envelope error");
+  }
+  return { bytes, keyId, parsed };
 }
 
 function sha256(bytes: Buffer): string {
@@ -99,14 +111,21 @@ export function verifyCandidate(input: {
   expectedProjectId: string;
   currentSequence?: number;
 }): { manifest: SnapshotManifest; warnings: SnapshotIssue[] } {
-  const manifestPath = join(input.candidateDir, "manifest.json");
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(readFileSync(manifestPath, "utf8"));
-  } catch {
-    throw new Error("hard schema/envelope error");
+  const envelope = readDetachedManifest(input.candidateDir);
+  const signaturePath = join(input.candidateDir, "manifest.sig");
+  if (!existsSync(signaturePath)) {
+    throw new Error("invalid signature");
   }
-  const manifest = parseSnapshotManifest(parsed);
+  const signature = readFileSync(signaturePath);
+  const ok = input.trust.verifySignature(
+    envelope.keyId,
+    envelope.bytes,
+    signature,
+  );
+  if (!ok) {
+    throw new Error("invalid signature");
+  }
+  const manifest = parseSnapshotManifest(envelope.parsed);
   if (manifest.projectId !== input.expectedProjectId) {
     throw new Error("wrong projectId");
   }
@@ -115,15 +134,6 @@ export function verifyCandidate(input: {
     manifest.publishSequence <= input.currentSequence
   ) {
     throw new Error("lower/equal sequence");
-  }
-  const signature = Buffer.from(manifest.signature, "base64");
-  const ok = input.trust.verifySignature(
-    manifest.keyId,
-    canonicalManifestPayload(manifest),
-    signature,
-  );
-  if (!ok) {
-    throw new Error("invalid signature");
   }
   const kinds = new Set(manifest.files.map((file) => file.kind));
   for (const kind of REQUIRED_DATASET_KINDS) {

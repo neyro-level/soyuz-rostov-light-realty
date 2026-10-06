@@ -204,6 +204,7 @@ export const SnapshotFileSchema = z.object({
 export const SnapshotManifestSchema = z.object({
   schemaMajor: z.number().int().nonnegative(),
   schemaMinor: z.number().int().nonnegative(),
+  schemaPatch: z.number().int().nonnegative().optional(),
   projectId: z.string().min(1),
   publishSequence: z.number().int().nonnegative(),
   generatedAt: z.string().min(1),
@@ -212,7 +213,6 @@ export const SnapshotManifestSchema = z.object({
   sourceRevisions: z.array(z.string()).default([]),
   files: z.array(SnapshotFileSchema),
   keyId: z.string().min(1),
-  signature: z.string().min(1),
 });
 
 export type PublicInventoryDto = z.infer<typeof PublicInventoryDtoSchema>;

@@ -108,7 +108,6 @@ try {
       },
     ],
     keyId: "key-1",
-    signature: "sig",
   });
   check("manifest-unknown-major-throws", false);
 } catch {
@@ -118,6 +117,7 @@ try {
 parseSnapshotManifest({
   schemaMajor: 3,
   schemaMinor: 1,
+  schemaPatch: 0,
   projectId: "demo",
   publishSequence: 1,
   generatedAt: "2026-10-03T00:00:00Z",
@@ -134,7 +134,6 @@ parseSnapshotManifest({
     },
   ],
   keyId: "key-1",
-  signature: "sig",
 });
 check("supported-manifest-accepted", true);
 
