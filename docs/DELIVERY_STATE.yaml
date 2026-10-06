@@ -26,9 +26,13 @@ closed_epics:
   - D1
   - D2
 pending_epics:
+  - epic: G1
+    pr: 26
+    sha: 84b4129
+    base: epic/F3-footer
   - epic: F3
     pr: 25
-    sha: 93ad766
+    sha: c738269
     base: epic/F1-header
   - epic: F1
     pr: 24
@@ -58,5 +62,5 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  F3 footer on epic/F3-footer (stack on F1 #24). Open PRs:
-  D3 #20, E1 #21, E2 #22, E3 #23, F1 #24, F3 #25. Production owner-only.
+  G1 home on epic/G1-home (stack on F3 #25). Open PRs:
+  D3–E3 #20–23, F1 #24, F3 #25, G1 #26. Production owner-only.
