@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export function PageBlock({
+export function PageShell({
   heading,
   body,
   children,
@@ -17,3 +17,6 @@ export function PageBlock({
     </main>
   );
 }
+
+/** @deprecated Use PageShell */
+export const PageBlock = PageShell;
