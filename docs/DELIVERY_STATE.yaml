@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: I3
+current_epic: I4
 next_ready:
-  - I4
-current_branch: epic/I3-snapshot
+  - I5
+current_branch: epic/I4-leads
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -53,6 +53,9 @@ pending_epics:
     pr: 36
     branch: epic/I3-snapshot
     base: epic/I2-ui-core
+  - epic: I4
+    branch: epic/I4-leads
+    base: epic/I3-snapshot
 last_merged:
   epic: H4
   pr: 32
@@ -66,4 +69,4 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Stack merge order: H5 #33 → I1 #34 → I2 #35 → I3. I3 adds snapshot verifier cases (minor, relation, atomic switch).
+  Stack: H5 #33 → I1 #34 → I2 #35 → I3 #36 → I4. I4 extends verify:leads (honeypot, rate limit, validation, atomic spool).
