@@ -1,4 +1,7 @@
-export const site = {
+import { site as altSite } from "../../fixtures/fixture-alt/project/site.config";
+import { isAltFixture } from "./data.config";
+
+export const primarySite = {
   brand: "Союз Застройщиков",
   legalName: "Индивидуальный предприниматель Мормуль Екатерина Владимировна",
   inn: "940400159853",
@@ -11,3 +14,5 @@ export const site = {
   hoursSchema: "Mo-Su 09:00-18:00",
   siteUrl: "https://souz-home.ru",
 } as const;
+
+export const site = isAltFixture() ? altSite : primarySite;

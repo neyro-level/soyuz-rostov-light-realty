@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: I5
+current_epic: J1
 next_ready:
-  - I6
-current_branch: epic/I5-seo
+  - J2
+current_branch: epic/J1-fixtures
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -61,6 +61,10 @@ pending_epics:
     pr: 38
     branch: epic/I5-seo
     base: epic/I4-leads
+  - epic: I6
+    pr: 39
+    branch: epic/I6-e2e
+    base: epic/I5-seo
 last_merged:
   epic: H4
   pr: 32
@@ -74,4 +78,4 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Stack merge #33→#37→I5. I5: legacy no redirect chains, canonical/H1, sitemap dedupe.
+  PHASE I stack #33–#39 (I6 PR #39). Next: J1 dual-fixture template:check on epic/J1-fixtures.

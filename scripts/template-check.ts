@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadFixtureInventory } from "../src/platform/catalog/local";
@@ -13,9 +13,25 @@ import { verifyCandidate } from "../src/platform/snapshot/verify";
 import { data } from "../src/project/data.config";
 import { features as primaryFeatures } from "../src/project/features.config";
 import { grammar as primaryGrammar } from "../src/project/grammar.config";
+import { site as primarySite } from "../src/project/site.config";
+import { site as altSite } from "../fixtures/fixture-alt/project/site.config";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const altDir = "fixtures/fixture-alt";
+function resolvePnpmCmd(): string {
+  if (process.env.npm_execpath && existsSync(process.env.npm_execpath)) {
+    return process.env.npm_execpath;
+  }
+  if (process.platform === "win32" && process.env.APPDATA) {
+    const winPnpm = join(process.env.APPDATA, "npm", "pnpm.cmd");
+    if (existsSync(winPnpm)) {
+      return winPnpm;
+    }
+  }
+  return "pnpm";
+}
+
+const pnpmCmd = resolvePnpmCmd();
 let failed = 0;
 
 function check(name: string, ok: boolean, detail = "") {
@@ -41,10 +57,10 @@ function loadTrust(fixtureDir: string) {
 
 function runChecks(label: string, extraEnv: Record<string, string>) {
   const commands: Array<{ cmd: string; args: string[] }> = [
-    { cmd: "pnpm", args: ["build"] },
-    { cmd: "pnpm", args: ["verify:seo-contracts"] },
-    { cmd: "pnpm", args: ["verify:layers"] },
-    { cmd: "pnpm", args: ["verify:routes"] },
+    { cmd: pnpmCmd, args: ["build"] },
+    { cmd: pnpmCmd, args: ["verify:seo-contracts"] },
+    { cmd: pnpmCmd, args: ["verify:layers"] },
+    { cmd: pnpmCmd, args: ["verify:routes"] },
   ];
   for (const { cmd, args } of commands) {
     const result = spawnSync(cmd, args, {
@@ -97,10 +113,37 @@ check(
   overlay.features.vtorichka !== primaryFeatures.vtorichka &&
     overlay.features.yurist !== primaryFeatures.yurist,
 );
+const primaryFixtureDir = "fixtures/fixture-sz-rostov";
+const primaryContacts = JSON.parse(
+  readFileSync(join(root, primaryFixtureDir, "contacts.json"), "utf8"),
+) as Array<{ phone: string; email: string }>;
+const altContacts = JSON.parse(
+  readFileSync(join(root, altDir, "contacts.json"), "utf8"),
+) as Array<{ phone: string; email: string }>;
+check("alt-brand-differs", altSite.brand !== primarySite.brand);
+check(
+  "alt-contacts-differs",
+  altContacts[0]?.phone !== primaryContacts[0]?.phone ||
+    altContacts[0]?.email !== primaryContacts[0]?.email,
+);
+const primaryRouteKeys = new Set(
+  primaryGrammar.routes.map((route) => route.pageKey),
+);
+const altRouteKeys = new Set(overlay.routes.map((route) => route.pageKey));
+const routesDiffer =
+  primaryRouteKeys.size !== altRouteKeys.size ||
+  [...primaryRouteKeys].some((key) => !altRouteKeys.has(key));
+check("alt-routes-differs", routesDiffer);
 check(
   "platform-untouched-by-alt-geo",
   !readFileSync(join(root, "src/platform/grammar/engine.ts"), "utf8").includes(
     overlay.geo,
+  ),
+);
+check(
+  "platform-untouched-by-alt-brand",
+  !readFileSync(join(root, "src/platform/grammar/engine.ts"), "utf8").includes(
+    altSite.brand,
   ),
 );
 

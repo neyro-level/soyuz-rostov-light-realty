@@ -1,6 +1,8 @@
 import type { LegacyRule } from "@/platform/seo";
+import { legacyRules as altLegacyRules } from "../../../fixtures/fixture-alt/project/legacy.rules";
+import { isAltFixture } from "../data.config";
 
-export const legacyRules: LegacyRule[] = [
+const primaryLegacyRules: LegacyRule[] = [
   {
     from: "/novostroyki-rostova/",
     status: 308,
@@ -15,3 +17,5 @@ export const legacyRules: LegacyRule[] = [
   { from: "/stroitelstvo-domov/", status: 410, match: "exact" },
   { from: "/otzyvy/", status: 410, match: "exact" },
 ];
+
+export const legacyRules = isAltFixture() ? altLegacyRules : primaryLegacyRules;

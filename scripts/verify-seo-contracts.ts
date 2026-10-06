@@ -158,11 +158,13 @@ check("d12-breadcrumb-clean", jsonLdHasForbiddenType(crumbs) === false);
 
 const gone = matchLegacy("/blog/old-post/", legacyRules);
 check("legacy-410-blog", gone?.status === 410);
-const moved = matchLegacy("/novostroyki-rostova/", legacyRules);
+const sample308 = legacyRules.find((rule) => rule.status === 308);
+const moved = sample308 ? matchLegacy(sample308.from, legacyRules) : null;
 const novostroykiHref = buildHref(grammar, features, "catNovostroyki");
 check(
   "legacy-308-novostroyki",
-  moved?.status === 308 &&
+  Boolean(sample308) &&
+    moved?.status === 308 &&
     Boolean(novostroykiHref) &&
     legacyLocation(moved, grammar, features) === novostroykiHref,
 );

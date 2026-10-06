@@ -1,1 +1,10 @@
-[{"projectId":"fixture-sz-rostov","phone":"+79885552027","email":"office@example.com","addressPublic":"переулок Доломановский, 19","hours":"Mo-Su 09:00-18:00","updatedAt":"2026-09-01T00:00:00Z"}]
+[
+  {
+    "projectId": "fixture-alt",
+    "phone": "+78612000000",
+    "email": "hello@kuban-dom.example",
+    "addressPublic": "ул. Красная, 1",
+    "hours": "Mo-Fr 10:00-19:00",
+    "updatedAt": "2026-09-01T00:00:00Z"
+  }
+]
