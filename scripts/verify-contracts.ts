@@ -29,7 +29,7 @@ function check(name: string, ok: boolean, detail = "") {
 }
 
 const hubContract = readFileSync(
-  join(root, "docs/standards/AMS_DATA_HUB_CONTRACT.md"),
+  join(root, "docs/archive/AMS_DATA_HUB_CONTRACT.md"),
   "utf8",
 );
 check(
