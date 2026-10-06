@@ -40,6 +40,15 @@ check(
   "garage-box-accepted",
   PropertyTypeSchema.safeParse("GARAGE_BOX").success,
 );
+check(
+  "commercial-type-accepted",
+  PropertyTypeSchema.safeParse("COMMERCIAL").success,
+);
+check(
+  "new-build-unit-type-accepted",
+  PropertyTypeSchema.safeParse("NEW_BUILD_UNIT").success,
+);
+check("other-type-accepted", PropertyTypeSchema.safeParse("OTHER").success);
 check("forked-garage-enum-absent", !propertyTypes.includes("GARAGE" as never));
 check("rent-long-accepted", transactionTypes.includes("RENT_LONG"));
 check("rent-short-accepted", transactionTypes.includes("RENT_SHORT"));
@@ -52,7 +61,7 @@ const inventory = parsePublicInventoryDto({
   dealKind: "PRIMARY_SALE",
   price: { amount: "12500000", currency: "RUB", scale: 2 },
   addressPublic: "Public street",
-  locationPrecision: "STREET",
+  geoPrecision: "street",
   facts: { lotAreaM2: 640 },
   media: [],
   status: "ACTIVE",

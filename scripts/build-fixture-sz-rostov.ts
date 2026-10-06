@@ -55,6 +55,8 @@ mkdirSync(join(outDir, "keys"), { recursive: true });
 
 const geo = DISTRICTS.map((name, index) => ({
   uid: `geo-${index + 1}`,
+  slug: `geo-${index + 1}`,
+  slugHistory: [],
   name,
 }));
 
@@ -66,6 +68,8 @@ const developers = Array.from({ length: 20 }, (_, index) => ({
 const developments = developers.map((developer, index) => ({
   uid: `dvl-${index + 1}`,
   publicUrlId: publicUrlId(1000 + index),
+  slug: `zhk-${index + 1}`,
+  slugHistory: [],
   name: `Жилой комплекс ${index + 1}`,
   developerUid: developer.uid,
   checkedAt: "2026-09-01T00:00:00Z",
@@ -74,6 +78,7 @@ const developments = developers.map((developer, index) => ({
 const agents = Array.from({ length: 8 }, (_, index) => ({
   uid: `agt-${index + 1}`,
   slug: `agent-${index + 1}`,
+  slugHistory: [],
   displayName: `Агент ${index + 1}`,
   listingPresenceStatus: "HAS_ACTIVE_LISTINGS",
 }));
@@ -104,7 +109,10 @@ const inventory = Array.from({ length: 300 }, (_, index) => {
       scale: 2,
     },
     addressPublic: `${district.name}, дом ${1 + (index % 40)}`,
-    locationPrecision: "STREET",
+    geoPrecision: "street",
+    slug: `listing-${index + 1}`,
+    slugHistory: [],
+    lifecycle: "active",
     facts: {
       rooms: 1 + (index % 4),
       floor: 1 + (index % 16),

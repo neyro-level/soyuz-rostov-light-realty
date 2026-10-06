@@ -9,6 +9,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { env } from "../src/platform/env";
+import { PropertyTypeSchema } from "../src/platform/hub/contract";
 import { REQUIRED_DATASET_KINDS } from "../src/platform/snapshot/constants";
 import {
   acquireLock,
@@ -41,16 +42,27 @@ function sha256(bytes: Buffer): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
+function publicUrlIdFromIndex(index: number): string {
+  const alphabet = "abcdefghijklmnopqrstuvwxyz234567";
+  let value = index + 1;
+  let out = "";
+  for (let i = 0; i < 6; i += 1) {
+    out = alphabet[value % alphabet.length] + out;
+    value = Math.floor(value / alphabet.length);
+  }
+  return out;
+}
+
 function listing(index: number, extra: Record<string, unknown> = {}) {
-  const token = "234567abc"[index] ?? "a";
   return {
     uid: `uid-${index}`,
-    publicUrlId: `abcde${token}`,
+    publicUrlId: publicUrlIdFromIndex(index),
     propertyType: "APARTMENT",
     transactionType: "SALE",
     dealKind: "SECONDARY_SALE",
     addressPublic: "Public street",
-    locationPrecision: "STREET",
+    geoPrecision: "street",
+    slugHistory: [],
     facts: { rooms: 1 },
     media: [],
     status: "ACTIVE",
@@ -327,7 +339,7 @@ check(
   ).status === "rejected",
 );
 
-const underThreshold = Array.from({ length: 10 }, (_, index) =>
+const underThreshold = Array.from({ length: 200 }, (_, index) =>
   index === 0 ? { broken: true } : listing(index),
 );
 const warned = apply(
@@ -344,8 +356,8 @@ check(
   warned.status === "rejected" ? warned.reason : "",
 );
 
-const overThreshold = Array.from({ length: 10 }, (_, index) =>
-  index < 3 ? { broken: true } : listing(index),
+const overThreshold = Array.from({ length: 200 }, (_, index) =>
+  index < 2 ? { broken: true } : listing(index),
 );
 check(
   "quarantine-over-threshold-reject",
@@ -355,6 +367,28 @@ check(
       keyId: "trusted",
       privateKey: trusted.privateKey,
       inventory: overThreshold,
+    }),
+  ).status === "rejected",
+);
+
+check(
+  "core-property-types-accepted",
+  PropertyTypeSchema.safeParse("COMMERCIAL").success &&
+    PropertyTypeSchema.safeParse("NEW_BUILD_UNIT").success &&
+    PropertyTypeSchema.safeParse("OTHER").success,
+);
+
+check(
+  "duplicate-publicUrlId-reject",
+  apply(
+    writeCandidate({
+      sequence: 4,
+      keyId: "trusted",
+      privateKey: trusted.privateKey,
+      inventory: [
+        listing(0),
+        listing(1, { publicUrlId: listing(0).publicUrlId }),
+      ],
     }),
   ).status === "rejected",
 );
