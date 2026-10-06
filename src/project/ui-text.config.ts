@@ -17,6 +17,16 @@ export const uiText = {
     prompt: "Сбор статистики только после согласия.",
   },
   notFoundFallback: "Страница не найдена",
+  catalog: {
+    gateFailTitle: "Раздел на проверке",
+    gateFailMessage:
+      "Каталог временно недоступен для индексации. Данные обновляются.",
+    emptyDevelopmentsTitle: "Пока нет новостроек",
+    emptyDevelopmentsMessage:
+      "Новые объекты появятся после обновления каталога.",
+    emptyListingsTitle: "Пока нет предложений",
+    emptyListingsMessage: "Объекты появятся после обновления каталога.",
+  },
   innLabel: "ИНН",
 };
 

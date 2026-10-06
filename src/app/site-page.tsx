@@ -203,8 +203,8 @@ async function CatalogSlot({
   if (isH3CatalogEntryPageKey(pageKey) && gate === "FAIL") {
     return (
       <EmptyState
-        message="Каталог временно недоступен для индексации. Данные обновляются."
-        title="Раздел на проверке"
+        message={uiText.catalog.gateFailMessage}
+        title={uiText.catalog.gateFailTitle}
       />
     );
   }
@@ -255,8 +255,8 @@ async function CatalogSlot({
       return (
         <div data-testid="catalog-grid">
           <EmptyState
-            message="Новые объекты появятся после обновления каталога."
-            title="Пока нет новостроек"
+            message={uiText.catalog.emptyDevelopmentsMessage}
+            title={uiText.catalog.emptyDevelopmentsTitle}
           />
         </div>
       );
@@ -294,8 +294,8 @@ async function CatalogSlot({
     return (
       <div data-testid="catalog-grid">
         <EmptyState
-          message="Объекты появятся после обновления каталога."
-          title="Пока нет предложений"
+          message={uiText.catalog.emptyListingsMessage}
+          title={uiText.catalog.emptyListingsTitle}
         />
       </div>
     );
