@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: H2
+current_epic: H3
 next_ready:
-  - H3
-current_branch: epic/H2-static-pages
+  - H4
+current_branch: epic/H3-catalog
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -33,24 +33,23 @@ closed_epics:
   - F3
   - G1
   - H1
+  - H2
 pending_epics:
-  - epic: H2
-    pr: 30
-    sha: b654e93
-    branch: epic/H2-static-pages
+  - epic: H3
+    branch: epic/H3-catalog
     base: main
 last_merged:
-  epic: H1
-  pr: 29
-  sha: eeda4ea
+  epic: H2
+  pr: 30
+  sha: eaeae58
 merge_wave:
   completed: "2026-10-06"
-  prs: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+  prs: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
 predecessor:
   plan_id: SZ-ROSTOV-LITE-MAIN
   plan_version: v1.4
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  H2: five static routes on StarterPageShell + NOINDEX_AUTO e2e smoke.
+  H3: catalog entry routes — developments vs properties, Content Gate empty states, e2e smoke.
   pr-light/lint red on main. Production owner-only.
