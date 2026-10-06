@@ -18,6 +18,10 @@ import {
   loadRegistry,
   resolveAppMetadata,
 } from "@/project/runtime";
+import {
+  isDevelopmentCatalogEntry,
+  isH3CatalogEntryPageKey,
+} from "@/project/catalog-entry.config";
 import { navigation } from "@/project/navigation.config";
 import {
   type H2StaticPageKey,
@@ -25,6 +29,7 @@ import {
   isH2StaticPageKey,
 } from "@/project/starter-pages.config";
 import { HomePage } from "@/ui/sections/home-page";
+import { EmptyState } from "@/ui/shared/empty-state";
 import { LeadDialog } from "@/ui/shared/lead-dialog";
 import { uiText } from "@/project/ui-text.config";
 
@@ -128,16 +133,17 @@ export async function SitePage({
   const starterContent = isH2StaticPageKey(pageKey) ? (
     <StaticStarterSlot leadForm={leadForm} pageKey={pageKey} />
   ) : (
-    <CatalogSlot hidePrice={contextResolved.hidePrice} pageKey={pageKey} />
+    <CatalogSlot
+      gate={contextResolved.gate}
+      hidePrice={contextResolved.hidePrice}
+      pageKey={pageKey}
+    />
   );
   const hasStarterContent =
     isH2StaticPageKey(pageKey) ||
+    isH3CatalogEntryPageKey(pageKey) ||
     pageKey === "developers" ||
-    pageKey === "team" ||
-    pageKey === "catNovostroyki" ||
-    pageKey === "catKvartiry" ||
-    pageKey === "facetVtorichka" ||
-    pageKey.startsWith("dist");
+    pageKey === "team";
 
   return (
     <StarterPageShell
@@ -178,10 +184,20 @@ function StaticStarterSlot({
 async function CatalogSlot({
   pageKey,
   hidePrice,
+  gate,
 }: {
   pageKey: string;
   hidePrice: boolean;
+  gate: "PASS" | "FAIL";
 }) {
+  if (isH3CatalogEntryPageKey(pageKey) && gate === "FAIL") {
+    return (
+      <EmptyState
+        message="Каталог временно недоступен для индексации. Данные обновляются."
+        title="Раздел на проверке"
+      />
+    );
+  }
   const repo = getRealtyRepository();
   if (pageKey === "developers") {
     const developers = await repo.listDevelopers();
@@ -223,19 +239,60 @@ async function CatalogSlot({
       </CatalogGrid>
     );
   }
+  if (isDevelopmentCatalogEntry(pageKey)) {
+    const developments = await repo.listDevelopments();
+    if (developments.length === 0) {
+      return (
+        <div data-testid="catalog-grid">
+          <EmptyState
+            message="Новые объекты появятся после обновления каталога."
+            title="Пока нет новостроек"
+          />
+        </div>
+      );
+    }
+    return (
+      <div data-testid="catalog-grid">
+        <CatalogGrid>
+        {developments.map((item) => {
+          const href = buildHref(grammar, features, "development", {
+            slug: item.slug,
+          });
+          return href ? (
+            <DevelopmentCard
+              href={href}
+              key={item.uid}
+              meta={item.slug}
+              title={item.name}
+            />
+          ) : null;
+        })}
+        </CatalogGrid>
+      </div>
+    );
+  }
   if (
-    pageKey !== "catNovostroyki" &&
-    pageKey !== "catKvartiry" &&
-    pageKey !== "facetVtorichka" &&
-    !pageKey.startsWith("dist")
+    !isH3CatalogEntryPageKey(pageKey) ||
+    (pageKey !== "catKvartiry" && pageKey !== "facetVtorichka")
   ) {
     return null;
   }
   const listings = await repo.listProperties(
     pageKey === "facetVtorichka" ? { dealKind: "SECONDARY_SALE" } : undefined,
   );
+  if (listings.length === 0) {
+    return (
+      <div data-testid="catalog-grid">
+        <EmptyState
+          message="Объекты появятся после обновления каталога."
+          title="Пока нет предложений"
+        />
+      </div>
+    );
+  }
   return (
-    <CatalogGrid>
+    <div data-testid="catalog-grid">
+      <CatalogGrid>
       {listings.map((item) => {
         const href = buildHref(
           grammar,
@@ -259,6 +316,7 @@ async function CatalogSlot({
           />
         ) : null;
       })}
-    </CatalogGrid>
+      </CatalogGrid>
+    </div>
   );
 }
