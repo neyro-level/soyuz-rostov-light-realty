@@ -43,6 +43,6 @@ pnpm test:e2e
 
 1. Зафиксировать exact SHA merge commit.
 2. Annotated tag: `REFERENCE BASELINE — TEMPLATE FREEZE`.
-3. Обновить `docs/DELIVERY_STATE.yaml`: `status: COMPLETE`, `last_merged` epic K1, pr 43.
+3. Обновить `docs/DELIVERY_STATE.yaml`: `status: COMPLETE`, `last_merged` epic K1, pr **44** (one-shot) или **43** (пошагово).
 
 См. также `docs/TEMPLATE_FREEZE_GATE.md`.
