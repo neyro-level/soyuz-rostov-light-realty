@@ -36,6 +36,8 @@ closed_epics:
   - H2
 pending_epics:
   - epic: H3
+    pr: 31
+    sha: 2bfe9aa
     branch: epic/H3-catalog
     base: main
 last_merged:
