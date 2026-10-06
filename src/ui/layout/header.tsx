@@ -1,17 +1,9 @@
 "use client";
 
-import { MenuIcon } from "lucide-react";
 import type { NavGroup, NavItem } from "@/platform/nav";
-import { LeadForm } from "@/ui/domain/lead-form";
+import { MobileNavigation } from "@/ui/layout/mobile-navigation";
 import { Container } from "@/ui/shared/container";
-import { Button } from "@/ui/primitives/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/ui/primitives/dialog";
+import { LeadDialog } from "@/ui/shared/lead-dialog";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -20,13 +12,6 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/ui/primitives/navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/ui/primitives/sheet";
 export type { NavGroup, NavItem } from "@/platform/nav";
 
 export type LeadFormConfig = {
@@ -100,7 +85,7 @@ export function Header({
           <DesktopNav groups={groups} />
         </div>
         <div className="flex justify-end border-t border-border py-[var(--sr-space-sm)] md:hidden">
-          <MobileNav
+          <MobileNavigation
             brand={brand}
             ctaLabel={ctaLabel}
             groups={groups}
@@ -155,88 +140,3 @@ function DesktopNav({ groups }: { groups: NavGroup[] }) {
   );
 }
 
-function LeadDialog({
-  ctaLabel,
-  leadForm,
-}: {
-  ctaLabel: string;
-  leadForm: LeadFormConfig;
-}) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button className="min-h-11" type="button">{ctaLabel}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{ctaLabel}</DialogTitle>
-        </DialogHeader>
-        <LeadForm {...leadForm} />
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function MobileNav({
-  groups,
-  brand,
-  ctaLabel,
-  leadForm,
-  phoneDisplay,
-  phoneTel,
-}: {
-  groups: NavGroup[];
-  brand: string;
-  ctaLabel: string;
-  leadForm: LeadFormConfig;
-  phoneDisplay?: string;
-  phoneTel?: string;
-}) {
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          aria-label="Открыть меню"
-          className="min-h-11 min-w-11"
-          size="icon"
-          type="button"
-          variant="outline"
-        >
-          <MenuIcon aria-hidden />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="right">
-        <SheetHeader>
-          <SheetTitle>{brand}</SheetTitle>
-        </SheetHeader>
-        <nav aria-label="Mobile" className="flex flex-col gap-[var(--sr-space-lg)]">
-          {groups.map((group) => (
-            <div key={group.title}>
-              <p className="mb-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)]">
-                {group.title}
-              </p>
-              <ul className="flex flex-col gap-[var(--sr-space-sm)]">
-                {group.items.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      className="inline-flex min-h-11 items-center text-[var(--sr-foreground)]"
-                      href={item.href}
-                    >
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {phoneDisplay && phoneTel ? (
-            <a className="min-h-11 text-[var(--sr-foreground)]" href={`tel:${phoneTel}`}>
-              {phoneDisplay}
-            </a>
-          ) : null}
-          <LeadDialog ctaLabel={ctaLabel} leadForm={leadForm} />
-        </nav>
-      </SheetContent>
-    </Sheet>
-  );
-}

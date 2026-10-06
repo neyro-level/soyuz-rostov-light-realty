@@ -5,11 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: G1
+current_epic: F2
 next_ready:
-  - G1-02
-  - F2
-current_branch: epic/G1-home
+  - H1
+current_branch: epic/F2-mobile
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -31,24 +30,23 @@ closed_epics:
   - E3
   - F1
   - F3
+  - G1
 pending_epics:
-  - epic: G1
-    pr: 26
-    sha: ef1a54b
-    note: G1-01 merged; G1-02 follow-up PR pending
+  - epic: F2
+    branch: epic/F2-mobile
+    base: main
 last_merged:
   epic: G1
-  pr: 26
-  sha: ef1a54b
+  pr: 27
+  sha: 1d70011
 merge_wave:
   completed: "2026-10-06"
-  prs: [20, 21, 22, 23, 24, 25, 26]
+  prs: [20, 21, 22, 23, 24, 25, 26, 27]
 predecessor:
   plan_id: SZ-ROSTOV-LITE-MAIN
   plan_version: v1.4
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Merge wave #20–#26 landed on main (force merge; pr-light/lint red).
-  G1-02: reduced-motion, viewport e2e, dialog focus trap — branch epic/G1-home.
-  Next epics: close G1, then F2, H1–H5, I*, J–K. Production owner-only.
+  G1 closed with PR #27 (a11y/responsive). F2: MobileNavigation Sheet module + Playwright.
+  pr-light/lint still red on main. Production owner-only.
