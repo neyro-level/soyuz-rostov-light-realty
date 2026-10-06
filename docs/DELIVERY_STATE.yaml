@@ -58,6 +58,7 @@ pending_epics:
     branch: epic/I4-leads
     base: epic/I3-snapshot
   - epic: I5
+    pr: 38
     branch: epic/I5-seo
     base: epic/I4-leads
 last_merged:
