@@ -102,5 +102,5 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Implementation graph delivered PR_ONLY #33–#43 (head epic/K1-freeze).
-  Merge stack in order; then tag REFERENCE BASELINE on owner merge SHA. No production.
+  Implementation graph PR_ONLY #33–#43. Head epic/K1-freeze: verify:* (except lint) PASS,
+  test:e2e 55 passed, verify:freeze PASS. Lint debt on main unchanged. Merge stack then tag.
