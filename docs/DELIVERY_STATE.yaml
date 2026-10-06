@@ -33,6 +33,8 @@ closed_epics:
   - G1
 pending_epics:
   - epic: F2
+    pr: 28
+    sha: d484dd6
     branch: epic/F2-mobile
     base: main
 last_merged:
