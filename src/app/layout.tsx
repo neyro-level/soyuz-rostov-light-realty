@@ -81,9 +81,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         />
         {children}
         <Footer
+          address={site.address}
+          brand={site.brand}
           columns={footerColumns}
           copyright={copyrightLine(new Date().getFullYear())}
-          legal={legalLine()}
+          email={site.email}
+          homeHref={homeHref}
+          hoursDisplay={site.hoursDisplay}
+          phoneDisplay={site.phoneDisplay}
+          phoneTel={site.phoneTel}
+          requisites={legalLine()}
         />
         <OptInAnalytics
           acceptLabel={uiText.analytics.acceptLabel}

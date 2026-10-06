@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: F1
+current_epic: F3
 next_ready:
-  - F3
-current_branch: epic/F1-header
+  - G1
+current_branch: epic/F3-footer
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
