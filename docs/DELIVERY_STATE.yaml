@@ -5,10 +5,11 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: F1
+current_epic: F3
 next_ready:
-  - F3
-current_branch: epic/F1-header
+  - F2
+  - G1
+current_branch: epic/F3-footer
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -25,9 +26,13 @@ closed_epics:
   - D1
   - D2
 pending_epics:
+  - epic: F3
+    pr: 25
+    sha: 93ad766
+    base: epic/F1-header
   - epic: F1
     pr: 24
-    sha: 3d7ac17
+    sha: 39ee05e
     base: epic/E3-ui
   - epic: D3
     pr: 20
@@ -53,5 +58,5 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  F1 header in progress on epic/F1-header (stacked on E3). Open PRs:
-  D3 #20, E1 #21, E2 #22, E3 #23. Production remains owner-only.
+  F3 footer on epic/F3-footer (stack on F1 #24). Open PRs:
+  D3 #20, E1 #21, E2 #22, E3 #23, F1 #24, F3 #25. Production owner-only.
