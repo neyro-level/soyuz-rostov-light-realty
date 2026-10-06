@@ -101,6 +101,7 @@ function writeCandidate(input: {
   inventory?: unknown[];
   projectId?: string;
   schemaMajor?: number;
+  schemaMinor?: number;
   schemaPatch?: number;
   pretty?: boolean;
   omitKind?: string;
@@ -136,7 +137,7 @@ function writeCandidate(input: {
   }
   const unsigned = {
     schemaMajor: input.schemaMajor ?? 3,
-    schemaMinor: 1,
+    schemaMinor: input.schemaMinor ?? 1,
     ...(input.schemaPatch === undefined
       ? {}
       : { schemaPatch: input.schemaPatch }),
@@ -265,6 +266,18 @@ check(
       keyId: "trusted",
       privateKey: trusted.privateKey,
       schemaMajor: 4,
+    }),
+  ).status === "rejected",
+);
+
+check(
+  "incompatible-minor-reject",
+  apply(
+    writeCandidate({
+      sequence: 2,
+      keyId: "trusted",
+      privateKey: trusted.privateKey,
+      schemaMinor: 0,
     }),
   ).status === "rejected",
 );
@@ -406,7 +419,42 @@ check(
   ).status === "rejected",
 );
 
+check(
+  "broken-relation-reject",
+  apply(
+    writeCandidate({
+      sequence: 5,
+      keyId: "trusted",
+      privateKey: trusted.privateKey,
+      inventory: [listing(0, { developmentUid: "missing-development-uid" })],
+    }),
+  ).status === "rejected",
+);
+
 const store = openSnapshotStore(storeRoot);
+const seqBeforeAtomic = readCurrentManifest(store)?.publishSequence ?? 1;
+const atomicSeq = seqBeforeAtomic + 1;
+const atomicApply = apply(
+  writeCandidate({
+    sequence: atomicSeq,
+    keyId: "trusted",
+    privateKey: trusted.privateKey,
+  }),
+);
+check(
+  "atomic-switch-activates",
+  atomicApply.status === "activated",
+  atomicApply.status === "rejected" ? atomicApply.reason : "",
+);
+check(
+  "atomic-switch-current-pointer",
+  readCurrentManifest(store)?.publishSequence === atomicSeq,
+);
+check(
+  "atomic-switch-prior-revision-kept",
+  existsSync(join(revisionDir(store, seqBeforeAtomic), "manifest.json")),
+);
+
 const seqBeforeCrash = readCurrentManifest(store)?.publishSequence;
 const crashSeq = (seqBeforeCrash ?? 1) + 1;
 const crashDir = writeCandidate({
