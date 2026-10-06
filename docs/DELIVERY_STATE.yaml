@@ -34,6 +34,8 @@ closed_epics:
   - G1
 pending_epics:
   - epic: H1
+    pr: 29
+    sha: dad5500
     branch: epic/H1-starter-shell
     base: main
 last_merged:
