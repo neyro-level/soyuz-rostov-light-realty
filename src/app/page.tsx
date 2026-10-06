@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import { resolvePageMetadata, toNextMetadata } from "@/platform/seo";
-import { loadSnapshot, metadataContext } from "@/project/runtime";
+import { toNextMetadata } from "@/platform/seo";
+import { resolveAppMetadata } from "@/project/runtime";
 import { SitePage } from "./site-page";
 
 export function generateMetadata(): Metadata {
-  const resolved = resolvePageMetadata(
-    "home",
-    {},
-    loadSnapshot(),
-    metadataContext(),
-  );
-  return toNextMetadata(resolved);
+  return toNextMetadata(resolveAppMetadata("home"));
 }
 
 export default function Home() {

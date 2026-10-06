@@ -1,22 +1,15 @@
 import type { Metadata } from "next";
-import { resolvePageMetadata, toNextMetadata } from "@/platform/seo";
+import { toNextMetadata } from "@/platform/seo";
 import { PageBlock } from "@/platform/ui";
-import { loadSnapshot, metadataContext } from "@/project/runtime";
+import { resolveAppMetadata } from "@/project/runtime";
 import { uiText } from "@/project/ui-text.config";
 
 export function generateMetadata(): Metadata {
-  return toNextMetadata(
-    resolvePageMetadata("notFound", {}, loadSnapshot(), metadataContext()),
-  );
+  return toNextMetadata(resolveAppMetadata("notFound"));
 }
 
 export default function NotFound() {
-  const resolved = resolvePageMetadata(
-    "notFound",
-    {},
-    loadSnapshot(),
-    metadataContext(),
-  );
+  const resolved = resolveAppMetadata("notFound");
   return (
     <PageBlock
       body={resolved.description}

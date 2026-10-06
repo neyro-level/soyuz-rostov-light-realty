@@ -16,3 +16,4 @@ export type {
   PropertyListQuery,
   RealtyRepository,
 } from "./repository";
+export { SnapshotRepository } from "./snapshot-repository";

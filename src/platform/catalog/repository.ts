@@ -14,6 +14,7 @@ export type PropertyListQuery = {
   geoSlug?: string;
   developmentUid?: string;
   developerUid?: string;
+  dealKind?: string;
 };
 
 export type DevelopmentListQuery = {

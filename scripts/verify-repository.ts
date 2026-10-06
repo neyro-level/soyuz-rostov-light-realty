@@ -56,6 +56,39 @@ for (const name of dtos) {
   check(`dto-${name}`, dtoSource.includes(`export type ${name}`));
 }
 
+const snapshotRepo = readFileSync(
+  join(root, "src/platform/catalog/snapshot-repository.ts"),
+  "utf8",
+);
+check(
+  "snapshot-repository-class",
+  snapshotRepo.includes("class SnapshotRepository") &&
+    snapshotRepo.includes("fromRevisionDir"),
+);
+
+const appFiles = [
+  "src/app/site-page.tsx",
+  "src/app/page.tsx",
+  "src/app/not-found.tsx",
+  "src/app/sitemap.ts",
+  "src/app/[...path]/page.tsx",
+];
+for (const rel of appFiles) {
+  const text = readFileSync(join(root, rel), "utf8");
+  check(
+    `app-no-fixture:${rel}`,
+    !text.includes("fixture") &&
+      !text.includes("catalog/local") &&
+      !text.includes("catalog/entities"),
+  );
+}
+check(
+  "site-page-uses-repository",
+  readFileSync(join(root, "src/app/site-page.tsx"), "utf8").includes(
+    "getRealtyRepository",
+  ),
+);
+
 if (failed) {
   process.exit(1);
 }

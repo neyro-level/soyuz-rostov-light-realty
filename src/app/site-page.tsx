@@ -1,14 +1,6 @@
 import { notFound, permanentRedirect } from "next/navigation";
-import {
-  findDeveloper,
-  findDevelopment,
-  findProperty,
-  formatMoney,
-  propertySemantic,
-  roomsOf,
-} from "@/platform/catalog/entities";
+import type { MoneyDTO, PropertyCardDTO } from "@/platform/catalog";
 import { buildHref } from "@/platform/grammar";
-import { resolvePageMetadata } from "@/platform/seo";
 import {
   CatalogGrid,
   DevelopmentCard,
@@ -18,24 +10,39 @@ import {
 } from "@/platform/ui";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
-import { loadSnapshot, metadataContext } from "@/project/runtime";
+import { getRealtyRepository, resolveAppMetadata } from "@/project/runtime";
 import { uiText } from "@/project/ui-text.config";
 
-export function SitePage({
+function formatPrice(price: MoneyDTO | null): string | undefined {
+  if (!price) {
+    return undefined;
+  }
+  const major = Number(price.amount) / 10 ** price.scale;
+  if (!Number.isFinite(major)) {
+    return undefined;
+  }
+  return String(Math.round(major));
+}
+
+function propertySemantic(listing: PropertyCardDTO): string {
+  return `${listing.rooms ?? 1}k`;
+}
+
+export async function SitePage({
   pageKey,
   params = {},
 }: {
   pageKey: string;
   params?: Record<string, string>;
 }) {
-  const snapshot = loadSnapshot();
-  const context = metadataContext();
+  const repo = getRealtyRepository();
+  const contextResolved = resolveAppMetadata(pageKey, params);
   if (pageKey === "property") {
-    const listing = findProperty(snapshot, params.id);
+    const listing = await repo.getProperty(params.id ?? "");
     if (!listing) {
       notFound();
     }
-    const canonicalSemantic = propertySemantic(listing);
+    const canonicalSemantic = `${listing.rooms ?? 1}k`;
     if (params.semantic !== canonicalSemantic) {
       const href = buildHref(grammar, features, "property", {
         semantic: canonicalSemantic,
@@ -47,13 +54,18 @@ export function SitePage({
       notFound();
     }
   }
-  if (pageKey === "development" && !findDevelopment(snapshot, params.slug)) {
+  if (
+    pageKey === "development" &&
+    !(await repo.getDevelopment(params.slug ?? ""))
+  ) {
     notFound();
   }
-  if (pageKey === "developer" && !findDeveloper(snapshot, params.slug)) {
+  if (
+    pageKey === "developer" &&
+    !(await repo.getDeveloper(params.slug ?? ""))
+  ) {
     notFound();
   }
-  const resolved = resolvePageMetadata(pageKey, params, snapshot, context);
   const hasRoute = (key: string) =>
     grammar.routes.some((route) => route.pageKey === key);
   const consentHref = hasRoute("consent")
@@ -63,8 +75,8 @@ export function SitePage({
     ? (buildHref(grammar, features, "thanks") ?? "/")
     : "/";
   return (
-    <PageBlock body={resolved.description} heading={resolved.h1}>
-      <CatalogSlot hidePrice={resolved.hidePrice} pageKey={pageKey} />
+    <PageBlock body={contextResolved.description} heading={contextResolved.h1}>
+      <CatalogSlot hidePrice={contextResolved.hidePrice} pageKey={pageKey} />
       {pageKey === "contacts" ? (
         <LeadForm
           actionUrl="/api/public/leads/"
@@ -84,18 +96,19 @@ export function SitePage({
   );
 }
 
-function CatalogSlot({
+async function CatalogSlot({
   pageKey,
   hidePrice,
 }: {
   pageKey: string;
   hidePrice: boolean;
 }) {
-  const snapshot = loadSnapshot();
+  const repo = getRealtyRepository();
   if (pageKey === "developers") {
+    const developers = await repo.listDevelopers();
     return (
       <CatalogGrid>
-        {snapshot.developers.map((item) => {
+        {developers.map((item) => {
           const href = buildHref(grammar, features, "developer", {
             slug: item.slug,
           });
@@ -119,10 +132,9 @@ function CatalogSlot({
   ) {
     return null;
   }
-  const listings =
-    pageKey === "facetVtorichka"
-      ? snapshot.inventory.filter((item) => item.dealKind === "SECONDARY_SALE")
-      : snapshot.inventory;
+  const listings = await repo.listProperties(
+    pageKey === "facetVtorichka" ? { dealKind: "SECONDARY_SALE" } : undefined,
+  );
   return (
     <CatalogGrid>
       {listings.map((item) => {
@@ -130,13 +142,11 @@ function CatalogSlot({
           semantic: propertySemantic(item),
           id: item.publicUrlId,
         });
-        const developmentName = snapshot.developments.find(
-          (row) => row.uid === item.developmentUid,
-        )?.name;
-        const price = hidePrice ? undefined : formatMoney(item.price);
+        const price =
+          hidePrice || item.hidePrice ? undefined : formatPrice(item.price);
         const metaParts = [
-          developmentName ?? item.addressPublic,
-          String(roomsOf(item)),
+          item.title,
+          item.rooms === null ? undefined : String(item.rooms),
           price,
         ].filter(Boolean);
         return href ? (
@@ -144,7 +154,7 @@ function CatalogSlot({
             href={href}
             key={item.uid}
             meta={metaParts.join(" · ")}
-            title={developmentName ?? item.addressPublic}
+            title={item.title}
           />
         ) : null;
       })}
