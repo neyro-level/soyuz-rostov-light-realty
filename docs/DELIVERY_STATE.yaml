@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: I2
+current_epic: I3
 next_ready:
-  - I3
-current_branch: epic/I2-ui-core
+  - I4
+current_branch: epic/I3-snapshot
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -49,6 +49,9 @@ pending_epics:
     pr: 35
     branch: epic/I2-ui-core
     base: epic/H5-utility
+  - epic: I3
+    branch: epic/I3-snapshot
+    base: epic/I2-ui-core
 last_merged:
   epic: H4
   pr: 32
@@ -62,4 +65,4 @@ predecessor:
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  Stack: H5 #33 → I1 #34 → I2 (ui-core verifier + entity model loader). Merge H5 first, rebase stack.
+  Stack merge order: H5 #33 → I1 #34 → I2 #35 → I3. I3 adds snapshot verifier cases (minor, relation, atomic switch).
