@@ -21,7 +21,12 @@ check("next-config-headers", config.includes("buildSecurityHeaders"));
 check("no-wildcard-csp-in-config", !config.includes("script-src *"));
 
 const health = readFileSync(join(root, "src/app/healthz/route.ts"), "utf8");
-check("healthz-route", health.includes("ok: true"));
+check(
+  "healthz-route",
+  health.includes('degraded ? "degraded" : "ok"') &&
+    health.includes("ok: !degraded") &&
+    health.includes("leadSpoolPending"),
+);
 
 const optIn = readFileSync(
   join(root, "src/platform/analytics/opt-in.tsx"),
