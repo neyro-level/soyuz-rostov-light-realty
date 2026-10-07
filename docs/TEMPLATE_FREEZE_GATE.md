@@ -1,6 +1,16 @@
-# Template Freeze Gate (K1)
+# Template Freeze Gate
 
-Точка готовности шаблона **без production**. Тег `REFERENCE BASELINE — TEMPLATE FREEZE` ставится только после merge PR K1 в `main` на exact SHA (команда владельца).
+Статус на каноническом `main`:
+
+- `SOUZ-TEMPLATE-FREEZE` v2 **COMPLETE** — тег `reference-baseline-template-freeze` @ `ccba58d929dc342ce0baa2f40796d7057fb4de1c`
+- `SOUZ-TEMPLATE-HARDENING` v1 **COMPLETE** — тег `reference-baseline-template-v2` @ `63360437e4b59399ede2b64c0b893a8d66eef95a`
+- Активного плана нет. Production не делался.
+
+Ниже — исторический чеклист Freeze (K1) и DoD Hardening (TH9). Теги уже проставлены; раздел K1 не описывает будущую работу.
+
+## K1 — Freeze checklist (исторический)
+
+Точка готовности шаблона **без production**. Тег `REFERENCE BASELINE — TEMPLATE FREEZE` ставится только после merge PR K1 в `main` на exact SHA (команда владельца). Это уже выполнено: см. статус выше.
 
 ## Merge-wave
 

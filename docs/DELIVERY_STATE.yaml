@@ -26,10 +26,10 @@ closed_epics:
   - TH9
 pending_epics: []
 last_merged:
-  epic: TH8
-  pr: 55
-  sha: 111da6cba4eb52c70b71745c14ffcc1a1f64c396
-  gate: 283
+  epic: TH9
+  pr: 56
+  sha: 63360437e4b59399ede2b64c0b893a8d66eef95a
+  gate: 287
 freeze_tag: reference-baseline-template-v2
 predecessor:
   plan_id: SOUZ-TEMPLATE-FREEZE
