@@ -1,7 +1,11 @@
 import {
+  closeSync,
+  constants,
   cpSync,
   existsSync,
   mkdirSync,
+  openSync,
+  readdirSync,
   readFileSync,
   renameSync,
   rmSync,
@@ -80,22 +84,38 @@ export function readCurrentManifest(
   ) as SnapshotManifest;
 }
 
+function writeLockFile(store: SnapshotStore): void {
+  const fd = openSync(
+    store.lockPath,
+    constants.O_CREAT | constants.O_EXCL | constants.O_WRONLY,
+  );
+  try {
+    writeFileSync(fd, JSON.stringify({ at: Date.now(), pid: process.pid }));
+  } finally {
+    closeSync(fd);
+  }
+}
+
 export function acquireLock(
   store: SnapshotStore,
   ttlMs = DEFAULT_LOCK_TTL_MS,
 ): void {
-  if (existsSync(store.lockPath)) {
+  try {
+    writeLockFile(store);
+    return;
+  } catch {
+    if (!existsSync(store.lockPath)) {
+      throw new Error("concurrent apply");
+    }
     const raw = JSON.parse(readFileSync(store.lockPath, "utf8")) as {
       at: number;
     };
     if (Date.now() - raw.at < ttlMs) {
       throw new Error("concurrent apply");
     }
+    rmSync(store.lockPath);
+    writeLockFile(store);
   }
-  writeFileSync(
-    store.lockPath,
-    JSON.stringify({ at: Date.now(), pid: process.pid }),
-  );
 }
 
 export function releaseLock(store: SnapshotStore): void {
@@ -134,6 +154,62 @@ export function activateStaging(store: SnapshotStore, sequence: number): void {
   }
   renameSync(tmp, dest);
   writeCurrentPointer(store, sequence);
+}
+
+export function pruneRevisions(
+  store: SnapshotStore,
+  previousSequence: number | null,
+): void {
+  const current = readCurrentSequence(store);
+  const keep = new Set<string>();
+  if (current !== null) {
+    keep.add(String(current));
+  }
+  if (previousSequence !== null) {
+    keep.add(String(previousSequence));
+  }
+  if (!existsSync(store.revisionsDir)) {
+    return;
+  }
+  for (const name of readdirSync(store.revisionsDir)) {
+    if (keep.has(name)) {
+      continue;
+    }
+    rmSync(join(store.revisionsDir, name), { recursive: true, force: true });
+  }
+}
+
+export function writeLastSyncSuccess(
+  store: SnapshotStore,
+  at = new Date().toISOString(),
+): void {
+  writeFileSync(join(store.root, "last-sync.json"), JSON.stringify({ at }));
+}
+
+export function readLastSyncSuccess(store: SnapshotStore): string | null {
+  const path = join(store.root, "last-sync.json");
+  if (!existsSync(path)) {
+    return null;
+  }
+  try {
+    const raw = JSON.parse(readFileSync(path, "utf8")) as { at?: unknown };
+    return typeof raw.at === "string" ? raw.at : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeSyncSignal(store: SnapshotStore): void {
+  writeFileSync(join(store.root, "SYNC_SIGNAL"), `${Date.now()}\n`);
+}
+
+export function consumeSyncSignal(store: SnapshotStore): boolean {
+  const path = join(store.root, "SYNC_SIGNAL");
+  if (!existsSync(path)) {
+    return false;
+  }
+  rmSync(path);
+  return true;
 }
 
 export function quarantineCandidate(

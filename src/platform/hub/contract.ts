@@ -143,6 +143,11 @@ export const FORBIDDEN_PUBLIC_FIELDS = [
   "sourceId",
   "sourceObjectCode",
   "DATABASE_URL",
+  "personalPhone",
+  "personalEmail",
+  "internalNotes",
+  "consentDocument",
+  "hiddenCoordinates",
 ] as const;
 
 function rejectForbiddenPublicFields(
@@ -261,11 +266,53 @@ export type ProjectContactDto = z.infer<typeof ProjectContactDtoSchema>;
 export type DevelopmentDto = z.infer<typeof DevelopmentDtoSchema>;
 export type SnapshotManifest = z.infer<typeof SnapshotManifestSchema>;
 
+export const DeveloperDtoSchema = z
+  .strictObject({
+    uid: z.string().min(1),
+    slug: z.string().min(1).optional(),
+    name: z.string().min(1),
+  })
+  .superRefine(rejectForbiddenPublicFields);
+
+export const MediaManifestItemSchema = z
+  .object({
+    uid: z.string().min(1).optional(),
+    key: z.string().min(1).optional(),
+    url: z.string().min(1).optional(),
+  })
+  .passthrough()
+  .superRefine(rejectForbiddenPublicFields);
+
+export const UrlRecordSchema = z
+  .object({
+    uid: z.string().min(1).optional(),
+    slug: z.string().min(1).optional(),
+    publicUrlId: z.string().min(1).optional(),
+  })
+  .passthrough()
+  .superRefine(rejectForbiddenPublicFields);
+
+export const RedirectRecordSchema = z
+  .object({
+    from: z.string().min(1).optional(),
+    to: z.string().min(1).optional(),
+  })
+  .passthrough()
+  .superRefine(rejectForbiddenPublicFields);
+
+export const LifecycleRecordSchema = z
+  .object({
+    uid: z.string().min(1).optional(),
+    lifecycle: EntityLifecycleSchema.optional(),
+  })
+  .passthrough()
+  .superRefine(rejectForbiddenPublicFields);
+
 export function isSupportedSchema(major: number, minor: number): boolean {
   if (major !== SUPPORTED_SCHEMA_MAJOR) {
     return false;
   }
-  return minor >= SUPPORTED_SCHEMA_MINOR;
+  return minor >= 0 && minor <= SUPPORTED_SCHEMA_MINOR;
 }
 
 export function parsePublicInventoryDto(input: unknown): PublicInventoryDto {

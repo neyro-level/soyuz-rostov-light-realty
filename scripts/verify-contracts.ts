@@ -12,6 +12,7 @@ import {
   parseSnapshotManifest,
   propertyTypes,
   SUPPORTED_SCHEMA_MAJOR,
+  SUPPORTED_SCHEMA_MINOR,
   serializeMoneyValue,
   transactionTypes,
 } from "../src/platform/hub/contract";
@@ -83,8 +84,13 @@ check(
   isSupportedSchema(SUPPORTED_SCHEMA_MAJOR + 1, 0) === false,
 );
 check(
+  "future-minor-rejected",
+  isSupportedSchema(SUPPORTED_SCHEMA_MAJOR, SUPPORTED_SCHEMA_MINOR + 1) ===
+    false,
+);
+check(
   "supported-minor-accepted",
-  isSupportedSchema(SUPPORTED_SCHEMA_MAJOR, 2) === true,
+  isSupportedSchema(SUPPORTED_SCHEMA_MAJOR, SUPPORTED_SCHEMA_MINOR) === true,
 );
 
 const leak = PublicInventoryDtoSchema.safeParse({

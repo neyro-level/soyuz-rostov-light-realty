@@ -5,18 +5,18 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-07
 canonical_plan: docs/МАСТЕР_ПЛАН_TEMPLATE_HARDENING.md
-current_epic: TH1
+current_epic: TH2
 next_ready:
-  - TH1.01
-current_branch: epic/TH1-runtime-snapshot
+  - TH2.01
+current_branch: epic/TH2-sync-hardening
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
 owner_pause: false
 closed_epics:
   - TH0
-pending_epics:
   - TH1
+pending_epics:
   - TH2
   - TH3
   - TH4
@@ -26,9 +26,9 @@ pending_epics:
   - TH8
   - TH9
 last_merged:
-  epic: TH0
-  pr: 47
-  sha: da719e8986969081d242e0bf7bfce5cded1b799f
+  epic: TH1
+  pr: 48
+  sha: accaa659ebd28b5811261f8311877999790c31aa
 predecessor:
   plan_id: SOUZ-TEMPLATE-FREEZE
   plan_version: v2
@@ -36,5 +36,5 @@ predecessor:
   freeze_tag: reference-baseline-template-freeze
   sha: ccba58d929dc342ce0baa2f40796d7057fb4de1c
 notes: >
-  TH0 merged (PR #47). TH1 runtime snapshot in progress.
+  TH1 merged (PR #48). TH2 sync/provider/health in progress.
   No production. Template repo split is owner command after TH9.

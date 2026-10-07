@@ -12,7 +12,11 @@ const PLACEHOLDER_SECRETS = new Set([
   "placeholder",
 ]);
 
-const SECRET_KEYS = ["SMTP_PASS", "LEAD_SPOOL_KEY"] as const;
+const SECRET_KEYS = [
+  "SMTP_PASS",
+  "LEAD_SPOOL_KEY",
+  "SYNC_SIGNAL_SECRET",
+] as const;
 
 const envSchema = z.object({
   NODE_ENV: z
@@ -51,6 +55,11 @@ const envSchema = z.object({
   SMTP_FROM: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   LEAD_SPOOL_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   LEAD_SPOOL_DIR: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  SYNC_SIGNAL_SECRET: z.preprocess(
+    emptyToUndefined,
+    z.string().min(1).optional(),
+  ),
+  PROVIDER_ORIGIN: z.preprocess(emptyToUndefined, z.string().url().optional()),
 });
 
 export type AppEnv = Omit<z.infer<typeof envSchema>, "SMTP_SECURE"> & {
@@ -67,6 +76,9 @@ function assertNoSilentSecretFallback(parsed: z.infer<typeof envSchema>): void {
   if (parsed.DATA_MODE === "snapshot" && parsed.APP_ENV !== "local") {
     if (!parsed.SNAPSHOT_STORE_DIR) {
       throw new Error("SNAPSHOT_STORE_DIR is required when DATA_MODE=snapshot");
+    }
+    if (!parsed.SYNC_SIGNAL_SECRET) {
+      throw new Error("SYNC_SIGNAL_SECRET is required when DATA_MODE=snapshot");
     }
   }
   if (parsed.DATA_MODE === "local" && parsed.APP_ENV !== "local") {

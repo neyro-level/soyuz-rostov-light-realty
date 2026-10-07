@@ -180,6 +180,8 @@ checkForbiddenImports(
     skipRelative: [
       "src\\app\\api\\internal\\sync",
       "src/app/api/internal/sync",
+      "src\\app\\healthz",
+      "src/app/healthz",
     ],
   },
 );

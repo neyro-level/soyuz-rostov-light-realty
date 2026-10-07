@@ -3,14 +3,21 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import {
   AgentPageDtoSchema,
+  DeveloperDtoSchema,
   DevelopmentDtoSchema,
   FORBIDDEN_PUBLIC_FIELDS,
   GeoDtoSchema,
+  LifecycleRecordSchema,
+  MediaManifestItemSchema,
+  ProjectContactDtoSchema,
   PublicInventoryDtoSchema,
   parseSnapshotManifest,
+  RedirectRecordSchema,
   type SnapshotManifest,
+  UrlRecordSchema,
 } from "../hub/contract";
 import {
+  DEFAULT_RESERVED_SLUGS,
   QUARANTINE_RATIO_THRESHOLD,
   REQUIRED_DATASET_KINDS,
 } from "./constants";
@@ -116,7 +123,7 @@ export function inspectInventory(
     if (seenUid.has(parsed.data.uid)) {
       issues.push({
         code: "identity-collision",
-        message: `duplicate uid ${parsed.data.uid}`,
+        message: "identity collision",
       });
       return { issues, quarantined: raw.length, total: raw.length };
     }
@@ -124,7 +131,7 @@ export function inspectInventory(
     if (seenPublicUrlId.has(parsed.data.publicUrlId)) {
       issues.push({
         code: "identity-collision",
-        message: `duplicate publicUrlId ${parsed.data.publicUrlId}`,
+        message: "identity collision",
       });
       return { issues, quarantined: raw.length, total: raw.length };
     }
@@ -137,7 +144,7 @@ export function inspectInventory(
       quarantined += 1;
       issues.push({
         code: "relation",
-        message: `missing development ${parsed.data.developmentUid}`,
+        message: "missing development relation",
       });
     }
     if (
@@ -148,7 +155,7 @@ export function inspectInventory(
       quarantined += 1;
       issues.push({
         code: "relation",
-        message: `missing agent ${parsed.data.agentUid}`,
+        message: "missing agent relation",
       });
     }
   }
@@ -172,11 +179,63 @@ function collectUids(
   return uids;
 }
 
+function parseArrayPayload(
+  raw: unknown,
+  schema: { safeParse: (item: unknown) => { success: boolean } },
+  label: string,
+  issues: SnapshotIssue[],
+): void {
+  if (!Array.isArray(raw)) {
+    throw new Error(`hard schema/envelope error: ${label}`);
+  }
+  for (const item of raw) {
+    if (
+      item &&
+      typeof item === "object" &&
+      rejectForbidden(item as Record<string, unknown>)
+    ) {
+      throw new Error("private forbidden field leak");
+    }
+    if (!schema.safeParse(item).success) {
+      issues.push({
+        code: "schema",
+        message: `${label} item failed DTO schema`,
+      });
+    }
+  }
+}
+
+function collectPublicUrlIds(raw: unknown): string[] {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  const ids: string[] = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") {
+      continue;
+    }
+    const id = (item as { publicUrlId?: unknown }).publicUrlId;
+    if (typeof id === "string" && id.length > 0) {
+      ids.push(id);
+    }
+  }
+  return ids;
+}
+
+function slugOf(item: unknown): string | null {
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  const slug = (item as { slug?: unknown }).slug;
+  return typeof slug === "string" && slug.length > 0 ? slug : null;
+}
+
 export function verifyCandidate(input: {
   candidateDir: string;
   trust: TrustSet;
   expectedProjectId: string;
   currentSequence?: number;
+  reservedRoots?: readonly string[];
 }): { manifest: SnapshotManifest; warnings: SnapshotIssue[] } {
   const envelope = readDetachedManifest(input.candidateDir);
   const signaturePath = join(input.candidateDir, "manifest.sig");
@@ -227,36 +286,109 @@ export function verifyCandidate(input: {
   const developments = payloads.get("developments");
   const agents = payloads.get("agents");
   const geo = payloads.get("geo");
-  if (Array.isArray(developments)) {
+  const developers = payloads.get("developers");
+  const contacts = payloads.get("contacts");
+  const extraIssues: SnapshotIssue[] = [];
+  parseArrayPayload(
+    developments,
+    DevelopmentDtoSchema,
+    "developments",
+    extraIssues,
+  );
+  parseArrayPayload(agents, AgentPageDtoSchema, "agents", extraIssues);
+  parseArrayPayload(geo, GeoDtoSchema, "geo", extraIssues);
+  if (developers !== undefined) {
+    parseArrayPayload(
+      developers,
+      DeveloperDtoSchema,
+      "developers",
+      extraIssues,
+    );
+  }
+  parseArrayPayload(
+    payloads.get("media"),
+    MediaManifestItemSchema,
+    "media",
+    extraIssues,
+  );
+  parseArrayPayload(payloads.get("urls"), UrlRecordSchema, "urls", extraIssues);
+  parseArrayPayload(
+    payloads.get("redirects"),
+    RedirectRecordSchema,
+    "redirects",
+    extraIssues,
+  );
+  parseArrayPayload(
+    payloads.get("lifecycle"),
+    LifecycleRecordSchema,
+    "lifecycle",
+    extraIssues,
+  );
+  if (!Array.isArray(contacts) || contacts.length === 0) {
+    throw new Error("missing public project contact");
+  }
+  const validContact = contacts.some(
+    (item) => ProjectContactDtoSchema.safeParse(item).success,
+  );
+  if (!validContact) {
+    throw new Error("missing public project contact");
+  }
+  for (const item of contacts) {
+    if (
+      item &&
+      typeof item === "object" &&
+      rejectForbidden(item as Record<string, unknown>)
+    ) {
+      throw new Error("private forbidden field leak");
+    }
+  }
+  const developerUids = collectUids(developers, DeveloperDtoSchema);
+  if (Array.isArray(developments) && developerUids.size > 0) {
     for (const item of developments) {
+      const developerUid =
+        item && typeof item === "object"
+          ? (item as { developerUid?: unknown }).developerUid
+          : undefined;
       if (
-        item &&
-        typeof item === "object" &&
-        rejectForbidden(item as Record<string, unknown>)
+        typeof developerUid === "string" &&
+        !developerUids.has(developerUid)
       ) {
-        throw new Error("private forbidden field leak");
+        extraIssues.push({
+          code: "relation",
+          message: "missing developer relation",
+        });
       }
     }
   }
-  if (Array.isArray(agents)) {
-    for (const item of agents) {
-      if (
-        item &&
-        typeof item === "object" &&
-        rejectForbidden(item as Record<string, unknown>)
-      ) {
-        throw new Error("private forbidden field leak");
-      }
+  const publicUrlIds = [
+    ...collectPublicUrlIds(payloads.get("inventory")),
+    ...collectPublicUrlIds(developments),
+  ];
+  const seenUrlIds = new Set<string>();
+  for (const id of publicUrlIds) {
+    if (seenUrlIds.has(id)) {
+      throw new Error("critical identity collision");
     }
+    seenUrlIds.add(id);
   }
-  if (Array.isArray(geo)) {
-    for (const item of geo) {
-      if (
-        item &&
-        typeof item === "object" &&
-        rejectForbidden(item as Record<string, unknown>)
-      ) {
-        throw new Error("private forbidden field leak");
+  const reserved = new Set(
+    (input.reservedRoots ?? DEFAULT_RESERVED_SLUGS).map((item) => item),
+  );
+  const slugSources = [
+    payloads.get("inventory"),
+    developments,
+    geo,
+    agents,
+    developers,
+  ];
+  for (const source of slugSources) {
+    if (!Array.isArray(source)) {
+      continue;
+    }
+    for (const item of source) {
+      const slug = slugOf(item);
+      if (slug && reserved.has(slug)) {
+        throw new Error("slug reserved root collision");
       }
     }
   }
@@ -265,27 +397,15 @@ export function verifyCandidate(input: {
     developmentUids: collectUids(developments, DevelopmentDtoSchema),
     agentUids: collectUids(agents, AgentPageDtoSchema),
   });
+  report.issues.push(...extraIssues);
+  report.quarantined += extraIssues.filter(
+    (issue) => issue.code === "schema" || issue.code === "relation",
+  ).length;
   if (report.issues.some((issue) => issue.code === "private-leak")) {
     throw new Error("private forbidden field leak");
   }
   if (report.issues.some((issue) => issue.code === "identity-collision")) {
     throw new Error("critical identity collision");
-  }
-  if (Array.isArray(geo)) {
-    for (const item of geo) {
-      if (
-        item &&
-        typeof item === "object" &&
-        !GeoDtoSchema.safeParse(item).success
-      ) {
-        report.quarantined += 1;
-        report.total += 1;
-        report.issues.push({
-          code: "schema",
-          message: "geo item failed DTO schema",
-        });
-      }
-    }
   }
   const ratio = report.total === 0 ? 0 : report.quarantined / report.total;
   if (ratio > QUARANTINE_RATIO_THRESHOLD) {

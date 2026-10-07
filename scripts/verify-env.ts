@@ -48,6 +48,8 @@ const names = [
   "SMTP_FROM",
   "LEAD_SPOOL_KEY",
   "LEAD_SPOOL_DIR",
+  "SYNC_SIGNAL_SECRET",
+  "PROVIDER_ORIGIN",
 ];
 
 for (const name of names) {

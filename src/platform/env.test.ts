@@ -15,6 +15,16 @@ describe("loadEnv", () => {
     ).toThrow(/SNAPSHOT_STORE_DIR/);
   });
 
+  it("requires SYNC_SIGNAL_SECRET outside local when DATA_MODE=snapshot", () => {
+    expect(() =>
+      loadEnv({
+        APP_ENV: "staging",
+        DATA_MODE: "snapshot",
+        SNAPSHOT_STORE_DIR: "/data/snapshots",
+      }),
+    ).toThrow(/SYNC_SIGNAL_SECRET/);
+  });
+
   it("requires LOCAL_SNAPSHOT_DIR outside local when DATA_MODE=local", () => {
     expect(() =>
       loadEnv({ APP_ENV: "production", DATA_MODE: "local" }),
