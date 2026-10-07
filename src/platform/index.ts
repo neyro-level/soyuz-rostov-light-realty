@@ -19,4 +19,3 @@ export {
   parseSeoRegistryCsv,
 } from "./seo";
 export { applyLocalSnapshot, loadCurrentSnapshot } from "./snapshot";
-export { Footer, Header } from "./ui";

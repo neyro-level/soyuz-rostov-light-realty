@@ -40,6 +40,16 @@ export const uiText = {
     favoritesEmpty: "Список избранного пуст.",
   },
   innLabel: "ИНН",
+  chrome: {
+    menuLabel: "Открыть меню",
+  },
+  home: {
+    catalogAllLabel: "Весь каталог",
+    dealSupportCaption: "Сопровождение сделки с недвижимостью",
+  },
+  entity: {
+    minPriceLabel: "Минимальная цена",
+  },
 };
 
 export function legalLine(): string {

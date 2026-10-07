@@ -1,27 +1,42 @@
+import type { ReactNode } from "react";
 import { cn } from "@/ui/lib/utils";
 
 export function SectionHeader({
   title,
   description,
+  eyebrow,
+  action,
   className,
 }: {
   title: string;
   description?: string;
+  eyebrow?: string;
+  action?: ReactNode;
   className?: string;
 }) {
   return (
-    <header className={cn("mb-[var(--sr-space-lg)]", className)}>
-      <h2
-        className="font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] leading-[var(--sr-text-h2-leading)] md:text-[length:var(--sr-text-h2-tablet)] lg:text-[length:var(--sr-text-h2-desktop)]"
-        style={{ fontWeight: "var(--sr-text-h2-weight)" }}
-      >
-        {title}
-      </h2>
-      {description ? (
-        <p className="mt-[var(--sr-space-sm)] text-[var(--sr-muted-foreground)]">
-          {description}
-        </p>
-      ) : null}
+    <header
+      className={cn(
+        "mb-lg flex flex-col gap-sm sm:flex-row sm:items-end sm:justify-between",
+        className,
+      )}
+    >
+      <div>
+        {eyebrow ? (
+          <p className="text-label font-bold tracking-[0.08em] text-primary uppercase">
+            {eyebrow}
+          </p>
+        ) : null}
+        <h2 className="text-h2 font-semibold leading-title text-balance text-foreground">
+          {title}
+        </h2>
+        {description ? (
+          <p className="mt-sm text-pretty text-muted-foreground">
+            {description}
+          </p>
+        ) : null}
+      </div>
+      {action ? <div className="shrink-0">{action}</div> : null}
     </header>
   );
 }

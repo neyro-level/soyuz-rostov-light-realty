@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -134,15 +134,7 @@ for (const file of sharedComponents) {
   }
 }
 check("ui-sections-dir", statSync(join(root, "src/ui/sections")).isDirectory());
-const platformUiDir = join(root, "src/platform/ui");
-const platformVisual = readdirSync(platformUiDir).filter((name) =>
-  name.endsWith(".tsx"),
-);
-check(
-  "platform-ui-not-visual-owner",
-  platformVisual.length === 0,
-  platformVisual.join(", "),
-);
+check("platform-ui-removed", !existsSync(join(root, "src/platform/ui")));
 
 const theme = readFileSync(join(root, "src/project/theme.css"), "utf8");
 const tokenNames = [
@@ -165,6 +157,21 @@ check(
   theme.includes("--sr-text-h2-mobile") &&
     theme.includes("--sr-text-h2-desktop") &&
     theme.includes("--sr-text-h2-weight: 600"),
+);
+check("souz-h1-token", theme.includes("--sr-text-h1"));
+check("souz-shadow-card", theme.includes("0 12px 32px"));
+check("souz-shadow-focus", theme.includes("0 0 0 4px"));
+check(
+  "button-height-48",
+  readFileSync(join(root, "src/ui/primitives/button.tsx"), "utf8").includes(
+    "h-12 min-h-12",
+  ),
+);
+check(
+  "input-height-52",
+  readFileSync(join(root, "src/ui/primitives/input.tsx"), "utf8").includes(
+    "h-input min-h-input",
+  ),
 );
 
 const rawColor = /#(?:[0-9a-fA-F]{3,8})\b|\brgb\(|\bhsl\(|\boklch\(/;
@@ -196,9 +203,13 @@ for (const file of walk(join(root, "src/ui"))) {
     check(`ui-no-raw-button:${rel}`, !/<button\b/.test(text));
     check(`ui-no-raw-input:${rel}`, !/<input\b/.test(text));
   }
+  check(`ui-no-sr-arbitrary:${rel}`, !text.includes("[var(--sr-"));
+  if (rel.includes("src/ui/primitives/")) {
+    check(`ui-no-dark:${rel}`, !text.includes("dark:"));
+  }
 }
 
-for (const dir of ["src/platform/ui", "src/ui"]) {
+for (const dir of ["src/ui"]) {
   const base = join(root, dir);
   try {
     statSync(base);

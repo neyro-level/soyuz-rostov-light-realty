@@ -12,10 +12,7 @@ export function ImageFrame({
 }) {
   return (
     <div
-      className={cn(
-        "overflow-hidden rounded-md bg-[var(--sr-surface-base)]",
-        className,
-      )}
+      className={cn("overflow-hidden rounded-md bg-surface-base", className)}
       style={{ aspectRatio: aspect }}
     >
       {children}

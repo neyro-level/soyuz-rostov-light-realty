@@ -7,7 +7,7 @@ export function ErrorState({
 }) {
   return (
     <div
-      className="rounded-md border border-[var(--sr-destructive)] bg-surface p-lg"
+      className="rounded-md border border-destructive bg-surface p-lg"
       role="alert"
     >
       <p className="font-medium text-fg">{title}</p>

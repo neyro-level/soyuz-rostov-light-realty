@@ -4,13 +4,6 @@ import type { MoneyDTO } from "@/platform/catalog";
 import { buildHref } from "@/platform/grammar";
 import { buildBreadcrumbListJsonLd } from "@/platform/seo";
 import { JsonLdScript } from "@/platform/seo/json-ld-script";
-import {
-  CatalogGrid,
-  DevelopmentCard,
-  LeadForm,
-  PropertyCard,
-  StarterPageShell,
-} from "@/platform/ui";
 import { buildHomeModel } from "@/project/build-home-model";
 import {
   isDevelopmentCatalogEntry,
@@ -20,6 +13,7 @@ import { loadEntityDetailModel } from "@/project/entity-detail-model";
 import { isH4EntityPageKey } from "@/project/entity-pages.config";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
+import { homeContent } from "@/project/home.config";
 import { navigation } from "@/project/navigation.config";
 import {
   getRealtyRepository,
@@ -38,6 +32,13 @@ import {
   h5UtilityBodies,
   isH5UtilityPageKey,
 } from "@/project/utility-pages.config";
+import {
+  CatalogGrid,
+  DevelopmentCard,
+  LeadForm,
+  PropertyCard,
+  StarterPageShell,
+} from "@/ui";
 import type { LeadFormConfig } from "@/ui/layout/header";
 import { EntityDetailSlot } from "@/ui/sections/entity-detail-slot";
 import { HomePage } from "@/ui/sections/home-page";
@@ -125,7 +126,22 @@ export async function SitePage({
   if (pageKey === "home") {
     const model = await buildHomeModel(grammar, features, loadRegistry());
     return (
-      <HomePage leadForm={leadForm} leadFormPageKey="home" model={model} />
+      <HomePage
+        copy={{
+          brand: site.brand,
+          catalogAllLabel: uiText.home.catalogAllLabel,
+          dealSupportCaption: uiText.home.dealSupportCaption,
+          directorName: site.director,
+          hero: homeContent.hero,
+          leadExpert: homeContent.leadExpert,
+          popularSearchesTitle: homeContent.popularSearches.title,
+          service: homeContent.service,
+          trust: homeContent.trust,
+        }}
+        leadForm={leadForm}
+        leadFormPageKey="home"
+        model={model}
+      />
     );
   }
   const homeHref = buildHref(grammar, features, "home") ?? "/";
@@ -144,8 +160,10 @@ export async function SitePage({
     <StaticStarterSlot leadForm={leadForm} pageKey={pageKey} />
   ) : isH4EntityPageKey(pageKey) && entityDetailModel ? (
     <EntityDetailSlot
+      ctaLabel={navigation.ctaLabel}
       hidePrice={contextResolved.hidePrice}
       leadForm={leadForm}
+      minPriceLabel={uiText.entity.minPriceLabel}
       model={entityDetailModel}
     />
   ) : isH5UtilityPageKey(pageKey) ? (
@@ -199,16 +217,14 @@ function UtilityStarterSlot({
 }) {
   return (
     <div
-      className="flex max-w-2xl flex-col gap-[var(--sr-space-lg)]"
+      className="flex max-w-2xl flex-col gap-lg"
       data-testid="utility-content"
     >
-      <p className="text-[length:var(--sr-body-size)] leading-relaxed text-[var(--sr-muted-foreground)]">
+      <p className="text-body leading-relaxed text-muted-foreground">
         {h5UtilityBodies[pageKey]}
       </p>
       {pageKey === "privacy" || pageKey === "consent" ? (
-        <p className="text-sm text-[var(--sr-muted-foreground)]">
-          {registryLead}
-        </p>
+        <p className="text-sm text-muted-foreground">{registryLead}</p>
       ) : null}
     </div>
   );
@@ -226,10 +242,8 @@ function StaticStarterSlot({
   }
   const body = h2StarterBodies[pageKey];
   return (
-    <div className="flex max-w-2xl flex-col gap-[var(--sr-space-lg)]">
-      <p className="text-[length:var(--sr-body-size)] leading-relaxed text-[var(--sr-muted-foreground)]">
-        {body}
-      </p>
+    <div className="flex max-w-2xl flex-col gap-lg">
+      <p className="text-body leading-relaxed text-muted-foreground">{body}</p>
       <LeadDialog
         ctaLabel={navigation.ctaLabel}
         leadForm={leadForm}

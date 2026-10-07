@@ -17,6 +17,13 @@ export default {
       to: { path: "^src/app" },
     },
     {
+      name: "ui-must-not-import-project",
+      comment: "UI renders props and must not import project config.",
+      severity: "error",
+      from: { path: "^src/ui" },
+      to: { path: "^src/project" },
+    },
+    {
       name: "ui-must-not-import-snapshot-storage",
       comment: "UI renders props; it must not reach snapshot storage.",
       severity: "error",

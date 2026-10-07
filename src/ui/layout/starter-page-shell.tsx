@@ -24,29 +24,24 @@ export function StarterPageShell({
   return (
     <main className="flex-1">
       <Section>
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
+        <Container>
           {breadcrumbs && breadcrumbs.length > 0 ? (
-            <Breadcrumbs
-              className="mb-[var(--sr-space-md)] py-0"
-              items={breadcrumbs}
-            />
+            <Breadcrumbs className="mb-md py-0" items={breadcrumbs} />
           ) : null}
           <header className="max-w-3xl">
-            <h1 className="mb-[var(--sr-space-md)] font-semibold text-[length:var(--sr-h1-size)] leading-[var(--sr-h1-line)] text-[var(--sr-foreground)]">
+            <h1 className="mb-md font-semibold text-h1 leading-heading text-foreground">
               {title}
             </h1>
-            <p className="mb-[var(--sr-space-lg)] text-[length:var(--sr-body-lg-size)] leading-relaxed text-[var(--sr-muted-foreground)]">
+            <p className="mb-lg text-body-lg leading-relaxed text-muted-foreground">
               {lead}
             </p>
-            {cta ? <div className="mb-[var(--sr-space-md)]">{cta}</div> : null}
+            {cta ? <div className="mb-md">{cta}</div> : null}
           </header>
         </Container>
       </Section>
       {children ? (
         <Section tone="soft">
-          <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-            {children}
-          </Container>
+          <Container>{children}</Container>
         </Section>
       ) : null}
     </main>

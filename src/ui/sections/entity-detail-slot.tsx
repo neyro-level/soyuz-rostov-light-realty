@@ -3,9 +3,7 @@ import {
   DevelopmentCard,
   Gallery,
   PropertyCard,
-} from "@/platform/ui";
-import type { EntityDetailModel } from "@/project/entity-detail-model";
-import { navigation } from "@/project/navigation.config";
+} from "@/ui/domain";
 import { PriceDisplay } from "@/ui/domain/price-display";
 import type { LeadFormConfig } from "@/ui/layout/header";
 import { LeadDialog } from "@/ui/shared/lead-dialog";
@@ -16,36 +14,78 @@ function FactsList({
   items: Array<{ label: string; value: string }>;
 }) {
   return (
-    <dl className="grid gap-[var(--sr-space-sm)] sm:grid-cols-2">
+    <dl className="grid gap-sm sm:grid-cols-2">
       {items.map((item) => (
         <div key={item.label}>
-          <dt className="text-sm text-[var(--sr-muted-foreground)]">
-            {item.label}
-          </dt>
-          <dd className="font-medium text-[var(--sr-foreground)]">
-            {item.value}
-          </dd>
+          <dt className="text-sm text-muted-foreground">{item.label}</dt>
+          <dd className="font-medium text-foreground">{item.value}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
+type EntityDetailView =
+  | {
+      kind: "property";
+      gallery: Array<{ src: string; alt: string }>;
+      facts: Array<{ label: string; value: string }>;
+      description: string | null;
+      priceDisplay: string | undefined;
+      hidePriceOnEntity: boolean;
+    }
+  | {
+      kind: "development";
+      gallery: Array<{ src: string; alt: string }>;
+      facts: Array<{ label: string; value: string }>;
+      description: string | null;
+      minPriceDisplay: string | undefined;
+      relatedListings: Array<{
+        uid: string;
+        href: string;
+        title: string;
+        meta: string;
+      }>;
+    }
+  | {
+      kind: "developer";
+      facts: Array<{ label: string; value: string }>;
+      developments: Array<{
+        uid: string;
+        href: string;
+        title: string;
+        meta: string;
+      }>;
+    }
+  | {
+      kind: "agent";
+      role: string | null;
+      bio: string | null;
+      workPhone: string | null;
+      listings: Array<{
+        uid: string;
+        href: string;
+        title: string;
+        meta: string;
+      }>;
+    };
+
 export function EntityDetailSlot({
   model,
   hidePrice,
   leadForm,
+  ctaLabel,
+  minPriceLabel,
 }: {
-  model: EntityDetailModel;
+  model: EntityDetailView;
   hidePrice: boolean;
   leadForm: LeadFormConfig;
+  ctaLabel: string;
+  minPriceLabel: string;
 }) {
   if (model.kind === "property") {
     return (
-      <div
-        className="flex flex-col gap-[var(--sr-space-lg)]"
-        data-testid="entity-detail"
-      >
+      <div className="flex flex-col gap-lg" data-testid="entity-detail">
         {model.gallery.length > 0 ? <Gallery items={model.gallery} /> : null}
         <FactsList items={model.facts} />
         <PriceDisplay
@@ -53,37 +93,24 @@ export function EntityDetailSlot({
           value={model.priceDisplay}
         />
         {model.description ? (
-          <p className="max-w-3xl text-[var(--sr-muted-foreground)]">
-            {model.description}
-          </p>
+          <p className="max-w-3xl text-muted-foreground">{model.description}</p>
         ) : null}
-        <LeadDialog
-          ctaLabel={navigation.ctaLabel}
-          leadForm={leadForm}
-          className="w-fit"
-        />
+        <LeadDialog ctaLabel={ctaLabel} leadForm={leadForm} className="w-fit" />
       </div>
     );
   }
 
   if (model.kind === "development") {
     return (
-      <div
-        className="flex flex-col gap-[var(--sr-space-lg)]"
-        data-testid="entity-detail"
-      >
+      <div className="flex flex-col gap-lg" data-testid="entity-detail">
         {model.gallery.length > 0 ? <Gallery items={model.gallery} /> : null}
         <FactsList items={model.facts} />
         <div>
-          <p className="mb-[var(--sr-space-xs)] text-sm text-[var(--sr-muted-foreground)]">
-            Минимальная цена
-          </p>
+          <p className="mb-xs text-sm text-muted-foreground">{minPriceLabel}</p>
           <PriceDisplay hidden={hidePrice} value={model.minPriceDisplay} />
         </div>
         {model.description ? (
-          <p className="max-w-3xl text-[var(--sr-muted-foreground)]">
-            {model.description}
-          </p>
+          <p className="max-w-3xl text-muted-foreground">{model.description}</p>
         ) : null}
         {model.relatedListings.length > 0 ? (
           <CatalogGrid>
@@ -97,21 +124,14 @@ export function EntityDetailSlot({
             ))}
           </CatalogGrid>
         ) : null}
-        <LeadDialog
-          ctaLabel={navigation.ctaLabel}
-          leadForm={leadForm}
-          className="w-fit"
-        />
+        <LeadDialog ctaLabel={ctaLabel} leadForm={leadForm} className="w-fit" />
       </div>
     );
   }
 
   if (model.kind === "developer") {
     return (
-      <div
-        className="flex flex-col gap-[var(--sr-space-lg)]"
-        data-testid="entity-detail"
-      >
+      <div className="flex flex-col gap-lg" data-testid="entity-detail">
         <FactsList items={model.facts} />
         {model.developments.length > 0 ? (
           <CatalogGrid>
@@ -125,30 +145,21 @@ export function EntityDetailSlot({
             ))}
           </CatalogGrid>
         ) : null}
-        <LeadDialog
-          ctaLabel={navigation.ctaLabel}
-          leadForm={leadForm}
-          className="w-fit"
-        />
+        <LeadDialog ctaLabel={ctaLabel} leadForm={leadForm} className="w-fit" />
       </div>
     );
   }
 
   return (
-    <div
-      className="flex flex-col gap-[var(--sr-space-lg)]"
-      data-testid="entity-detail"
-    >
+    <div className="flex flex-col gap-lg" data-testid="entity-detail">
       {model.role ? (
-        <p className="text-[var(--sr-muted-foreground)]">{model.role}</p>
+        <p className="text-muted-foreground">{model.role}</p>
       ) : null}
       {model.bio ? (
-        <p className="max-w-3xl text-[var(--sr-muted-foreground)]">
-          {model.bio}
-        </p>
+        <p className="max-w-3xl text-muted-foreground">{model.bio}</p>
       ) : null}
       {model.workPhone ? (
-        <p className="text-[var(--sr-foreground)]">
+        <p className="text-foreground">
           <a href={`tel:${model.workPhone}`}>{model.workPhone}</a>
         </p>
       ) : null}
@@ -162,11 +173,7 @@ export function EntityDetailSlot({
           />
         ))}
       </CatalogGrid>
-      <LeadDialog
-        ctaLabel={navigation.ctaLabel}
-        leadForm={leadForm}
-        className="w-fit"
-      />
+      <LeadDialog ctaLabel={ctaLabel} leadForm={leadForm} className="w-fit" />
     </div>
   );
 }

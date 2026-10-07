@@ -6,9 +6,6 @@ import {
   Landmark,
   Percent,
 } from "lucide-react";
-import type { HomeModel } from "@/project/build-home-model";
-import { homeContent } from "@/project/home.config";
-import { site } from "@/project/site.config";
 import {
   CatalogGrid,
   DevelopmentCard,
@@ -35,51 +32,107 @@ const quickRouteIcons = {
   headphones: Headphones,
 } as const;
 
+export type HomePageModel = {
+  heroChips: Array<{ label: string; href: string }>;
+  quickRoutes: Array<{ label: string; href: string; icon: string }>;
+  developmentsTitle: string;
+  developmentsCatalogHref?: string;
+  developments: Array<{
+    href: string;
+    title: string;
+    meta: string;
+    priceLabel?: string;
+  }>;
+  selectionCard: { title: string; text: string; ctaLabel: string };
+  interestTitle: string;
+  properties: Array<{ href: string; title: string; meta: string }>;
+  interestServiceCard: { title: string; text: string; ctaLabel: string };
+  servicePrimaryHref?: string;
+  serviceSecondaryHref?: string;
+  popularGroups: Array<{
+    title: string;
+    links: Array<{ label: string; href: string }>;
+  }>;
+};
+
+export type HomePageCopy = {
+  hero: {
+    eyebrow: string;
+    titleLine1: string;
+    titleLine2: string;
+    supporting: string;
+    ctaLabel: string;
+  };
+  service: {
+    eyebrow: string;
+    titleLine1: string;
+    titleLine2: string;
+    text: string;
+    primaryCta: string;
+    secondaryCta: string;
+  };
+  trust: {
+    eyebrow: string;
+    titleLine1: string;
+    titleLine2: string;
+    paragraph1: string;
+    paragraph2: string;
+  };
+  leadExpert: {
+    eyebrow: string;
+    titleLine1: string;
+    titleLine2: string;
+    text: string;
+    submitLabel: string;
+  };
+  popularSearchesTitle: string;
+  catalogAllLabel: string;
+  dealSupportCaption: string;
+  directorName: string;
+  brand: string;
+};
+
 export function HomePage({
   model,
+  copy,
   leadForm,
   leadFormPageKey,
 }: {
-  model: HomeModel;
+  model: HomePageModel;
+  copy: HomePageCopy;
   leadForm: LeadFormConfig;
   leadFormPageKey: string;
 }) {
-  const hero = homeContent.hero;
-  const service = homeContent.service;
-  const trust = homeContent.trust;
-  const leadExpert = homeContent.leadExpert;
+  const hero = copy.hero;
+  const service = copy.service;
+  const trust = copy.trust;
+  const leadExpert = copy.leadExpert;
 
   return (
     <main className="flex-1">
-      <Section
-        tone="primary"
-        className="!py-[var(--sr-section-lg-mobile)] md:!py-[var(--sr-section-lg-desktop)]"
-      >
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-          <div className="grid items-center gap-[var(--sr-space-xl)] lg:grid-cols-2">
+      <Section size="hero" tone="primary">
+        <Container>
+          <div className="grid items-center gap-xl lg:grid-cols-2">
             <div>
-              <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
+              <p className="text-label font-bold tracking-[0.08em] text-primary uppercase">
                 {hero.eyebrow}
               </p>
-              <h1 className="mt-[var(--sr-space-sm)] max-w-xl font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] leading-[var(--sr-text-h2-leading)] md:text-[length:var(--sr-text-h2-tablet)] lg:text-[length:var(--sr-text-h2-desktop)]">
+              <h1 className="mt-sm max-w-xl font-semibold text-balance text-h1 leading-heading text-foreground">
                 {hero.titleLine1}
                 <br />
                 {hero.titleLine2}
               </h1>
-              <p className="mt-[var(--sr-space-md)] max-w-lg text-[var(--sr-muted-foreground)]">
+              <p className="mt-md max-w-lg text-muted-foreground">
                 {hero.supporting}
               </p>
-              <div className="mt-[var(--sr-space-lg)] flex flex-wrap gap-[var(--sr-space-sm)]">
+              <div className="mt-lg flex flex-wrap gap-sm">
                 <LeadDialog ctaLabel={hero.ctaLabel} leadForm={leadForm} />
               </div>
-              <ul className="mt-[var(--sr-space-lg)] flex flex-wrap gap-[var(--sr-space-sm)]">
+              <ul className="mt-lg flex flex-wrap gap-sm">
                 {model.heroChips.map((chip) => (
                   <li key={chip.href}>
                     <Badge asChild variant="secondary">
-                      <a
-                        className="min-h-11 px-[var(--sr-space-md)]"
-                        href={chip.href}
-                      >
+                      <a className="min-h-11 px-md" href={chip.href}>
                         {chip.label}
                       </a>
                     </Badge>
@@ -87,11 +140,8 @@ export function HomePage({
                 ))}
               </ul>
             </div>
-            <ImageFrame
-              aspect="4/3"
-              className="bg-[var(--sr-surface-primary-strong)]"
-            >
-              <div className="flex h-full items-center justify-center text-[var(--sr-primary)]">
+            <ImageFrame aspect="4/3" className="bg-surface-primary-strong">
+              <div className="flex h-full items-center justify-center text-primary">
                 <Building2 aria-hidden className="size-24" strokeWidth={1.25} />
               </div>
             </ImageFrame>
@@ -101,8 +151,8 @@ export function HomePage({
 
       {model.quickRoutes.length > 0 ? (
         <Section tone="default">
-          <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-            <ul className="grid gap-[var(--sr-space-sm)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <Container>
+            <ul className="grid gap-sm sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
               {model.quickRoutes.map((route) => {
                 const Icon =
                   quickRouteIcons[route.icon as keyof typeof quickRouteIcons] ??
@@ -110,14 +160,11 @@ export function HomePage({
                 return (
                   <li key={route.href}>
                     <a
-                      className="flex min-h-11 flex-col items-start gap-[var(--sr-space-sm)] rounded-md border border-[var(--sr-border)] bg-[var(--sr-card)] p-[var(--sr-space-md)] transition-colors hover:border-[var(--sr-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-primary)]"
+                      className="flex min-h-11 flex-col items-start gap-sm rounded-md border border-border bg-card p-md transition-colors hover:border-border-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       href={route.href}
                     >
-                      <Icon
-                        aria-hidden
-                        className="size-5 text-[var(--sr-primary)]"
-                      />
-                      <span className="text-sm font-medium text-[var(--sr-foreground)]">
+                      <Icon aria-hidden className="size-5 text-primary" />
+                      <span className="text-sm font-medium text-foreground">
                         {route.label}
                       </span>
                     </a>
@@ -130,18 +177,20 @@ export function HomePage({
       ) : null}
 
       <Section tone="soft">
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-          <SectionHeader title={model.developmentsTitle} />
-          {model.developmentsCatalogHref ? (
-            <p className="-mt-[var(--sr-space-md)] mb-[var(--sr-space-lg)]">
-              <a
-                className="text-sm text-[var(--sr-primary)] underline-offset-4 hover:underline"
-                href={model.developmentsCatalogHref}
-              >
-                Весь каталог
-              </a>
-            </p>
-          ) : null}
+        <Container>
+          <SectionHeader
+            action={
+              model.developmentsCatalogHref ? (
+                <a
+                  className="text-sm text-primary underline-offset-4 hover:underline"
+                  href={model.developmentsCatalogHref}
+                >
+                  {copy.catalogAllLabel}
+                </a>
+              ) : null
+            }
+            title={model.developmentsTitle}
+          />
           <CatalogGrid>
             {model.developments.map((item) => (
               <DevelopmentCard
@@ -166,7 +215,7 @@ export function HomePage({
       </Section>
 
       <Section>
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
+        <Container>
           <SectionHeader title={model.interestTitle} />
           <CatalogGrid>
             {model.properties.slice(0, 4).map((item) => (
@@ -196,21 +245,19 @@ export function HomePage({
       </Section>
 
       <Section tone="primary">
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-          <div className="grid items-center gap-[var(--sr-space-xl)] lg:grid-cols-2">
+        <Container>
+          <div className="grid items-center gap-xl lg:grid-cols-2">
             <div>
-              <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
+              <p className="text-xs font-medium tracking-wide text-primary uppercase">
                 {service.eyebrow}
               </p>
-              <h2 className="mt-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] md:text-[length:var(--sr-text-h2-tablet)]">
+              <h2 className="mt-sm font-semibold text-foreground text-h2 leading-title">
                 {service.titleLine1}
                 <br />
                 {service.titleLine2}
               </h2>
-              <p className="mt-[var(--sr-space-md)] text-[var(--sr-muted-foreground)]">
-                {service.text}
-              </p>
-              <div className="mt-[var(--sr-space-lg)] flex flex-wrap gap-[var(--sr-space-sm)]">
+              <p className="mt-md text-muted-foreground">{service.text}</p>
+              <div className="mt-lg flex flex-wrap gap-sm">
                 {model.servicePrimaryHref ? (
                   <LeadDialog
                     ctaLabel={service.primaryCta}
@@ -229,9 +276,9 @@ export function HomePage({
                 ) : null}
               </div>
             </div>
-            <ImageFrame aspect="16/9" className="bg-[var(--sr-surface-soft)]">
-              <div className="flex h-full items-center justify-center p-[var(--sr-space-lg)] text-center text-sm text-[var(--sr-muted-foreground)]">
-                Сопровождение сделки с недвижимостью
+            <ImageFrame aspect="16/9" className="bg-surface-soft">
+              <div className="flex h-full items-center justify-center p-lg text-center text-sm text-muted-foreground">
+                {copy.dealSupportCaption}
               </div>
             </ImageFrame>
           </div>
@@ -239,56 +286,45 @@ export function HomePage({
       </Section>
 
       <Section tone="soft">
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-          <div className="grid items-center gap-[var(--sr-space-xl)] lg:grid-cols-2">
-            <ImageFrame
-              aspect="3/4"
-              className="max-w-md bg-[var(--sr-surface-base)]"
-            >
-              <div className="flex h-full flex-col justify-end p-[var(--sr-space-lg)]">
-                <p className="text-sm font-medium text-[var(--sr-foreground)]">
-                  {site.director}
+        <Container>
+          <div className="grid items-center gap-xl lg:grid-cols-2">
+            <ImageFrame aspect="3/4" className="max-w-md bg-surface-base">
+              <div className="flex h-full flex-col justify-end p-lg">
+                <p className="text-sm font-medium text-foreground">
+                  {copy.directorName}
                 </p>
-                <p className="text-sm text-[var(--sr-muted-foreground)]">
-                  {site.brand}
-                </p>
+                <p className="text-sm text-muted-foreground">{copy.brand}</p>
               </div>
             </ImageFrame>
             <div>
-              <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
+              <p className="text-xs font-medium tracking-wide text-primary uppercase">
                 {trust.eyebrow}
               </p>
-              <h2 className="mt-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] md:text-[length:var(--sr-text-h2-tablet)]">
+              <h2 className="mt-sm font-semibold text-foreground text-h2 leading-title">
                 {trust.titleLine1}
                 <br />
                 {trust.titleLine2}
               </h2>
-              <p className="mt-[var(--sr-space-md)] text-[var(--sr-muted-foreground)]">
-                {trust.paragraph1}
-              </p>
-              <p className="mt-[var(--sr-space-md)] text-[var(--sr-muted-foreground)]">
-                {trust.paragraph2}
-              </p>
+              <p className="mt-md text-muted-foreground">{trust.paragraph1}</p>
+              <p className="mt-md text-muted-foreground">{trust.paragraph2}</p>
             </div>
           </div>
         </Container>
       </Section>
 
       <Section>
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-          <div className="grid gap-[var(--sr-space-xl)] lg:grid-cols-2">
+        <Container>
+          <div className="grid gap-xl lg:grid-cols-2">
             <div>
-              <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
+              <p className="text-xs font-medium tracking-wide text-primary uppercase">
                 {leadExpert.eyebrow}
               </p>
-              <h2 className="mt-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] md:text-[length:var(--sr-text-h2-tablet)]">
+              <h2 className="mt-sm font-semibold text-foreground text-h2 leading-title">
                 {leadExpert.titleLine1}
                 <br />
                 {leadExpert.titleLine2}
               </h2>
-              <p className="mt-[var(--sr-space-md)] text-[var(--sr-muted-foreground)]">
-                {leadExpert.text}
-              </p>
+              <p className="mt-md text-muted-foreground">{leadExpert.text}</p>
             </div>
             <LeadForm
               {...leadForm}
@@ -300,19 +336,19 @@ export function HomePage({
       </Section>
 
       <Section tone="soft">
-        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
-          <SectionHeader title={homeContent.popularSearches.title} />
-          <div className="grid gap-[var(--sr-space-xl)] sm:grid-cols-2 lg:grid-cols-4">
+        <Container>
+          <SectionHeader title={copy.popularSearchesTitle} />
+          <div className="grid gap-xl sm:grid-cols-2 lg:grid-cols-4">
             {model.popularGroups.map((group) => (
               <section key={group.title}>
-                <h3 className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[var(--sr-subtle-foreground)]">
+                <h3 className="mb-sm text-xs font-medium uppercase tracking-wide text-subtle-foreground">
                   {group.title}
                 </h3>
-                <ul className="flex flex-col gap-[var(--sr-space-xs)]">
+                <ul className="flex flex-col gap-xs">
                   {group.links.map((link) => (
                     <li key={link.href}>
                       <a
-                        className="inline-flex min-h-11 items-center text-sm text-[var(--sr-foreground)] underline-offset-4 hover:text-[var(--sr-primary)] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-primary)]"
+                        className="inline-flex min-h-11 items-center text-sm text-foreground underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         href={link.href}
                       >
                         {link.label}

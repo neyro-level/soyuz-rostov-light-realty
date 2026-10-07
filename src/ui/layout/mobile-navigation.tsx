@@ -20,6 +20,7 @@ export function MobileNavigation({
   leadForm,
   phoneDisplay,
   phoneTel,
+  menuLabel,
 }: {
   groups: NavGroup[];
   brand: string;
@@ -27,12 +28,13 @@ export function MobileNavigation({
   leadForm: LeadFormConfig;
   phoneDisplay?: string;
   phoneTel?: string;
+  menuLabel: string;
 }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          aria-label="Открыть меню"
+          aria-label={menuLabel}
           className="min-h-11 min-w-11"
           size="icon"
           type="button"
@@ -45,20 +47,17 @@ export function MobileNavigation({
         <SheetHeader>
           <SheetTitle>{brand}</SheetTitle>
         </SheetHeader>
-        <nav
-          aria-label="Mobile"
-          className="flex flex-col gap-[var(--sr-space-lg)]"
-        >
+        <nav aria-label="Mobile" className="flex flex-col gap-lg">
           {groups.map((group) => (
             <div key={group.title}>
-              <p className="mb-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)]">
+              <p className="mb-sm font-semibold text-foreground">
                 {group.title}
               </p>
-              <ul className="flex flex-col gap-[var(--sr-space-sm)]">
+              <ul className="flex flex-col gap-sm">
                 {group.items.map((item) => (
                   <li key={item.href}>
                     <a
-                      className="inline-flex min-h-11 items-center text-[var(--sr-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-primary)]"
+                      className="inline-flex min-h-11 items-center text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                       href={item.href}
                     >
                       {item.label}
@@ -70,7 +69,7 @@ export function MobileNavigation({
           ))}
           {phoneDisplay && phoneTel ? (
             <a
-              className="inline-flex min-h-11 items-center text-[var(--sr-foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-primary)]"
+              className="inline-flex min-h-11 items-center text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               href={`tel:${phoneTel}`}
             >
               {phoneDisplay}

@@ -80,8 +80,8 @@ body {
   --popover-foreground: var(--sr-foreground);
   --primary: var(--sr-primary);
   --primary-foreground: var(--sr-foreground-on-dark);
-  --secondary: var(--sr-surface-soft);
-  --secondary-foreground: var(--sr-foreground);
+  --secondary: var(--sr-surface-primary);
+  --secondary-foreground: var(--sr-primary);
   --muted: var(--sr-surface-base);
   --muted-foreground: var(--sr-muted-foreground);
   --accent: var(--sr-primary-soft);
