@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { loadEnv } from "./env";
 
+const spoolKey = Buffer.alloc(32, 7).toString("base64");
+const spoolDir = "/data/leads";
+
 describe("loadEnv", () => {
   it("applies safe local defaults", () => {
     const parsed = loadEnv({ NODE_ENV: "test" });
@@ -21,13 +24,44 @@ describe("loadEnv", () => {
         APP_ENV: "staging",
         DATA_MODE: "snapshot",
         SNAPSHOT_STORE_DIR: "/data/snapshots",
+        LEAD_SPOOL_KEY: spoolKey,
+        LEAD_SPOOL_DIR: spoolDir,
       }),
     ).toThrow(/SYNC_SIGNAL_SECRET/);
   });
 
+  it("requires LEAD_SPOOL_KEY and DIR outside local", () => {
+    expect(() =>
+      loadEnv({
+        APP_ENV: "staging",
+        DATA_MODE: "snapshot",
+        SNAPSHOT_STORE_DIR: "/data/snapshots",
+        SYNC_SIGNAL_SECRET: "sync-secret-value",
+      }),
+    ).toThrow(/LEAD_SPOOL/);
+  });
+
+  it("rejects a short LEAD_SPOOL_KEY", () => {
+    expect(() =>
+      loadEnv({
+        APP_ENV: "staging",
+        DATA_MODE: "snapshot",
+        SNAPSHOT_STORE_DIR: "/data/snapshots",
+        SYNC_SIGNAL_SECRET: "sync-secret-value",
+        LEAD_SPOOL_DIR: spoolDir,
+        LEAD_SPOOL_KEY: Buffer.alloc(8, 1).toString("base64"),
+      }),
+    ).toThrow(/32 bytes/);
+  });
+
   it("requires LOCAL_SNAPSHOT_DIR outside local when DATA_MODE=local", () => {
     expect(() =>
-      loadEnv({ APP_ENV: "production", DATA_MODE: "local" }),
+      loadEnv({
+        APP_ENV: "production",
+        DATA_MODE: "local",
+        LEAD_SPOOL_KEY: spoolKey,
+        LEAD_SPOOL_DIR: spoolDir,
+      }),
     ).toThrow(/LOCAL_SNAPSHOT_DIR/);
   });
 });

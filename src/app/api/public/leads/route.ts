@@ -1,11 +1,8 @@
-import { randomBytes } from "node:crypto";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { NextResponse } from "next/server";
 import { env } from "@/platform/env";
 import {
-  FileLeadSpool,
-  SmtpLeadSink,
+  createLeadTransportSink,
+  processLeadSpool,
   submitLead,
   WindowRateLimiter,
 } from "@/platform/leads";
@@ -16,40 +13,21 @@ const limiter = new WindowRateLimiter(
   lead.rateLimitWindowMs,
 );
 
-function smtpSink() {
-  return SmtpLeadSink.create({
-    host: env.SMTP_HOST ?? "",
-    port: env.SMTP_PORT ?? 0,
-    secure: env.SMTP_SECURE === true,
-    user: env.SMTP_USER ?? "",
-    pass: env.SMTP_PASS ?? "",
-    from: env.SMTP_FROM ?? "",
-  });
-}
-
-function spoolFromEnv() {
-  const key = env.LEAD_SPOOL_KEY
-    ? Buffer.from(env.LEAD_SPOOL_KEY, "base64")
-    : randomBytes(32);
-  const dir = env.LEAD_SPOOL_DIR ?? join(tmpdir(), "souz-lead-spool");
-  return new FileLeadSpool(dir, key.length === 32 ? key : randomBytes(32));
-}
-
 export async function POST(request: Request) {
   const payload = await request.json().catch(() => null);
   const forwarded = request.headers.get("x-forwarded-for");
   const ip = forwarded?.split(",")[0]?.trim() || "local";
   const transport = env.LEAD_TRANSPORT;
+  const sink = createLeadTransportSink(env);
   const result = await submitLead(payload, {
     ip,
     now: new Date(),
     destinationEmail: lead.destinationEmail,
     mode: env.LEADS_ROUTE,
     transport,
-    sink:
-      transport === "smtp" ? smtpSink() : { deliver: async () => undefined },
+    sink: sink ?? undefined,
     limiter,
-    spool: spoolFromEnv(),
+    spool: transport === "none" ? undefined : processLeadSpool(env),
   });
   if (!result.ok) {
     const status =

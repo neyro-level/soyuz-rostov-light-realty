@@ -12,10 +12,17 @@ export class WebhookLeadSink implements LeadSink {
   async deliver(delivery: LeadDelivery): Promise<void> {
     const response = await this.post(this.url, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        "Idempotency-Key": delivery.leadId,
+      },
       body: JSON.stringify({
-        leadCapturedAt: delivery.capturedAt,
+        leadId: delivery.leadId,
+        name: delivery.name,
+        phone: delivery.phone,
         pageKey: delivery.pageKey,
+        publicUrlId: delivery.publicUrlId,
+        leadCapturedAt: delivery.capturedAt,
         consentAt: delivery.consentAt,
       }),
     });

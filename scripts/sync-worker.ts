@@ -9,6 +9,11 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { loadEnv } from "../src/platform/env";
 import {
+  createLeadTransportSink,
+  flushLeadSpool,
+  processLeadSpool,
+} from "../src/platform/leads";
+import {
   consumeSyncSignal,
   createHubAdapter,
   DEFAULT_RESERVED_SLUGS,
@@ -92,6 +97,21 @@ async function syncOnce(cwd: string): Promise<void> {
   consumeSyncSignal(store);
 }
 
+async function flushLeads(): Promise<void> {
+  const env = loadEnv();
+  if (env.LEAD_TRANSPORT === "none") {
+    return;
+  }
+  if (!env.LEAD_SPOOL_KEY || !env.LEAD_SPOOL_DIR) {
+    return;
+  }
+  const sink = createLeadTransportSink(env);
+  if (!sink) {
+    return;
+  }
+  await flushLeadSpool(processLeadSpool(env), sink);
+}
+
 async function main(): Promise<void> {
   const cwd = process.cwd();
   let lastPoll = 0;
@@ -108,6 +128,7 @@ async function main(): Promise<void> {
     if (signaled || due) {
       lastPoll = Date.now();
       try {
+        await flushLeads();
         await syncOnce(cwd);
       } catch (error) {
         const reason = error instanceof Error ? error.message : "sync failed";

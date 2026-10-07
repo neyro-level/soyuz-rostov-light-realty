@@ -25,8 +25,9 @@ const envSchema = z.object({
   APP_ENV: z.enum(["local", "staging", "production"]).default("local"),
   INDEXING_MODE: z.enum(["private", "staging", "public"]).default("staging"),
   DATA_MODE: z.enum(["snapshot", "local"]).default("local"),
-  LEADS_ROUTE: z.enum(["direct", "service", "dual"]).default("direct"),
-  LEAD_TRANSPORT: z.enum(["none", "smtp", "webhook", "crm"]).default("none"),
+  LEADS_ROUTE: z.enum(["direct"]).default("direct"),
+  LEAD_TRANSPORT: z.enum(["none", "smtp", "webhook"]).default("none"),
+  LEAD_WEBHOOK_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   PROJECT_FIXTURE: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   SNAPSHOT_STORE_DIR: z.preprocess(
     emptyToUndefined,
@@ -86,6 +87,17 @@ function assertNoSilentSecretFallback(parsed: z.infer<typeof envSchema>): void {
       throw new Error("LOCAL_SNAPSHOT_DIR is required when DATA_MODE=local");
     }
   }
+  if (parsed.APP_ENV !== "local") {
+    if (!parsed.LEAD_SPOOL_DIR) {
+      throw new Error("LEAD_SPOOL_DIR is required when APP_ENV is not local");
+    }
+    if (!parsed.LEAD_SPOOL_KEY) {
+      throw new Error("LEAD_SPOOL_KEY is required when APP_ENV is not local");
+    }
+    assertLeadSpoolKey(parsed.LEAD_SPOOL_KEY);
+  } else if (parsed.LEAD_SPOOL_KEY) {
+    assertLeadSpoolKey(parsed.LEAD_SPOOL_KEY);
+  }
   if (parsed.LEAD_TRANSPORT === "smtp") {
     const required = [
       "SMTP_HOST",
@@ -101,6 +113,17 @@ function assertNoSilentSecretFallback(parsed: z.infer<typeof envSchema>): void {
       }
     }
   }
+  if (parsed.LEAD_TRANSPORT === "webhook" && !parsed.LEAD_WEBHOOK_URL) {
+    throw new Error("LEAD_WEBHOOK_URL is required when LEAD_TRANSPORT=webhook");
+  }
+}
+
+export function assertLeadSpoolKey(raw: string): Buffer {
+  const key = Buffer.from(raw, "base64");
+  if (key.length !== 32) {
+    throw new Error("LEAD_SPOOL_KEY must be 32 bytes of base64");
+  }
+  return key;
 }
 
 export function loadEnv(

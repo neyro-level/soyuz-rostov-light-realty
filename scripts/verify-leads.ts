@@ -58,11 +58,12 @@ async function main() {
       spool: noneSpool,
     },
   );
-  check("none-allowed", none.ok && none.captured === true);
-  check("none-has-leadId", none.ok && none.captured && none.leadId.length > 0);
+  check(
+    "none-transport-disabled",
+    !none.ok && none.code === "lead_transport_disabled",
+  );
   check("none-does-not-call-sink", noneSink.deliveries.length === 0);
-  check("none-keeps-spool", noneSpool.pendingCount() === 1);
-  check("pii-encrypted-at-rest", !noneSpool.ciphertextContains(phone));
+  check("none-does-not-spool", noneSpool.pendingCount() === 0);
 
   const smtpSink = SmtpLeadSink.jsonTransport("noreply@example.com");
   const smtpSpool = makeSpool().spool;
@@ -72,6 +73,7 @@ async function main() {
       phone,
       consent: true,
       pageKey: "contacts",
+      publicUrlId: "aaaaa2",
     },
     {
       ip: "test-ip",
@@ -93,6 +95,15 @@ async function main() {
   check("smtp-captured", smtp.ok && smtp.captured === true);
   check("smtp-to-config-email", raw.includes(lead.destinationEmail));
   check("smtp-has-pageKey", raw.includes("pageKey=contacts"));
+  check("smtp-has-name", raw.includes("name=Test"));
+  check("smtp-has-phone", raw.includes(`phone=${phone}`));
+  check("smtp-has-public-id", raw.includes("publicUrlId=aaaaa2"));
+  check(
+    "smtp-has-message-id",
+    smtp.ok &&
+      smtp.captured &&
+      JSON.stringify(smtpSink.lastResult).includes(smtp.leadId),
+  );
   check("smtp-has-consent", raw.includes("consent=true"));
   check("smtp-clears-spool", smtpSpool.pendingCount() === 0);
   check("leads-route-direct", lead.route === "direct");
@@ -201,6 +212,7 @@ async function main() {
     !rateLimited.ok && rateLimited.code === "rate_limit",
   );
 
+  const secondSink = SmtpLeadSink.jsonTransport("noreply@example.com");
   const second = await submitLead(
     {
       name: "Other",
@@ -213,8 +225,8 @@ async function main() {
       now: new Date("2026-10-03T12:00:01.000Z"),
       destinationEmail: lead.destinationEmail,
       mode: lead.route,
-      transport: "none",
-      sink: noneSink,
+      transport: "smtp",
+      sink: secondSink,
       limiter,
       spool: makeSpool().spool,
     },
@@ -222,11 +234,11 @@ async function main() {
   check(
     "leadId-unique",
     Boolean(
-      none.ok &&
-        none.captured &&
+      smtp.ok &&
+        smtp.captured &&
         second.ok &&
         second.captured &&
-        none.leadId !== second.leadId,
+        smtp.leadId !== second.leadId,
     ),
   );
 
@@ -261,6 +273,7 @@ async function main() {
     "spool-accepts-when-transport-down",
     accepted.ok && accepted.captured && retrySpool.pendingCount() === 1,
   );
+  check("pii-encrypted-at-rest", !retrySpool.ciphertextContains(phone));
   down = false;
   const later = new Date("2026-10-03T12:05:00.000Z");
   const delivered = await flushLeadSpool(retrySpool, mockSink, later);
@@ -284,8 +297,12 @@ async function main() {
       now: new Date("2026-10-03T12:00:00.000Z"),
       destinationEmail: lead.destinationEmail,
       mode: lead.route,
-      transport: "none",
-      sink: noneSink,
+      transport: "smtp",
+      sink: {
+        async deliver() {
+          throw new Error("keep spool");
+        },
+      },
       limiter,
       spool: atomic.spool,
     },
@@ -297,10 +314,12 @@ async function main() {
   check("spool-persists-encrypted-file", atomic.spool.pendingCount() === 1);
 
   let posts = 0;
+  let idempotencyKey = "";
   const webhook = new WebhookLeadSink(
     "https://example.test/leads",
-    async () => {
+    async (_url, init) => {
       posts += 1;
+      idempotencyKey = init.headers["Idempotency-Key"] ?? "";
       return { ok: true };
     },
   );
@@ -323,7 +342,14 @@ async function main() {
       spool: hookSpool,
     },
   );
-  check("webhook-adapter", hooked.ok && hooked.captured && posts === 1);
+  check(
+    "webhook-adapter",
+    hooked.ok &&
+      hooked.captured &&
+      posts === 1 &&
+      hooked.captured &&
+      idempotencyKey === hooked.leadId,
+  );
 
   if (failed) {
     process.exit(1);

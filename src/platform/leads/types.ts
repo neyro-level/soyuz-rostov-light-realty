@@ -1,4 +1,4 @@
-export type LeadRoute = "direct" | "service" | "dual";
+export type LeadRoute = "direct";
 export type LeadMode = LeadRoute;
 
 export type LeadSubmission = {
@@ -6,14 +6,17 @@ export type LeadSubmission = {
   phone: string;
   consent: boolean;
   pageKey?: string;
+  publicUrlId?: string;
   website?: string;
 };
 
 export type LeadDelivery = {
+  leadId: string;
   to: string;
   subject: string;
   capturedAt: string;
   pageKey?: string;
+  publicUrlId?: string;
   name: string;
   phone: string;
   consentAt: string;
@@ -23,7 +26,7 @@ export type LeadSink = {
   deliver(delivery: LeadDelivery): Promise<void>;
 };
 
-export type LeadTransport = "none" | "smtp" | "webhook" | "crm";
+export type LeadTransport = "none" | "smtp" | "webhook";
 
 export type LeadResult =
   | { ok: true; captured: true; leadId: string }
@@ -62,9 +65,9 @@ export type LeadSubmitContext = {
   destinationEmail: string;
   mode: LeadMode;
   transport: LeadTransport;
-  sink: LeadSink;
+  sink?: LeadSink;
   limiter: RateLimiter;
-  spool: LeadSpool;
+  spool?: LeadSpool;
 };
 
 export type RateLimiter = {

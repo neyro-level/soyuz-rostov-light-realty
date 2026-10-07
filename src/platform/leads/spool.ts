@@ -71,6 +71,9 @@ export class FileLeadSpool implements LeadSpool {
     private readonly dir: string,
     private readonly key: Buffer,
   ) {
+    if (key.length !== 32) {
+      throw new Error("LEAD_SPOOL_KEY must be 32 bytes");
+    }
     mkdirSync(dir, { recursive: true });
   }
 

@@ -12,6 +12,7 @@ const LeadSubmissionSchema = z.object({
     }),
   consent: z.boolean(),
   pageKey: z.string().trim().min(1).max(80).optional(),
+  publicUrlId: z.string().trim().min(1).max(32).optional(),
   website: z.string().max(200).optional(),
 });
 

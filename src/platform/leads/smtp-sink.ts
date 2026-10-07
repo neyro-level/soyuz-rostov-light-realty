@@ -45,8 +45,13 @@ export class SmtpLeadSink implements LeadSink {
       from: this.from,
       to: delivery.to,
       subject: delivery.subject,
+      messageId: `<${delivery.leadId}@lead.local>`,
       text: [
+        `leadId=${delivery.leadId}`,
+        `name=${delivery.name}`,
+        `phone=${delivery.phone}`,
         `pageKey=${delivery.pageKey ?? ""}`,
+        `publicUrlId=${delivery.publicUrlId ?? ""}`,
         `consent=true`,
         `consentAt=${delivery.consentAt}`,
         `capturedAt=${delivery.capturedAt}`,

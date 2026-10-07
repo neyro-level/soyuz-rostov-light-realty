@@ -6,7 +6,7 @@ export async function submitLead(
   input: unknown,
   context: LeadSubmitContext,
 ): Promise<LeadResult> {
-  if (context.mode !== "direct" && context.mode !== "dual") {
+  if (context.mode !== "direct") {
     return { ok: false, code: "sink" };
   }
   const parsed = parseLeadSubmission(input);
@@ -23,13 +23,21 @@ export async function submitLead(
   if (!context.limiter.allow(context.ip, context.now)) {
     return { ok: false, code: "rate_limit" };
   }
+  if (context.transport === "none") {
+    return { ok: false, code: "lead_transport_disabled" };
+  }
+  if (!context.sink || !context.spool) {
+    return { ok: false, code: "sink" };
+  }
   const capturedAt = context.now.toISOString();
   const leadId = createLeadId();
   const delivery = {
+    leadId,
     to: context.destinationEmail,
     subject: "lead",
     capturedAt,
     pageKey: submission.pageKey,
+    publicUrlId: submission.publicUrlId,
     name: submission.name,
     phone: submission.phone,
     consentAt: capturedAt,
@@ -41,9 +49,6 @@ export async function submitLead(
     updatedAt: capturedAt,
     delivery,
   });
-  if (context.transport === "none" || context.transport === "crm") {
-    return { ok: true, captured: true, leadId };
-  }
   try {
     await context.sink.deliver(delivery);
     context.spool.remove(leadId);

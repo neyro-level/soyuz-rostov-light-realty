@@ -2,6 +2,11 @@ export { submitLead } from "./handler";
 export { MemoryLeadSink, WindowRateLimiter } from "./sink";
 export { SmtpLeadSink } from "./smtp-sink";
 export { createLeadId, FileLeadSpool, flushLeadSpool } from "./spool";
+export {
+  createLeadTransportSink,
+  processLeadSpool,
+  resetProcessLeadSpool,
+} from "./transport";
 export type {
   LeadDelivery,
   LeadMode,

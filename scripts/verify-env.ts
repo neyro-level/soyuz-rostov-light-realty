@@ -48,6 +48,7 @@ const names = [
   "SMTP_FROM",
   "LEAD_SPOOL_KEY",
   "LEAD_SPOOL_DIR",
+  "LEAD_WEBHOOK_URL",
   "SYNC_SIGNAL_SECRET",
   "PROVIDER_ORIGIN",
 ];
