@@ -73,7 +73,9 @@ function assertNoSilentSecretFallback(parsed: z.infer<typeof envSchema>): void {
   }
 }
 
-export function loadEnv(source: NodeJS.ProcessEnv = process.env): AppEnv {
+export function loadEnv(
+  source: Record<string, string | undefined> = process.env,
+): AppEnv {
   const parsed = envSchema.parse(source);
   assertNoSilentSecretFallback(parsed);
   return {
