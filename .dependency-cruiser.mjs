@@ -31,7 +31,7 @@ export default {
       severity: "error",
       from: {
         path: "^src/app",
-        pathNot: "^src/app/api/internal/sync",
+        pathNot: "^src/app/(api/internal/sync|healthz)",
       },
       to: {
         path: "^src/platform/(snapshot|catalog/(snapshot-repository|local))",

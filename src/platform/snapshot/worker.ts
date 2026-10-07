@@ -59,6 +59,7 @@ export function runProviderSync(input: {
   provider: DataProvider;
   trust: TrustSet;
   expectedProjectId: string;
+  reservedRoots?: readonly string[];
 }): ProviderSyncResult {
   const pullDir = mkdtempSync(join(tmpdir(), "sz-pull-"));
   try {
@@ -78,9 +79,26 @@ export function runProviderSync(input: {
     const parsed = JSON.parse(manifestBytes.toString("utf8")) as {
       publishSequence?: unknown;
       files?: Array<{ key?: unknown }>;
+      keyId?: unknown;
     };
     if (typeof parsed.publishSequence !== "number") {
       return { status: "rejected", reason: "hard schema/envelope error" };
+    }
+    if (typeof parsed.keyId !== "string" || parsed.keyId.length === 0) {
+      return { status: "rejected", reason: "hard schema/envelope error" };
+    }
+    let signed = false;
+    try {
+      signed = input.trust.verifySignature(
+        parsed.keyId,
+        manifestBytes,
+        signature,
+      );
+    } catch {
+      signed = false;
+    }
+    if (!signed) {
+      return { status: "rejected", reason: "invalid signature" };
     }
     const sequence = parsed.publishSequence;
     const current = loadCurrentSnapshot(input.storeRoot);
@@ -115,6 +133,7 @@ export function runProviderSync(input: {
       candidateDir: pullDir,
       trust: input.trust,
       expectedProjectId: input.expectedProjectId,
+      reservedRoots: input.reservedRoots,
     });
     if (applied.status === "rejected") {
       return { status: "rejected", reason: applied.reason };

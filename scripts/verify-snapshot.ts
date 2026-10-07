@@ -23,7 +23,9 @@ import {
   activateStaging,
   openSnapshotStore,
   prepareStaging,
+  pruneRevisions,
   readCurrentManifest,
+  readCurrentSequence,
   releaseLock,
   revisionDir,
   revisionTmpDir,
@@ -64,6 +66,15 @@ function publicUrlIdFromIndex(index: number): string {
     value = Math.floor(value / alphabet.length);
   }
   return out;
+}
+
+function projectContact(projectId = PROJECT_ID) {
+  return {
+    projectId,
+    phone: "+70000000000",
+    email: "office@example.test",
+    updatedAt: "2026-10-03T00:00:00Z",
+  };
 }
 
 function listing(index: number, extra: Record<string, unknown> = {}) {
@@ -123,7 +134,12 @@ function writeCandidate(input: {
     const payload =
       kind === "inventory"
         ? Buffer.from(JSON.stringify(input.inventory ?? [listing(0)]), "utf8")
-        : Buffer.from("[]", "utf8");
+        : kind === "contacts"
+          ? Buffer.from(
+              JSON.stringify([projectContact(input.projectId ?? PROJECT_ID)]),
+              "utf8",
+            )
+          : Buffer.from("[]", "utf8");
     const key = `${kind}.json`;
     writeFileSync(join(dir, key), payload);
     files.push({
@@ -277,7 +293,7 @@ check(
       sequence: 2,
       keyId: "trusted",
       privateKey: trusted.privateKey,
-      schemaMinor: 0,
+      schemaMinor: 2,
     }),
   ).status === "rejected",
 );
@@ -725,6 +741,18 @@ check(
   "provider-down-keeps-current",
   down.status === "provider-unavailable" &&
     loadCurrentSnapshot(providerStore)?.publishSequence === 2,
+);
+
+const pruneStore = openSnapshotStore(providerStore);
+const pruneCurrent = readCurrentSequence(pruneStore);
+pruneRevisions(pruneStore, pruneCurrent === null ? null : pruneCurrent - 1);
+check(
+  "prune-keeps-current-and-previous",
+  pruneCurrent !== null &&
+    existsSync(join(revisionDir(pruneStore, pruneCurrent), "manifest.json")) &&
+    existsSync(
+      join(revisionDir(pruneStore, pruneCurrent - 1), "manifest.json"),
+    ),
 );
 
 if (failed) {

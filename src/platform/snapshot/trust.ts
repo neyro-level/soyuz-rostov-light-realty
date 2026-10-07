@@ -1,4 +1,5 @@
 import { createPublicKey, verify } from "node:crypto";
+import { readFileSync } from "node:fs";
 
 export type TrustKey = {
   keyId: string;
@@ -33,4 +34,39 @@ export class TrustSet {
     });
     return verify(null, payload, publicKey, signature);
   }
+}
+
+type TrustFile = {
+  keyId?: string;
+  publicKeySpkiBase64?: string;
+  revoked?: boolean;
+  keys?: Array<{
+    keyId: string;
+    publicKeySpkiBase64: string;
+    revoked?: boolean;
+  }>;
+};
+
+export function loadTrustSetFromFile(path: string): TrustSet {
+  const raw = JSON.parse(readFileSync(path, "utf8")) as TrustFile;
+  const entries =
+    raw.keys ??
+    (raw.keyId && raw.publicKeySpkiBase64
+      ? [
+          {
+            keyId: raw.keyId,
+            publicKeySpkiBase64: raw.publicKeySpkiBase64,
+            revoked: raw.revoked,
+          },
+        ]
+      : []);
+  const trust = new TrustSet();
+  for (const entry of entries) {
+    trust.add({
+      keyId: entry.keyId,
+      publicKeyDer: Buffer.from(entry.publicKeySpkiBase64, "base64"),
+      revoked: entry.revoked,
+    });
+  }
+  return trust;
 }

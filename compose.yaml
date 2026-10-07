@@ -1,17 +1,28 @@
 # Artifact only: not a production rollout. This plan does not deploy.
+x-app-env: &app-env
+  NODE_ENV: production
+  APP_ENV: local
+  DATA_MODE: snapshot
+  LEADS_ROUTE: direct
+  INDEXING_MODE: staging
+  SNAPSHOT_STORE_DIR: /data/snapshots
+  LEAD_SPOOL_DIR: /data/leads
+  HOSTNAME: 0.0.0.0
+  PORT: "3000"
 services:
   web:
     build: .
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: production
-      APP_ENV: local
-      DATA_MODE: local
-      LEADS_ROUTE: direct
-      INDEXING_MODE: staging
-      HOSTNAME: 0.0.0.0
-      PORT: "3000"
+      <<: *app-env
+    volumes:
+      - lite-data:/data
+  sync:
+    build: .
+    command: ["node", "dist/sync-worker.cjs"]
+    environment:
+      <<: *app-env
     volumes:
       - lite-data:/data
 volumes:

@@ -4,9 +4,11 @@ import {
   activateStaging,
   openSnapshotStore,
   prepareStaging,
+  pruneRevisions,
   quarantineCandidate,
   readCurrentManifest,
   releaseLock,
+  writeLastSyncSuccess,
 } from "./store";
 import type { TrustSet } from "./trust";
 import { verifyCandidate } from "./verify";
@@ -21,6 +23,7 @@ export function applyLocalSnapshot(input: {
   trust: TrustSet;
   expectedProjectId: string;
   lockTtlMs?: number;
+  reservedRoots?: readonly string[];
 }): ApplyResult {
   const store = openSnapshotStore(input.storeRoot);
   try {
@@ -37,13 +40,17 @@ export function applyLocalSnapshot(input: {
         trust: input.trust,
         expectedProjectId: input.expectedProjectId,
         currentSequence: current?.publishSequence,
+        reservedRoots: input.reservedRoots,
       });
+      const previous = current?.publishSequence ?? null;
       prepareStaging(
         store,
         input.candidateDir,
         verified.manifest.publishSequence,
       );
       activateStaging(store, verified.manifest.publishSequence);
+      pruneRevisions(store, previous);
+      writeLastSyncSuccess(store);
       return {
         status: "activated",
         manifest: verified.manifest,
