@@ -5,7 +5,7 @@ import { legacyLocation, matchLegacy } from "@/platform/seo";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
 import { legacyRules } from "@/project/redirects/legacy";
-import { loadSnapshot } from "@/project/runtime";
+import { getRealtyRepository } from "@/project/runtime";
 
 function isStaticPath(pathname: string): boolean {
   return (
@@ -37,7 +37,7 @@ export function proxy(request: NextRequest) {
   }
   const decision = lifecycleForMatchedRoute(
     matched,
-    loadSnapshot(),
+    getRealtyRepository(),
     grammar,
     features,
   );

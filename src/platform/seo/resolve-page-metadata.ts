@@ -33,6 +33,7 @@ export type PageMetadataContext = {
     snapshot: CatalogSnapshot,
   ) => Record<string, string | undefined>;
   noindexAutoPageKeys?: readonly string[];
+  catalogReady?: boolean;
   now?: Date;
 };
 
@@ -47,6 +48,23 @@ export type ResolvedPageMetadata = {
   vars: Record<string, string | undefined>;
   href: string;
 };
+
+const CATALOG_PAGE_KEYS = new Set([
+  "property",
+  "development",
+  "developer",
+  "developers",
+  "agent",
+  "team",
+  "geoHub",
+  "catNovostroyki",
+  "catKvartiry",
+  "facetVtorichka",
+]);
+
+function isCatalogSeoPage(pageKey: string): boolean {
+  return CATALOG_PAGE_KEYS.has(pageKey) || pageKey.startsWith("dist");
+}
 
 function rowOrThrow(
   registry: SeoRegistryRow[],
@@ -65,7 +83,11 @@ export function evaluatePageGate(
   params: Record<string, string>,
   thresholds: PriceGateThresholds,
   now: Date,
+  catalogReady = true,
 ): { gate: "PASS" | "FAIL"; hidePrice: boolean; checkedAt?: string } {
+  if (!catalogReady && isCatalogSeoPage(pageKey)) {
+    return { gate: "FAIL", hidePrice: false };
+  }
   const gated =
     pageKey === "property" ||
     pageKey === "development" ||
@@ -146,6 +168,7 @@ export function resolvePageMetadata(
     params,
     context.thresholds,
     now,
+    context.catalogReady !== false,
   );
   const vars = context.mapVars(pageKey, params, snapshot);
   const title = fillSeoTemplate(row.title, vars, { hidePrice });

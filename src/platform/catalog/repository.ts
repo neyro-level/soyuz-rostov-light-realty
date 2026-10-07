@@ -23,6 +23,7 @@ export type DevelopmentListQuery = {
 };
 
 export interface RealtyRepository {
+  hasCatalog(): boolean;
   getProjectContact(): Promise<ProjectContactDTO | null>;
   getGeo(slug: string): Promise<GeoDTO | null>;
   listProperties(query?: PropertyListQuery): Promise<PropertyCardDTO[]>;

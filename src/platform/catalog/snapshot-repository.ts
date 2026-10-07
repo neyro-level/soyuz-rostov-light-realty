@@ -16,11 +16,7 @@ import type {
 import {
   type CatalogSnapshot,
   developerOf,
-  developmentOf,
   developmentUrlSlug,
-  findDeveloper,
-  findDevelopment,
-  findProperty,
   loadCatalogSnapshot,
   roomsOf,
 } from "./entities";
@@ -88,21 +84,58 @@ function mediaOf(listing: PublicInventoryDto): MediaRefDTO[] {
 }
 
 export class SnapshotRepository implements RealtyRepository {
+  private readonly byUid = new Map<string, PublicInventoryDto>();
+  private readonly byPublicUrlId = new Map<string, PublicInventoryDto>();
+  private readonly bySlug = new Map<string, PublicInventoryDto>();
+  private readonly byDevelopmentUid = new Map<string, PublicInventoryDto[]>();
+  private readonly geoBySlug = new Map<string, GeoDTO>();
+  private readonly developmentByUid = new Map<
+    string,
+    CatalogSnapshot["developments"][number]
+  >();
+  private readonly developmentBySlug = new Map<
+    string,
+    CatalogSnapshot["developments"][number]
+  >();
+  private readonly developerBySlug = new Map<
+    string,
+    CatalogSnapshot["developers"][number]
+  >();
+  private readonly agentByUid = new Map<string, AgentRecord>();
+
   constructor(
     private readonly snapshot: CatalogSnapshot,
     private readonly geos: GeoDTO[],
     private readonly agents: AgentRecord[],
     private readonly contact: ProjectContactDTO | null,
-  ) {}
+    private readonly catalogReady = true,
+  ) {
+    this.buildIndexes();
+  }
+
+  hasCatalog(): boolean {
+    return this.catalogReady;
+  }
 
   /** Catalog view for SEO, lifecycle, and sitemap (same revision as repository reads). */
   catalogSnapshot(): CatalogSnapshot {
     return this.snapshot;
   }
 
+  static empty(): SnapshotRepository {
+    return new SnapshotRepository(
+      { inventory: [], developments: [], developers: [] },
+      [],
+      [],
+      null,
+      false,
+    );
+  }
+
   static fromRevisionDir(
     root: string,
     revisionDir: string,
+    catalogReady = true,
   ): SnapshotRepository {
     const snapshot = loadCatalogSnapshot(root, revisionDir);
     const geos = loadFixtureJson<GeoRecord[]>(
@@ -134,7 +167,47 @@ export class SnapshotRepository implements RealtyRepository {
           hours: raw.hours ?? null,
         }
       : null;
-    return new SnapshotRepository(snapshot, geos, agents, contact);
+    return new SnapshotRepository(
+      snapshot,
+      geos,
+      agents,
+      contact,
+      catalogReady,
+    );
+  }
+
+  private buildIndexes(): void {
+    for (const geo of this.geos) {
+      this.geoBySlug.set(geo.slug, geo);
+    }
+    for (const developer of this.snapshot.developers) {
+      this.developerBySlug.set(developer.slug, developer);
+    }
+    for (const development of this.snapshot.developments) {
+      this.developmentByUid.set(development.uid, development);
+      this.developmentBySlug.set(developmentUrlSlug(development), development);
+      if (development.slug) {
+        this.developmentBySlug.set(development.slug, development);
+      }
+      if (development.publicUrlId) {
+        this.developmentBySlug.set(development.publicUrlId, development);
+      }
+    }
+    for (const agent of this.agents) {
+      this.agentByUid.set(agent.uid, agent);
+    }
+    for (const item of this.snapshot.inventory) {
+      this.byUid.set(item.uid, item);
+      this.byPublicUrlId.set(item.publicUrlId, item);
+      if (item.slug) {
+        this.bySlug.set(item.slug, item);
+      }
+      if (item.developmentUid) {
+        const bucket = this.byDevelopmentUid.get(item.developmentUid) ?? [];
+        bucket.push(item);
+        this.byDevelopmentUid.set(item.developmentUid, bucket);
+      }
+    }
   }
 
   async getProjectContact(): Promise<ProjectContactDTO | null> {
@@ -142,7 +215,7 @@ export class SnapshotRepository implements RealtyRepository {
   }
 
   async getGeo(slug: string): Promise<GeoDTO | null> {
-    return this.geos.find((item) => item.slug === slug) ?? null;
+    return this.geoBySlug.get(slug) ?? null;
   }
 
   async listProperties(query?: PropertyListQuery): Promise<PropertyCardDTO[]> {
@@ -157,7 +230,9 @@ export class SnapshotRepository implements RealtyRepository {
         ) {
           return false;
         }
-        const development = developmentOf(this.snapshot, item);
+        const development = item.developmentUid
+          ? this.developmentByUid.get(item.developmentUid)
+          : undefined;
         if (
           query?.developerUid &&
           development?.developerUid !== query.developerUid
@@ -170,14 +245,16 @@ export class SnapshotRepository implements RealtyRepository {
   }
 
   async getProperty(publicUrlId: string): Promise<PropertyDetailsDTO | null> {
-    const listing = findProperty(this.snapshot, publicUrlId);
+    const listing = this.byPublicUrlId.get(publicUrlId);
     if (!listing) {
       return null;
     }
-    const development = developmentOf(this.snapshot, listing);
+    const development = listing.developmentUid
+      ? this.developmentByUid.get(listing.developmentUid)
+      : undefined;
     const developer = developerOf(this.snapshot, development);
     const agent = listing.agentUid
-      ? this.agents.find((item) => item.uid === listing.agentUid)
+      ? this.agentByUid.get(listing.agentUid)
       : undefined;
     const contact = this.contact ?? {
       phone: "",
@@ -225,7 +302,7 @@ export class SnapshotRepository implements RealtyRepository {
   async getDevelopment(
     publicUrlId: string,
   ): Promise<DevelopmentDetailsDTO | null> {
-    const development = findDevelopment(this.snapshot, publicUrlId);
+    const development = this.developmentBySlug.get(publicUrlId);
     if (!development?.publicUrlId) {
       return null;
     }
@@ -237,9 +314,9 @@ export class SnapshotRepository implements RealtyRepository {
       address: null,
       hours: null,
     };
-    const properties = this.snapshot.inventory
-      .filter((item) => item.developmentUid === development.uid)
-      .map((item) => this.toPropertyCard(item));
+    const properties = (this.byDevelopmentUid.get(development.uid) ?? []).map(
+      (item) => this.toPropertyCard(item),
+    );
     return {
       uid: development.uid,
       publicUrlId: development.publicUrlId,
@@ -260,7 +337,7 @@ export class SnapshotRepository implements RealtyRepository {
   }
 
   async getDeveloper(slug: string): Promise<DeveloperDTO | null> {
-    const developer = findDeveloper(this.snapshot, slug);
+    const developer = this.developerBySlug.get(slug);
     return developer ? this.toDeveloper(developer) : null;
   }
 
@@ -269,7 +346,9 @@ export class SnapshotRepository implements RealtyRepository {
   }
 
   async getAgent(slug: string): Promise<AgentDetailsDTO | null> {
-    const agent = this.agents.find((item) => (item.slug ?? item.uid) === slug);
+    const agent =
+      this.agents.find((item) => (item.slug ?? item.uid) === slug) ??
+      this.agentByUid.get(slug);
     if (!agent) {
       return null;
     }
@@ -289,11 +368,16 @@ export class SnapshotRepository implements RealtyRepository {
   }
 
   private propertyTitle(listing: PublicInventoryDto): string {
-    return developmentOf(this.snapshot, listing)?.name ?? listing.addressPublic;
+    const development = listing.developmentUid
+      ? this.developmentByUid.get(listing.developmentUid)
+      : undefined;
+    return development?.name ?? listing.addressPublic;
   }
 
   private toPropertyCard(listing: PublicInventoryDto): PropertyCardDTO {
-    const development = developmentOf(this.snapshot, listing);
+    const development = listing.developmentUid
+      ? this.developmentByUid.get(listing.developmentUid)
+      : undefined;
     return {
       uid: listing.uid,
       publicUrlId: listing.publicUrlId,
@@ -311,8 +395,8 @@ export class SnapshotRepository implements RealtyRepository {
   private toDevelopmentCard(
     development: CatalogSnapshot["developments"][number],
   ): DevelopmentCardDTO {
-    const prices = this.snapshot.inventory
-      .filter((item) => item.developmentUid === development.uid && item.price)
+    const prices = (this.byDevelopmentUid.get(development.uid) ?? [])
+      .filter((item) => item.price)
       .map((item) => item.price as MoneyDTO);
     const minPrice =
       prices.length === 0
