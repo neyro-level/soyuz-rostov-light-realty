@@ -5,17 +5,17 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-07
 canonical_plan: docs/МАСТЕР_ПЛАН_TEMPLATE_HARDENING.md
-current_epic: TH0
+current_epic: TH1
 next_ready:
-  - TH0.01
-current_branch: epic/TH0-bootstrap
+  - TH1.01
+current_branch: epic/TH1-runtime-snapshot
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
 owner_pause: false
-closed_epics: []
-pending_epics:
+closed_epics:
   - TH0
+pending_epics:
   - TH1
   - TH2
   - TH3
@@ -25,6 +25,10 @@ pending_epics:
   - TH7
   - TH8
   - TH9
+last_merged:
+  epic: TH0
+  pr: 47
+  sha: da719e8986969081d242e0bf7bfce5cded1b799f
 predecessor:
   plan_id: SOUZ-TEMPLATE-FREEZE
   plan_version: v2
@@ -32,5 +36,5 @@ predecessor:
   freeze_tag: reference-baseline-template-freeze
   sha: ccba58d929dc342ce0baa2f40796d7057fb4de1c
 notes: >
-  Hardening v1 started. Predecessor Freeze v2 remains historical canon.
+  TH0 merged (PR #47). TH1 runtime snapshot in progress.
   No production. Template repo split is owner command after TH9.

@@ -262,6 +262,14 @@ async function CatalogSlot({
     );
   }
   const repo = getRealtyRepository();
+  if (!repo.hasCatalog()) {
+    return (
+      <EmptyState
+        message={uiText.catalog.emptyListingsMessage}
+        title={uiText.catalog.emptyListingsTitle}
+      />
+    );
+  }
   if (pageKey === "developers") {
     const developers = await repo.listDevelopers();
     return (

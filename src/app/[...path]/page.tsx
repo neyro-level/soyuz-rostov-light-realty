@@ -5,11 +5,7 @@ import { lifecycleForMatchedRoute } from "@/platform/lifecycle";
 import { toNextMetadata } from "@/platform/seo";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
-import {
-  getRealtyRepository,
-  loadSnapshot,
-  resolveAppMetadata,
-} from "@/project/runtime";
+import { getRealtyRepository, resolveAppMetadata } from "@/project/runtime";
 import { applyLifecycleDecision } from "../apply-lifecycle";
 import { SitePage } from "../site-page";
 
@@ -90,7 +86,7 @@ export async function generateMetadata({
     notFound();
   }
   applyLifecycleDecision(
-    lifecycleForMatchedRoute(matched, loadSnapshot(), grammar, features),
+    lifecycleForMatchedRoute(matched, getRealtyRepository(), grammar, features),
   );
   const repo = getRealtyRepository();
   if (matched.pageKey === "property") {
@@ -132,7 +128,7 @@ export default async function CatchAllPage({
     notFound();
   }
   applyLifecycleDecision(
-    lifecycleForMatchedRoute(matched, loadSnapshot(), grammar, features),
+    lifecycleForMatchedRoute(matched, getRealtyRepository(), grammar, features),
   );
   return <SitePage pageKey={matched.pageKey} params={matched.params} />;
 }

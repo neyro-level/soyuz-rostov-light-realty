@@ -1,4 +1,3 @@
-import type { CatalogSnapshot } from "../catalog/entities";
 import {
   developmentUrlSlug,
   findDeveloper,
@@ -6,6 +5,7 @@ import {
   findProperty,
   propertyUrlParams,
 } from "../catalog/entities";
+import type { SnapshotRepository } from "../catalog/snapshot-repository";
 import {
   buildHref,
   type FeatureFlags,
@@ -26,10 +26,11 @@ function catalogFallback(
 
 export function lifecycleForMatchedRoute(
   matched: MatchedRoute,
-  snapshot: CatalogSnapshot,
+  repo: SnapshotRepository,
   grammar: GrammarConfig,
   flags: FeatureFlags,
 ): LifecycleDecision | null {
+  const snapshot = repo.catalogSnapshot();
   if (matched.pageKey === "property") {
     const listing = findProperty(snapshot, matched.params.publicUrlId);
     const canonicalHref = listing

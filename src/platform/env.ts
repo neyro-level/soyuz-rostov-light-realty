@@ -24,6 +24,14 @@ const envSchema = z.object({
   LEADS_ROUTE: z.enum(["direct", "service", "dual"]).default("direct"),
   LEAD_TRANSPORT: z.enum(["none", "smtp", "webhook", "crm"]).default("none"),
   PROJECT_FIXTURE: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  SNAPSHOT_STORE_DIR: z.preprocess(
+    emptyToUndefined,
+    z.string().min(1).optional(),
+  ),
+  LOCAL_SNAPSHOT_DIR: z.preprocess(
+    emptyToUndefined,
+    z.string().min(1).optional(),
+  ),
   MEDIA_ORIGIN: z.preprocess(emptyToUndefined, z.string().url().optional()),
   ANALYTICS_METRIKA_ID: z.preprocess(
     emptyToUndefined,
@@ -54,6 +62,16 @@ function assertNoSilentSecretFallback(parsed: z.infer<typeof envSchema>): void {
     const value = parsed[key];
     if (value !== undefined && PLACEHOLDER_SECRETS.has(value.toLowerCase())) {
       throw new Error(`${key} must not use a silent fallback or placeholder`);
+    }
+  }
+  if (parsed.DATA_MODE === "snapshot" && parsed.APP_ENV !== "local") {
+    if (!parsed.SNAPSHOT_STORE_DIR) {
+      throw new Error("SNAPSHOT_STORE_DIR is required when DATA_MODE=snapshot");
+    }
+  }
+  if (parsed.DATA_MODE === "local" && parsed.APP_ENV !== "local") {
+    if (!parsed.LOCAL_SNAPSHOT_DIR) {
+      throw new Error("LOCAL_SNAPSHOT_DIR is required when DATA_MODE=local");
     }
   }
   if (parsed.LEAD_TRANSPORT === "smtp") {
