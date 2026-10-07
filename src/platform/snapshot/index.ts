@@ -5,6 +5,11 @@ export {
   type DataProvider,
   parseSyncTrigger,
 } from "./provider";
+export {
+  openSnapshotStore,
+  readCurrentSequence,
+  resolveCurrentRevisionDir,
+} from "./store";
 export { applyLocalSnapshot, loadCurrentSnapshot } from "./sync";
 export { TrustSet } from "./trust";
 export { verifyCandidate } from "./verify";
