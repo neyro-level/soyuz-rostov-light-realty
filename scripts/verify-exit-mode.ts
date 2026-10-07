@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "../src/platform/env";
 import { lead } from "../src/project/lead.config";
+import { runExitHttpSmoke } from "./http-smoke";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 let failed = 0;
@@ -65,7 +66,15 @@ check(
   /^DATA_MODE$/m.test(example) && /^LEADS_ROUTE$/m.test(example),
 );
 
-if (failed) {
-  process.exit(1);
+async function main() {
+  if (failed) {
+    process.exit(1);
+  }
+  await runExitHttpSmoke(root);
+  console.log("verify:exit-mode PASS");
 }
-console.log("verify:exit-mode PASS");
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

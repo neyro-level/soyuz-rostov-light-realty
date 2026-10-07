@@ -5,10 +5,10 @@ plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-07
 canonical_plan: docs/МАСТЕР_ПЛАН_TEMPLATE_HARDENING.md
-current_epic: TH6
+current_epic: TH7
 next_ready:
-  - TH6.01
-current_branch: epic/TH6-ui-souz
+  - TH7.01
+current_branch: epic/TH7-fixtures-verifiers
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -20,16 +20,16 @@ closed_epics:
   - TH3
   - TH4
   - TH5
-pending_epics:
   - TH6
+pending_epics:
   - TH7
   - TH8
   - TH9
 last_merged:
-  epic: TH5
-  pr: 52
-  sha: 6bbb5e533e1a1d59812076a4c6ca9177aefda053
-  gate: 270
+  epic: TH6
+  pr: 53
+  sha: 466e17af96634cdb9ac311a7c4a78f429c7a5859
+  gate: 275
 predecessor:
   plan_id: SOUZ-TEMPLATE-FREEZE
   plan_version: v2
@@ -37,5 +37,5 @@ predecessor:
   freeze_tag: reference-baseline-template-freeze
   sha: ccba58d929dc342ce0baa2f40796d7057fb4de1c
 notes: >
-  TH5 merged (PR #52, merge-gate #270). TH6 UI SOUZ in progress.
+  TH6 merged (PR #53, merge-gate #275). TH7 fixtures and honest verifiers in progress.
   No production. Template repo split is owner command after TH9.

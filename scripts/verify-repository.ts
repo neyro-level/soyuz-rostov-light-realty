@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { RealtyRepository } from "../src/platform/catalog";
+import { SnapshotRepository } from "../src/platform/catalog/snapshot-repository";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 let failed = 0;
@@ -89,7 +90,52 @@ check(
   ),
 );
 
-if (failed) {
-  process.exit(1);
+const repo = SnapshotRepository.fromRevisionDir(
+  root,
+  "fixtures/fixture-sz-rostov",
+  true,
+  {
+    thresholds: {
+      hideAfterDays: 45,
+      failAfterDays: 120,
+      developmentTextFailAfterDays: 180,
+    },
+    now: new Date("2026-09-20T00:00:00Z"),
+  },
+);
+
+async function main() {
+  const properties = await repo.listProperties();
+  check("runtime-list-properties", properties.length > 0);
+  const first = properties[0];
+  const details = first ? await repo.getProperty(first.publicUrlId) : null;
+  check("runtime-get-property", Boolean(details?.publicUrlId));
+  check(
+    "runtime-property-rooms-typed",
+    details?.rooms === null || typeof details?.rooms === "number",
+  );
+  const developments = await repo.listDevelopments();
+  check("runtime-list-developments", developments.length > 0);
+  const development = developments[0]
+    ? await repo.getDevelopment(developments[0].publicUrlId)
+    : null;
+  check("runtime-get-development", Boolean(development?.publicUrlId));
+  const agents = await repo.listAgents();
+  check("runtime-list-agents", agents.length > 0);
+  const agent = agents[0] ? await repo.getAgent(agents[0].slug) : null;
+  check("runtime-get-agent", Boolean(agent?.slug));
+  const contact = await repo.getProjectContact();
+  check("runtime-contact", Boolean(contact?.phone));
+  const geo = await repo.getGeo("geo-1");
+  check("runtime-geo", geo?.slug === "geo-1");
+
+  if (failed) {
+    process.exit(1);
+  }
+  console.log("verify:repository PASS");
 }
-console.log("verify:repository PASS");
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

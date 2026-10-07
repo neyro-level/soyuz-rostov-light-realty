@@ -209,7 +209,13 @@ for (const file of walk(join(root, "src/ui"))) {
   }
 }
 
-for (const dir of ["src/ui"]) {
+for (const file of walk(join(root, "src/app"))) {
+  const text = readFileSync(file, "utf8");
+  const rel = relative(root, file).replaceAll("\\", "/");
+  check(`app-no-sr-arbitrary:${rel}`, !text.includes("[var(--sr-"));
+}
+
+for (const dir of ["src/ui", "src/app"]) {
   const base = join(root, dir);
   try {
     statSync(base);

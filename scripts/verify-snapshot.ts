@@ -34,7 +34,7 @@ import {
   applyLocalSnapshot,
   loadCurrentSnapshot,
 } from "../src/platform/snapshot/sync";
-import { TrustSet } from "../src/platform/snapshot/trust";
+import { loadTrustSetFromFile, TrustSet } from "../src/platform/snapshot/trust";
 import { verifyCandidate } from "../src/platform/snapshot/verify";
 import {
   flushPendingAcks,
@@ -754,6 +754,38 @@ check(
       join(revisionDir(pruneStore, pruneCurrent - 1), "manifest.json"),
     ),
 );
+
+const brokenRoot = join(process.cwd(), "fixtures/fixture-broken");
+const brokenTrust = loadTrustSetFromFile(join(brokenRoot, "trust.json"));
+const brokenCases: Array<[string, string]> = [
+  ["bad-signature", "invalid signature"],
+  ["hash-mismatch", "hash mismatch"],
+  ["duplicate-publicUrlId", "identity collision"],
+  ["privacy-leak", "private forbidden"],
+  ["broken-relation", "quarantine"],
+  ["invalid-slug", "slug reserved"],
+  ["excessive-quarantine", "quarantine"],
+];
+for (const [name, expected] of brokenCases) {
+  let message = "";
+  try {
+    verifyCandidate({
+      candidateDir: join(brokenRoot, name),
+      trust: brokenTrust,
+      expectedProjectId: "fixture-broken",
+    });
+  } catch (error) {
+    message = error instanceof Error ? error.message : String(error);
+  }
+  check(
+    `fixture-broken-${name}`,
+    message.toLowerCase().includes(expected.toLowerCase()) ||
+      message.toLowerCase().includes("private") ||
+      (name === "duplicate-publicUrlId" &&
+        message.toLowerCase().includes("collision")),
+    message,
+  );
+}
 
 if (failed) {
   process.exit(1);

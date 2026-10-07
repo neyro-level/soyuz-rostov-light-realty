@@ -51,6 +51,14 @@ check(
   verifyScript.includes("verify:exit-mode"),
 );
 check(
+  "gate5-verify-includes-lifecycle",
+  verifyScript.includes("verify:lifecycle"),
+);
+check(
+  "gate5-verify-includes-repository",
+  verifyScript.includes("verify:repository"),
+);
+check(
   "gate5-verify-includes-e2e-chain",
   verifyScript.includes("verify:ui-core"),
 );
