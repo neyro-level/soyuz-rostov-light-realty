@@ -2,7 +2,7 @@
 x-app-env: &app-env
   NODE_ENV: production
   APP_ENV: local
-  DATA_MODE: snapshot
+  DATA_MODE: local
   LEADS_ROUTE: direct
   INDEXING_MODE: staging
   SNAPSHOT_STORE_DIR: /data/snapshots
@@ -23,6 +23,7 @@ services:
     command: ["node", "dist/sync-worker.cjs"]
     environment:
       <<: *app-env
+      DATA_MODE: snapshot
     volumes:
       - lite-data:/data
 volumes:
