@@ -1,8 +1,4 @@
-import { uiText as altUiText } from "../../fixtures/fixture-alt/project/ui-text.config";
-import { isAltFixture } from "./data.config";
-import { site } from "./site.config";
-
-const primaryUiText = {
+export const uiText = {
   form: {
     nameLabel: "Имя",
     phoneLabel: "Телефон",
@@ -46,20 +42,10 @@ const primaryUiText = {
     menuLabel: "Открыть меню",
   },
   home: {
-    catalogAllLabel: "Весь каталог",
+    catalogAllLabel: "Весь каталог Кубань Дом",
     dealSupportCaption: "Сопровождение сделки с недвижимостью",
   },
   entity: {
     minPriceLabel: "Минимальная цена",
   },
 } as const;
-
-export const uiText = isAltFixture() ? altUiText : primaryUiText;
-
-export function legalLine(): string {
-  return `${site.legalName}, ${uiText.innLabel} ${site.inn}, ${site.address}, ${site.phoneDisplay}, ${site.email}, ${site.hoursDisplay}`;
-}
-
-export function copyrightLine(year: number): string {
-  return `© ${year} ${site.brand}`;
-}

@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { site as altSite } from "../fixtures/fixture-alt/project/site.config";
 import { loadFixtureInventory } from "../src/platform/catalog/local";
@@ -14,7 +14,7 @@ import { verifyCandidate } from "../src/platform/snapshot/verify";
 import { data } from "../src/project/data.config";
 import { features as primaryFeatures } from "../src/project/features.config";
 import { grammar as primaryGrammar } from "../src/project/grammar.config";
-import { site as primarySite } from "../src/project/site.config";
+import { site as primarySite } from "../src/project/site.souz.config";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const altDir = "fixtures/fixture-alt";
@@ -120,7 +120,10 @@ const primaryContacts = JSON.parse(
 const altContacts = JSON.parse(
   readFileSync(join(root, altDir, "contacts.json"), "utf8"),
 ) as Array<{ phone: string; email: string }>;
-check("alt-brand-differs", altSite.brand !== primarySite.brand);
+check(
+  "alt-brand-differs",
+  (altSite.brand as string) !== (primarySite.brand as string),
+);
 check(
   "alt-contacts-differs",
   altContacts[0]?.phone !== primaryContacts[0]?.phone ||
@@ -156,6 +159,70 @@ if (!failed) {
   runChecks("alt-fixture", {
     PROJECT_FIXTURE: "fixture-alt",
   });
+}
+
+check(
+  "overlay-home-config",
+  existsSync(join(root, altDir, "project/home.config.ts")),
+);
+check(
+  "overlay-ui-text-config",
+  existsSync(join(root, altDir, "project/ui-text.config.ts")),
+);
+check("overlay-theme", existsSync(join(root, altDir, "project/theme.css")));
+
+const primaryBrandNeedles = [
+  "Союз Застройщиков",
+  "souz-home.ru",
+  "szrostov-promo",
+  "О СОЮЗЕ ЗАСТРОЙЩИКОВ",
+];
+
+function collectFiles(dir: string, files: string[] = []): string[] {
+  if (!existsSync(dir)) {
+    return files;
+  }
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) {
+      collectFiles(full, files);
+      continue;
+    }
+    const ext = extname(full);
+    if ([".html", ".rsc", ".css"].includes(ext)) {
+      files.push(full);
+    }
+  }
+  return files;
+}
+
+function isScanTarget(file: string): boolean {
+  const rel = file.slice(root.length + 1).replaceAll("\\", "/");
+  if (rel.includes("fixtures/fixture-sz-rostov")) {
+    return false;
+  }
+  if (rel.includes("docs/seo")) {
+    return false;
+  }
+  if (rel.includes(".next/cache")) {
+    return false;
+  }
+  return true;
+}
+
+if (!failed) {
+  const leak = collectFiles(join(root, ".next")).find((file) => {
+    if (!isScanTarget(file)) {
+      return false;
+    }
+    const text = readFileSync(file, "utf8");
+    return primaryBrandNeedles.some((needle) => text.includes(needle));
+  });
+  check(
+    "alt-next-no-primary-brand",
+    !leak,
+    leak ? leak.slice(root.length + 1) : "",
+  );
 }
 
 if (failed) {

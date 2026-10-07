@@ -4,6 +4,9 @@ import { analytics } from "./src/project/analytics.config";
 import { media } from "./src/project/media.config";
 
 const nextConfig: NextConfig = {
+  env: {
+    PROJECT_FIXTURE: process.env.PROJECT_FIXTURE ?? "fixture-sz-rostov",
+  },
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   trailingSlash: true,
   output: "standalone",
