@@ -1,14 +1,14 @@
 plan_id: SOUZ-TEMPLATE-HARDENING
 plan_version: v1
-status: IN_PROGRESS
-plan_status: APPROVED
+status: COMPLETE
+plan_status: COMPLETE
 approved_by: owner
 approved_at: 2026-10-07
+completed_at: 2026-10-07
 canonical_plan: docs/МАСТЕР_ПЛАН_TEMPLATE_HARDENING.md
-current_epic: TH8
-next_ready:
-  - TH8.01
-current_branch: epic/TH8-template-ready
+current_epic: none
+next_ready: []
+current_branch: main
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -22,14 +22,15 @@ closed_epics:
   - TH5
   - TH6
   - TH7
-pending_epics:
   - TH8
   - TH9
+pending_epics: []
 last_merged:
-  epic: TH7
-  pr: 54
-  sha: 856c865759093a8eff0dccf6a0fafde5505bce6b
-  gate: 279
+  epic: TH8
+  pr: 55
+  sha: 111da6cba4eb52c70b71745c14ffcc1a1f64c396
+  gate: 283
+freeze_tag: reference-baseline-template-v2
 predecessor:
   plan_id: SOUZ-TEMPLATE-FREEZE
   plan_version: v2
@@ -37,5 +38,5 @@ predecessor:
   freeze_tag: reference-baseline-template-freeze
   sha: ccba58d929dc342ce0baa2f40796d7057fb4de1c
 notes: >
-  TH7 merged (PR #54, merge-gate #279). TH8 template overlay and docs in progress.
-  No production. Template repo split is owner command after TH9.
+  Hardening COMPLETE. Tag reference-baseline-template-v2 is applied on exact
+  merged main after TH9 merge-gate. No production. Template repo split is owner command.

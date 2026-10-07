@@ -71,3 +71,53 @@ pnpm verify:exit-mode
 | No unused UI kit | `verify:ui-core` |
 | No secrets in repo | `verify:env`, `verify:security` |
 | No fake facts in generic layers | `verify:layers` project-literal guards |
+
+## TH9 — DoD mapping (SITE §32 / REALTY §67 / UI §50)
+
+Тег `reference-baseline-template-v2` — baseline шаблона **без production**. Playwright не gate.
+
+### SITE CORE §32
+
+| Пункт | Доказательство |
+|-------|----------------|
+| production build | merge-gate `verify-and-build`, `next build` в `template:check` / HTTP smoke |
+| обязательные проверки | `pnpm verify` + `tsc --noEmit` |
+| URL централизованы | `verify:routes`, `verify:grammar` |
+| SEO Registry / canonical / robots / sitemap | `verify:seo-contracts` |
+| Content Gate | `verify:seo-contracts` d4 / listing-gate |
+| 404/410/redirect | `verify:lifecycle`, HTTP smoke 404/410/308 |
+| заявка не теряется / spool без ПД в лог | `verify:leads` |
+| legal / нет секретов | `verify:env`, `verify:security` |
+| UI конституция | `verify:ui-core`, `docs/SOUZ_DESIGN_SYSTEM.md` |
+| нет выдуманных фактов | `verify:layers`, honest DTO tests |
+| развёртывание без скрытых зависимостей | `verify:exit-mode`, `docs/EXIT_BUNDLE.md` |
+
+### REALTY CORE §67
+
+| Пункт | Доказательство |
+|-------|----------------|
+| без live Hub на рендере | `DATA_MODE=local\|snapshot`, `verify:snapshot` |
+| SnapshotRepository единственная точка чтения | `verify:repository` |
+| подпись / last-good / ACK | `verify:snapshot` |
+| slug → 308, privacy, price freshness | `verify:lifecycle`, `verify:snapshot`, catalog tests |
+| sitemap = активный snapshot | `verify:seo-contracts` |
+| media заменяем | `verify:media` |
+| durable spool затем доставка | `verify:leads` |
+| Exit Mode без AMS credentials | HTTP smoke `DATA_MODE=local` |
+| UI без raw snapshot | `verify:ui-core`, depcruise `ui -/-> project` |
+
+### UI CORE §50
+
+| Пункт | Доказательство |
+|-------|----------------|
+| одна DS, tokens, primitives | `verify:ui-core`, `src/project/theme.css` |
+| Container/Section, server + islands | TH6 Header/layout, `verify:ui-core` |
+| DTO props, одна форма | `LeadForm`, `verify:leads` |
+| a11y / responsive | TH6 visual 375–1440, LeadForm ids/alerts |
+| нет fake facts / dark patterns | honest DTO, `INDEXING_MODE=private` |
+| production build | merge-gate |
+
+### TH9.01 security evidence
+
+- Next.js **16.3.8** — September 2026 Active LTS security line (`nextjs.org/blog/upcoming-nextjs-security-release-september-2026`).
+- `pnpm audit --prod`: nodemailer поднят до **10.x** (GHSA spool/parser/TLS). Transitive `braces` через `shadcn` без патча — зафиксировано, не блокирует template freeze.

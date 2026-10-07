@@ -1,6 +1,8 @@
 import { type ChildProcess, spawn } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+
+const SMOKE_FIXTURE = "fixture-sz-rostov";
 
 const PORT = process.env.VERIFY_HTTP_PORT ?? "4017";
 const ORIGIN = `http://127.0.0.1:${PORT}`;
@@ -47,6 +49,7 @@ function startProductionServer(root: string): ChildProcess {
       NODE_ENV: "production",
       APP_ENV: "local",
       DATA_MODE: "local",
+      PROJECT_FIXTURE: SMOKE_FIXTURE,
       LEADS_ROUTE: "direct",
       LEAD_TRANSPORT: "none",
       INDEXING_MODE: "private",
@@ -66,6 +69,7 @@ function runNextBuild(root: string): Promise<void> {
         NODE_ENV: "production",
         APP_ENV: "local",
         DATA_MODE: "local",
+        PROJECT_FIXTURE: SMOKE_FIXTURE,
       },
       stdio: "inherit",
     });
@@ -84,9 +88,14 @@ export async function runExitHttpSmoke(root: string): Promise<void> {
     console.log("SKIP http-smoke VERIFY_SKIP_HTTP_SMOKE=1");
     return;
   }
-  if (!existsSync(join(root, ".next"))) {
-    console.log("http-smoke running next build");
+  const marker = join(root, ".next/ams-smoke-fixture");
+  const builtFixture = existsSync(marker)
+    ? readFileSync(marker, "utf8").trim()
+    : "";
+  if (!existsSync(join(root, ".next")) || builtFixture !== SMOKE_FIXTURE) {
+    console.log(`http-smoke running next build (${SMOKE_FIXTURE})`);
     await runNextBuild(root);
+    writeFileSync(marker, `${SMOKE_FIXTURE}\n`);
   }
   const server = startProductionServer(root);
   try {
