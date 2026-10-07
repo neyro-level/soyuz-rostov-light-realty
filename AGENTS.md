@@ -6,8 +6,9 @@
 
 - Plan ID: `SOUZ-TEMPLATE-FREEZE`
 - Version: `v2`
-- Status: `APPROVED`
-- Canonical file: `docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md`
+- Status: **`COMPLETE`** (закрыт 2026-10-07; implementation graph доставлен, freeze tag `reference-baseline-template-freeze` @ `ccba58d`)
+- Canonical file: `docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md` (исторический канон; **не расширять** без нового Plan ID)
+- **Активный план:** нет — новый scope / правки программы → **новый Plan ID** + новый мастер-план (или ADR + owner approval)
 - Standards: `docs/standards/`
 - Design system: `docs/SOUZ_DESIGN_SYSTEM.md`
 - Predecessor archive: `docs/archive/` (не Source of Truth; Beads Lite не трогать)

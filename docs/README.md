@@ -4,9 +4,9 @@
 
 | Файл | Роль |
 |---|---|
-| `ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md` | Канонический мастер-план `SOUZ-TEMPLATE-FREEZE` v2 APPROVED |
-| `task-manager-inventory.v2.json` | Inventory Task Manager `souztf` |
-| `DELIVERY_STATE.yaml` | Текущий эпик и статус доставки |
+| `ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md` | Мастер-план `SOUZ-TEMPLATE-FREEZE` v2 **COMPLETE** (исторический канон; новый scope → новый Plan ID) |
+| `task-manager-inventory.v2.json` | Inventory Task Manager `souztf` (закрытая программа; не расширять без нового плана) |
+| `DELIVERY_STATE.yaml` | Финальный статус доставки Freeze v2 (`plan_status: COMPLETE`) |
 | `SOUZ_DESIGN_SYSTEM.md` | Единственная проектная дизайн-система |
 | `standards/AMS_SITE_CORE.md` | Конституция сайтов AMS |
 | `standards/AMS_REALTY_CORE.md` | Профиль недвижимости |
