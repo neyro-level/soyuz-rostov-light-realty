@@ -1,7 +1,12 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   decideEntityLifecycle,
   normalizeLifecycle,
 } from "../src/platform/lifecycle";
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 let failed = 0;
 
@@ -66,6 +71,47 @@ check(
   "slug-history-canonical",
   oldSlug.location === "/kvartiry/listing-1-aaaaab/",
 );
+
+const developmentHistory = decideEntityLifecycle({
+  missing: false,
+  lifecycle: "VISIBLE",
+  requestSlug: "old-zhk",
+  canonicalSlug: "reka",
+  slugHistory: ["old-zhk"],
+  canonicalHref: "/novostroyki/zhk-reka/",
+});
+check("development-slug-history-308", developmentHistory.status === 308);
+check(
+  "development-slug-history-canonical",
+  developmentHistory.location === "/novostroyki/zhk-reka/",
+);
+
+const redirectedNoTarget = decideEntityLifecycle({
+  missing: false,
+  lifecycle: "REDIRECTED",
+});
+check("redirected-without-location-is-410", redirectedNoTarget.status === 410);
+check("redirected-does-not-use-home", redirectedNoTarget.location !== "/");
+
+const applySource = readFileSync(
+  join(root, "src/app/apply-lifecycle.ts"),
+  "utf8",
+);
+check("rsc-410-calls-gone", applySource.includes("gone()"));
+check("rsc-410-status-branch", applySource.includes("status === 410"));
+
+const fromRoute = readFileSync(
+  join(root, "src/platform/lifecycle/from-route.ts"),
+  "utf8",
+);
+check(
+  "lifecycle-fallback-not-home",
+  !fromRoute.includes('buildHref(grammar, flags, "home")'),
+);
+
+const proxySource = readFileSync(join(root, "src/proxy.ts"), "utf8");
+check("lowercase-308", proxySource.includes("asciiLowerPath"));
+check("lifecycle-legacy-chain", proxySource.includes("resolvePublicLocation"));
 
 if (failed) {
   process.exit(1);

@@ -10,6 +10,7 @@ describe("loadEnv", () => {
     expect(parsed.APP_ENV).toBe("local");
     expect(parsed.DATA_MODE).toBe("local");
     expect(parsed.LEADS_ROUTE).toBe("direct");
+    expect(parsed.INDEXING_MODE).toBe("private");
   });
 
   it("requires SNAPSHOT_STORE_DIR outside local when DATA_MODE=snapshot", () => {

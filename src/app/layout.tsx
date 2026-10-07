@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { OptInAnalytics } from "@/platform/analytics";
 import { buildHref, isFeatureEnabled } from "@/platform/grammar";
 import { resolveNavGroup } from "@/platform/nav";
@@ -19,7 +20,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.siteUrl),
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const agentJsonLd = buildRealEstateAgentJsonLd({
     name: site.brand,
     url: site.siteUrl,
@@ -51,7 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ru" className={`${manrope.variable} h-full antialiased`}>
       <body className={`${manrope.className} min-h-full flex flex-col`}>
-        <JsonLdScript data={agentJsonLd} />
+        <JsonLdScript data={agentJsonLd} nonce={nonce} />
         <Header
           brand={site.brand}
           ctaLabel={navigation.ctaLabel}

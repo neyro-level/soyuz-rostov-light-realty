@@ -20,7 +20,7 @@ function catalogFallback(
 ): string | null {
   return (
     buildHref(grammar, flags, "catNovostroyki") ??
-    buildHref(grammar, flags, "home")
+    buildHref(grammar, flags, "catKvartiry")
   );
 }
 

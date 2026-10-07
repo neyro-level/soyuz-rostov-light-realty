@@ -101,12 +101,21 @@ export function findDevelopment(
   if (!slug) {
     return undefined;
   }
-  return snapshot.developments.find(
-    (item) =>
+  return snapshot.developments.find((item) => {
+    if (
       developmentUrlSlug(item) === slug ||
       item.slug === slug ||
-      item.publicUrlId === slug,
-  );
+      item.publicUrlId === slug
+    ) {
+      return true;
+    }
+    return (item.slugHistory ?? []).some(
+      (historic) =>
+        historic === slug ||
+        historic === `zhk-${slug}` ||
+        developmentUrlSlug({ ...item, slug: historic }) === slug,
+    );
+  });
 }
 
 export function findDeveloper(

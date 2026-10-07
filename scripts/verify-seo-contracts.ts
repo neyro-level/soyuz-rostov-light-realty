@@ -134,9 +134,9 @@ const exampleEnv = readFileSync(join(root, ".env.example"), "utf8").replaceAll(
 );
 const envSource = readFileSync(join(root, "src/platform/env.ts"), "utf8");
 check(
-  "INDEXING_MODE=staging",
+  "INDEXING_MODE=private",
   /^INDEXING_MODE$/m.test(exampleEnv) &&
-    envSource.includes('.default("staging")'),
+    envSource.includes('.default("private")'),
 );
 
 const agent = buildRealEstateAgentJsonLd({
@@ -155,6 +155,10 @@ const crumbs = buildBreadcrumbListJsonLd([
 ]);
 check("d12-breadcrumb-type", crumbs["@type"] === "BreadcrumbList");
 check("d12-breadcrumb-clean", jsonLdHasForbiddenType(crumbs) === false);
+check(
+  "seo-registry-og-column",
+  rows.every((row) => typeof row.og === "string"),
+);
 
 const gone = matchLegacy("/blog/old-post/", legacyRules);
 check("legacy-410-blog", gone?.status === 410);
@@ -195,7 +199,12 @@ check(
   "robots-staging-disallow",
   buildRobotsTxt("staging").includes("Disallow: /"),
 );
+check(
+  "robots-private-disallow",
+  buildRobotsTxt("private").includes("Disallow: /"),
+);
 check("sitemap-staging-empty", sitemapAllowed("staging") === false);
+check("sitemap-private-empty", sitemapAllowed("private") === false);
 
 const repo = SnapshotRepository.fromRevisionDir(
   root,
@@ -288,6 +297,55 @@ const stagingEntries = buildSitemapEntries(snapshot, {
   indexingMode: "staging",
 });
 check("sitemap-staging-entries-empty", stagingEntries.length === 0);
+
+const privateHome = resolvePageMetadata("home", {}, snapshot, {
+  ...context,
+  indexingMode: "private",
+});
+check(
+  "private-html-noindex-nofollow",
+  privateHome.robots.index === false && privateHome.robots.follow === false,
+);
+const stagingHome = resolvePageMetadata("home", {}, snapshot, {
+  ...context,
+  indexingMode: "staging",
+});
+check(
+  "staging-html-noindex-nofollow",
+  stagingHome.robots.index === false && stagingHome.robots.follow === false,
+);
+check("og-title-present", privateHome.ogTitle.length > 0);
+
+if (listing) {
+  const unitMeta = resolvePageMetadata(
+    "property",
+    {
+      slug: listing.slug || listing.publicUrlId,
+      publicUrlId: listing.publicUrlId,
+    },
+    {
+      ...snapshot,
+      inventory: snapshot.inventory.map((item) =>
+        item.publicUrlId === listing.publicUrlId
+          ? { ...item, propertyType: "NEW_BUILD_UNIT" as const }
+          : item,
+      ),
+    },
+    publicContext,
+  );
+  check(
+    "new-build-unit-noindex-follow",
+    unitMeta.robots.index === false && unitMeta.robots.follow === true,
+  );
+}
+
+const thinListing = resolvePageMetadata(
+  "catNovostroyki",
+  {},
+  { ...snapshot, developments: [] },
+  { ...publicContext, listingIndexMinCount: 3 },
+);
+check("listing-gate-threshold", thinListing.gate === "FAIL");
 
 if (failed) {
   process.exit(1);

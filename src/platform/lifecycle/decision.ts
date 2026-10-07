@@ -51,7 +51,14 @@ export function decideEntityLifecycle(input: {
     input.requestSlug !== input.canonicalSlug &&
     input.canonicalHref
   ) {
-    return { status: 308, location: input.canonicalHref };
+    const historic = input.slugHistory ?? [];
+    if (
+      historic.length === 0 ||
+      historic.includes(input.requestSlug) ||
+      historic.includes(`zhk-${input.requestSlug}`)
+    ) {
+      return { status: 308, location: input.canonicalHref };
+    }
   }
   const lifecycle = normalizeLifecycle(input.lifecycle);
   if (lifecycle === "GONE") {

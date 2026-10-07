@@ -1,6 +1,9 @@
+import { headers } from "next/headers";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { MoneyDTO } from "@/platform/catalog";
 import { buildHref } from "@/platform/grammar";
+import { buildBreadcrumbListJsonLd } from "@/platform/seo";
+import { JsonLdScript } from "@/platform/seo/json-ld-script";
 import {
   CatalogGrid,
   DevelopmentCard,
@@ -165,12 +168,23 @@ export async function SitePage({
     pageKey === "developers" ||
     pageKey === "team";
 
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const breadcrumbJsonLd = buildBreadcrumbListJsonLd(
+    breadcrumbs.map((crumb) => ({
+      name: crumb.label,
+      item:
+        "href" in crumb && crumb.href
+          ? new URL(crumb.href, site.siteUrl).toString()
+          : contextResolved.canonical,
+    })),
+  );
   return (
     <StarterPageShell
       breadcrumbs={breadcrumbs}
       lead={contextResolved.description}
       title={contextResolved.h1}
     >
+      <JsonLdScript data={breadcrumbJsonLd} nonce={nonce} />
       {hasStarterContent ? starterContent : null}
     </StarterPageShell>
   );
@@ -194,25 +208,6 @@ function UtilityStarterSlot({
       {pageKey === "privacy" || pageKey === "consent" ? (
         <p className="text-sm text-[var(--sr-muted-foreground)]">
           {registryLead}
-        </p>
-      ) : null}
-      {pageKey === "search" ? (
-        <label className="flex flex-col gap-[var(--sr-space-xs)]">
-          <span className="text-sm text-[var(--sr-muted-foreground)]">
-            {uiText.utility.searchLabel}
-          </span>
-          <input
-            aria-disabled="true"
-            className="min-h-11 rounded-lg border border-border bg-[var(--sr-background)] px-[var(--sr-space-md)]"
-            disabled
-            placeholder={uiText.utility.searchPlaceholder}
-            type="search"
-          />
-        </label>
-      ) : null}
-      {pageKey === "favorites" ? (
-        <p className="text-sm text-[var(--sr-muted-foreground)]">
-          {uiText.utility.favoritesEmpty}
         </p>
       ) : null}
     </div>

@@ -6,7 +6,7 @@ import {
   listingCheckedAt,
 } from "../catalog/entities";
 import { buildHref, type FeatureFlags, type GrammarConfig } from "../grammar";
-import { normalizeLifecycle } from "../lifecycle";
+import { isPubliclyListed, normalizeLifecycle } from "../lifecycle";
 import {
   evaluateDevelopmentTextGate,
   evaluatePriceFreshness,
@@ -34,6 +34,7 @@ export type PageMetadataContext = {
   ) => Record<string, string | undefined>;
   noindexAutoPageKeys?: readonly string[];
   catalogReady?: boolean;
+  listingIndexMinCount?: number;
   now?: Date;
 };
 
@@ -47,6 +48,7 @@ export type ResolvedPageMetadata = {
   hidePrice: boolean;
   vars: Record<string, string | undefined>;
   href: string;
+  ogTitle: string;
 };
 
 const CATALOG_PAGE_KEYS = new Set([
@@ -77,6 +79,25 @@ function rowOrThrow(
   return row;
 }
 
+const LISTING_PAGE_KEYS = new Set([
+  "catNovostroyki",
+  "catKvartiry",
+  "facetVtorichka",
+]);
+
+function listingObjectCount(
+  pageKey: string,
+  snapshot: CatalogSnapshot,
+): number {
+  if (pageKey === "catNovostroyki" || pageKey.startsWith("dist")) {
+    return snapshot.developments.filter((item) =>
+      isPubliclyListed(item.lifecycle),
+    ).length;
+  }
+  return snapshot.inventory.filter((item) => isPubliclyListed(item.lifecycle))
+    .length;
+}
+
 export function evaluatePageGate(
   pageKey: string,
   snapshot: CatalogSnapshot,
@@ -84,9 +105,15 @@ export function evaluatePageGate(
   thresholds: PriceGateThresholds,
   now: Date,
   catalogReady = true,
+  listingIndexMinCount = 1,
 ): { gate: "PASS" | "FAIL"; hidePrice: boolean; checkedAt?: string } {
   if (!catalogReady && isCatalogSeoPage(pageKey)) {
     return { gate: "FAIL", hidePrice: false };
+  }
+  if (LISTING_PAGE_KEYS.has(pageKey) || pageKey.startsWith("dist")) {
+    if (listingObjectCount(pageKey, snapshot) < listingIndexMinCount) {
+      return { gate: "FAIL", hidePrice: false };
+    }
   }
   const gated =
     pageKey === "property" ||
@@ -169,15 +196,20 @@ export function resolvePageMetadata(
     context.thresholds,
     now,
     context.catalogReady !== false,
+    context.listingIndexMinCount ?? 1,
   );
   const vars = context.mapVars(pageKey, params, snapshot);
   const title = fillSeoTemplate(row.title, vars, { hidePrice });
   const description = fillSeoTemplate(row.description, vars, { hidePrice });
   const h1 = fillSeoTemplate(row.h1, vars, { hidePrice });
+  const ogTitle = fillSeoTemplate(row.og || row.title, vars, { hidePrice });
   const href = resolveHref(context, pageKey, params);
   const canonical = absoluteCanonical(context.siteUrl, href);
   let robots = parseRobotsDirective(row.robotsDefault);
-  if (context.indexingMode === "staging") {
+  if (
+    context.indexingMode === "private" ||
+    context.indexingMode === "staging"
+  ) {
     robots = { index: false, follow: false };
   } else if (context.noindexAutoPageKeys?.includes(pageKey)) {
     robots = { index: false, follow: true };
@@ -185,6 +217,8 @@ export function resolvePageMetadata(
     const listing = findProperty(snapshot, params.publicUrlId);
     if (!listing) {
       robots = { index: false, follow: false };
+    } else if (listing.propertyType === "NEW_BUILD_UNIT") {
+      robots = { index: false, follow: true };
     } else if (normalizeLifecycle(listing.lifecycle) === "ARCHIVED_VISIBLE") {
       robots = { index: false, follow: true };
     } else if (gate === "FAIL") {
@@ -214,6 +248,7 @@ export function resolvePageMetadata(
     hidePrice,
     vars,
     href,
+    ogTitle,
   };
 }
 
@@ -225,6 +260,13 @@ export function toNextMetadata(resolved: ResolvedPageMetadata): Metadata {
     robots: {
       index: resolved.robots.index,
       follow: resolved.robots.follow,
+    },
+    openGraph: {
+      title: resolved.ogTitle,
+      description: resolved.description,
+      url: resolved.canonical,
+      locale: "ru_RU",
+      type: "website",
     },
   };
 }

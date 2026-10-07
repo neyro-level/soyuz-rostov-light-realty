@@ -8,6 +8,7 @@ export type SeoRegistryRow = {
   targetIntent: string;
   contentGateRule: string;
   status: string;
+  og: string;
 };
 
 function splitCsvLine(line: string): string[] {
@@ -63,6 +64,7 @@ export function parseSeoRegistryCsv(raw: string): SeoRegistryRow[] {
     "targetIntent",
     "contentGateRule",
     "status",
+    "og",
   ];
   for (const name of required) {
     if (!header.includes(name)) {
@@ -85,6 +87,7 @@ export function parseSeoRegistryCsv(raw: string): SeoRegistryRow[] {
       targetIntent: row.targetIntent,
       contentGateRule: row.contentGateRule,
       status: row.status,
+      og: row.og ?? "",
     };
   });
 }

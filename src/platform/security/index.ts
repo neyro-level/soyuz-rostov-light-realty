@@ -1,1 +1,6 @@
-export { buildSecurityHeaders, type SecurityHeader } from "./headers";
+export {
+  applySecurityHeaders,
+  buildSecurityHeaders,
+  createCspNonce,
+  type SecurityHeader,
+} from "./headers";

@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
         headers: buildSecurityHeaders({
           mediaOrigin: media.origin,
           analyticsOrigins: analytics.origins,
+          hsts: process.env.NODE_ENV === "production",
         }),
       },
     ];

@@ -66,7 +66,7 @@ check(
 
 const defaults = loadEnv({} as NodeJS.ProcessEnv);
 check("secret-undefined-by-default", defaults.SMTP_PASS === undefined);
-check("indexing-default-staging", defaults.INDEXING_MODE === "staging");
+check("indexing-default-private", defaults.INDEXING_MODE === "private");
 check("data-mode-default-local", defaults.DATA_MODE === "local");
 check("lead-transport-default-none", defaults.LEAD_TRANSPORT === "none");
 

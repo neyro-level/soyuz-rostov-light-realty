@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildHref, matchPath } from "../src/platform/grammar";
+import {
+  buildHref,
+  isFeatureEnabled,
+  matchPath,
+} from "../src/platform/grammar";
 import { resolveNavGroup } from "../src/platform/nav";
 import { parseSeoRegistryCsv } from "../src/platform/seo";
 import { features } from "../src/project/features.config";
@@ -36,7 +40,14 @@ for (const route of grammar.routes) {
     id: "aaaaab",
   });
   if (!href) {
-    check(`route-disabled-or-missing:${route.pageKey}`, false);
+    const feature =
+      "feature" in route
+        ? (route.feature as keyof typeof features | undefined)
+        : undefined;
+    check(
+      `route-disabled:${route.pageKey}`,
+      Boolean(feature) && !isFeatureEnabled(features, feature),
+    );
     continue;
   }
   const matched = matchPath(grammar, features, href);

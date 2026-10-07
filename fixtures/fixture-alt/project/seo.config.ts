@@ -7,6 +7,7 @@ export const seo = {
   priceHideAfterDays: 45,
   priceGateFailAfterDays: 120,
   developmentTextFailAfterDays: 180,
+  listingIndexMinCount: 1,
   brandInTitlePageKeys: [] as string[],
   noindexAutoPageKeys: [] as string[],
   catalogPageKeys: [

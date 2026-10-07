@@ -10,6 +10,7 @@ const primarySeo = {
   priceHideAfterDays: 45,
   priceGateFailAfterDays: 120,
   developmentTextFailAfterDays: 180,
+  listingIndexMinCount: 3,
   brandInTitlePageKeys: [
     "home",
     "ipoteka",

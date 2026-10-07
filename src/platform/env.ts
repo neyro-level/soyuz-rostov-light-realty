@@ -23,7 +23,7 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   APP_ENV: z.enum(["local", "staging", "production"]).default("local"),
-  INDEXING_MODE: z.enum(["private", "staging", "public"]).default("staging"),
+  INDEXING_MODE: z.enum(["private", "staging", "public"]).default("private"),
   DATA_MODE: z.enum(["snapshot", "local"]).default("local"),
   LEADS_ROUTE: z.enum(["direct"]).default("direct"),
   LEAD_TRANSPORT: z.enum(["none", "smtp", "webhook"]).default("none"),

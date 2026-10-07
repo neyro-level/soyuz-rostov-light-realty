@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSecurityHeaders } from "../src/platform/security";
@@ -42,8 +42,25 @@ const headers = buildSecurityHeaders({
   analyticsOrigins: analytics.origins,
 });
 const csp = headers.find((item) => item.key === "Content-Security-Policy");
+const nonceHeaders = buildSecurityHeaders({
+  analyticsOrigins: analytics.origins,
+  nonce: "test-nonce",
+  hsts: true,
+});
+const nonceCsp = nonceHeaders.find(
+  (item) => item.key === "Content-Security-Policy",
+);
 check("csp-present", Boolean(csp?.value.includes("default-src 'self'")));
 check("csp-no-wildcard", Boolean(csp && !csp.value.includes("*")));
+check("csp-nonce", Boolean(nonceCsp?.value.includes("'nonce-test-nonce'")));
+check(
+  "hsts-production",
+  nonceHeaders.some(
+    (item) =>
+      item.key === "Strict-Transport-Security" &&
+      item.value.includes("max-age=31536000"),
+  ),
+);
 check(
   "x-frame-deny",
   headers.some(
@@ -55,6 +72,17 @@ check(
   headers.some(
     (item) => item.key === "X-Content-Type-Options" && item.value === "nosniff",
   ),
+);
+
+const proxy = readFileSync(join(root, "src/proxy.ts"), "utf8");
+check("csp-nonce-via-proxy", proxy.includes("createCspNonce"));
+const dockerfile = readFileSync(join(root, "Dockerfile"), "utf8");
+check("docker-healthcheck", dockerfile.includes("HEALTHCHECK"));
+check("dockerfile-leads-route", dockerfile.includes("LEADS_ROUTE=direct"));
+check("dockerfile-no-leads-mode", !dockerfile.includes("LEADS_MODE"));
+check(
+  "global-error-present",
+  existsSync(join(root, "src/app/global-error.tsx")),
 );
 
 if (failed) {

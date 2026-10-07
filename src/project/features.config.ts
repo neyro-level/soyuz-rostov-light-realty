@@ -7,8 +7,8 @@ const primaryFeatures = {
   vtorichka: "ON",
   yurist: "ON",
   vacancies: "ON",
-  favorites: "ON",
-  search: "ON",
+  favorites: "DISABLED",
+  search: "DISABLED",
   team: "ON",
 } as const satisfies FeatureFlags;
 

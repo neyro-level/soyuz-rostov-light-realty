@@ -4,7 +4,7 @@ x-app-env: &app-env
   APP_ENV: local
   DATA_MODE: local
   LEADS_ROUTE: direct
-  INDEXING_MODE: staging
+  INDEXING_MODE: private
   SNAPSHOT_STORE_DIR: /data/snapshots
   LEAD_SPOOL_DIR: /data/leads
   HOSTNAME: 0.0.0.0

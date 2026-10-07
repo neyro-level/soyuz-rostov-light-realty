@@ -1,4 +1,4 @@
-pageKey,urlPattern,robotsDefault,title,h1,description,targetIntent,contentGateRule,status
+pageKey,urlPattern,robotsDefault,title,h1,description,targetIntent,contentGateRule,status,og
 home,/,index,"Новостройки Краснодара — каталог квартир от застройщиков","Новостройки Краснодара","Каталог новостроек Краснодара: цены от застройщиков, планировки и сроки сдачи. Подбор квартиры без обязательств.",home,none,active
 geoHub,/{geo}/,"noindex,follow","Недвижимость в Краснодаре: новостройки и цены","Недвижимость в Краснодаре","Новостройки Краснодара: актуальные предложения застройщиков, цены и планировки по районам города.",geo-hub,none,active
 catNovostroyki,/{geo}/novostroyki/,index,"Новостройки Краснодара — цены и жилые комплексы","Новостройки в Краснодаре","Новостройки Краснодара от застройщиков: цены, планировки, сроки сдачи и расположение ЖК. Подбор квартиры.",novostroyki-catalog,none,active

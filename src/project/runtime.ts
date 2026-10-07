@@ -126,6 +126,7 @@ export function metadataContext(): PageMetadataContext {
       developmentTextFailAfterDays: seo.developmentTextFailAfterDays,
     },
     noindexAutoPageKeys: seo.noindexAutoPageKeys,
+    listingIndexMinCount: seo.listingIndexMinCount,
   };
 }
 
