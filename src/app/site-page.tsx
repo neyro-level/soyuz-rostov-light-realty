@@ -275,6 +275,9 @@ async function CatalogSlot({
     return (
       <CatalogGrid>
         {developers.map((item) => {
+          if (!item.slug) {
+            return null;
+          }
           const href = buildHref(grammar, features, "developer", {
             slug: item.slug,
           });

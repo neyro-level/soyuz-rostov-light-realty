@@ -34,7 +34,7 @@ export function seoVarsForPage(
     const development = developmentOf(snapshot, listing);
     const complexOrAddress = development?.name ?? listing.addressPublic;
     return {
-      N: String(roomsOf(listing)),
+      N: roomsOf(listing) === null ? undefined : String(roomsOf(listing)),
       S: factNumber(listing.facts, "totalAreaM2"),
       floor: factNumber(listing.facts, "floor"),
       floors: factNumber(listing.facts, "floorsTotal"),

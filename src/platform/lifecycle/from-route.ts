@@ -75,7 +75,7 @@ export function lifecycleForMatchedRoute(
   }
   if (matched.pageKey === "developer") {
     const developer = findDeveloper(snapshot, matched.params.slug);
-    const canonicalHref = developer
+    const canonicalHref = developer?.slug
       ? buildHref(grammar, flags, "developer", { slug: developer.slug })
       : null;
     return decideEntityLifecycle({

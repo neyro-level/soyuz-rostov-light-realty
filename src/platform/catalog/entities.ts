@@ -3,7 +3,7 @@ import { loadFixtureInventory, loadFixtureJson } from "./local";
 
 export type DeveloperRecord = {
   uid: string;
-  slug: string;
+  slug?: string;
   name: string;
 };
 
@@ -32,10 +32,7 @@ export function loadCatalogSnapshot(
     root,
     fixtureDir,
     "developers.json",
-  ).map((item) => ({
-    ...item,
-    slug: item.slug || `developer-${item.uid.replace(/^dev-/, "")}`,
-  }));
+  );
   const developments = loadFixtureJson<DevelopmentRecord[]>(
     root,
     fixtureDir,
@@ -48,14 +45,15 @@ export function loadCatalogSnapshot(
   };
 }
 
-export function roomsOf(listing: PublicInventoryDto): number {
+export function roomsOf(listing: PublicInventoryDto): number | null {
   return "rooms" in listing.facts && typeof listing.facts.rooms === "number"
     ? listing.facts.rooms
-    : 1;
+    : null;
 }
 
-export function propertySemantic(listing: PublicInventoryDto): string {
-  return `${roomsOf(listing)}k`;
+export function propertySemantic(listing: PublicInventoryDto): string | null {
+  const rooms = roomsOf(listing);
+  return rooms === null ? null : `${rooms}k`;
 }
 
 export function propertyUrlParams(listing: {
@@ -118,7 +116,9 @@ export function findDeveloper(
   if (!slug) {
     return undefined;
   }
-  return snapshot.developers.find((item) => item.slug === slug);
+  return snapshot.developers.find(
+    (item) => Boolean(item.slug) && item.slug === slug,
+  );
 }
 
 export function developmentOf(

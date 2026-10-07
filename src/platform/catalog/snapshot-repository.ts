@@ -1,5 +1,9 @@
 import type { PublicInventoryDto } from "../hub/contract";
 import { isPubliclyListed, normalizeLifecycle } from "../lifecycle";
+import {
+  evaluatePriceFreshness,
+  type PriceGateThresholds,
+} from "../seo/content-gate";
 import type {
   AgentCardDTO,
   AgentDetailsDTO,
@@ -17,6 +21,7 @@ import {
   type CatalogSnapshot,
   developerOf,
   developmentUrlSlug,
+  listingCheckedAt,
   loadCatalogSnapshot,
   roomsOf,
 } from "./entities";
@@ -27,7 +32,7 @@ import type {
   RealtyRepository,
 } from "./repository";
 
-type GeoRecord = { uid: string; name: string };
+type GeoRecord = { uid: string; name: string; slug?: string };
 type AgentRecord = {
   uid: string;
   slug?: string;
@@ -109,6 +114,10 @@ export class SnapshotRepository implements RealtyRepository {
     private readonly agents: AgentRecord[],
     private readonly contact: ProjectContactDTO | null,
     private readonly catalogReady = true,
+    private readonly priceGate?: {
+      thresholds: PriceGateThresholds;
+      now?: Date;
+    },
   ) {
     this.buildIndexes();
   }
@@ -136,6 +145,7 @@ export class SnapshotRepository implements RealtyRepository {
     root: string,
     revisionDir: string,
     catalogReady = true,
+    priceGate?: { thresholds: PriceGateThresholds; now?: Date },
   ): SnapshotRepository {
     const snapshot = loadCatalogSnapshot(root, revisionDir);
     const geos = loadFixtureJson<GeoRecord[]>(
@@ -144,7 +154,7 @@ export class SnapshotRepository implements RealtyRepository {
       "geo.json",
     ).map((item) => ({
       uid: item.uid,
-      slug: item.uid,
+      slug: item.slug ?? item.uid,
       name: item.name,
     }));
     const agents = loadFixtureJson<AgentRecord[]>(
@@ -173,6 +183,7 @@ export class SnapshotRepository implements RealtyRepository {
       agents,
       contact,
       catalogReady,
+      priceGate,
     );
   }
 
@@ -181,7 +192,9 @@ export class SnapshotRepository implements RealtyRepository {
       this.geoBySlug.set(geo.slug, geo);
     }
     for (const developer of this.snapshot.developers) {
-      this.developerBySlug.set(developer.slug, developer);
+      if (developer.slug) {
+        this.developerBySlug.set(developer.slug, developer);
+      }
     }
     for (const development of this.snapshot.developments) {
       this.developmentByUid.set(development.uid, development);
@@ -256,13 +269,10 @@ export class SnapshotRepository implements RealtyRepository {
     const agent = listing.agentUid
       ? this.agentByUid.get(listing.agentUid)
       : undefined;
-    const contact = this.contact ?? {
-      phone: "",
-      email: null,
-      messengers: null,
-      address: null,
-      hours: null,
-    };
+    const contact = this.contact;
+    if (!contact) {
+      return null;
+    }
     return {
       uid: listing.uid,
       publicUrlId: listing.publicUrlId,
@@ -273,10 +283,11 @@ export class SnapshotRepository implements RealtyRepository {
       floor: floorOf(listing),
       floorsTotal: floorsTotalOf(listing),
       price: money(listing.price),
-      hidePrice: false,
+      hidePrice: this.hidePriceOf(listing),
       description:
         listing.descriptionText ?? listing.descriptionHtmlSafe ?? null,
-      geo: null,
+      geo: this.geoForPrecision(listing.geoPrecision),
+      geoPrecision: listing.geoPrecision,
       development: development ? this.toDevelopmentCard(development) : null,
       developer: developer ? this.toDeveloper(developer) : null,
       agent: agent ? this.toAgentCard(agent) : null,
@@ -307,13 +318,10 @@ export class SnapshotRepository implements RealtyRepository {
       return null;
     }
     const developer = developerOf(this.snapshot, development);
-    const contact = this.contact ?? {
-      phone: "",
-      email: null,
-      messengers: null,
-      address: null,
-      hours: null,
-    };
+    const contact = this.contact;
+    if (!contact) {
+      return null;
+    }
     const properties = (this.byDevelopmentUid.get(development.uid) ?? []).map(
       (item) => this.toPropertyCard(item),
     );
@@ -324,10 +332,11 @@ export class SnapshotRepository implements RealtyRepository {
       name: development.name,
       description: null,
       developer: developer ? this.toDeveloper(developer) : null,
-      geo: null,
+      geo: this.geoForPrecision(undefined),
       contact,
       media: [],
       properties,
+      minPrice: this.toDevelopmentCard(development).minPrice,
       lifecycle: normalizeLifecycle(development.lifecycle),
     };
   }
@@ -361,7 +370,7 @@ export class SnapshotRepository implements RealtyRepository {
       bio: null,
       specializations: null,
       photo: null,
-      workPhone: null,
+      workPhone: this.contact?.phone ?? null,
       workEmail: null,
       lifecycle: normalizeLifecycle(agent.lifecycle),
     };
@@ -386,8 +395,9 @@ export class SnapshotRepository implements RealtyRepository {
       rooms: roomsOf(listing),
       area: areaOf(listing),
       price: money(listing.price),
-      hidePrice: false,
-      geoSlug: null,
+      hidePrice: this.hidePriceOf(listing),
+      geoSlug: this.geos[0]?.slug ?? null,
+      geoPrecision: listing.geoPrecision,
       developmentPublicUrlId: development?.publicUrlId ?? null,
     };
   }
@@ -396,7 +406,7 @@ export class SnapshotRepository implements RealtyRepository {
     development: CatalogSnapshot["developments"][number],
   ): DevelopmentCardDTO {
     const prices = (this.byDevelopmentUid.get(development.uid) ?? [])
-      .filter((item) => item.price)
+      .filter((item) => item.price && !this.hidePriceOf(item))
       .map((item) => item.price as MoneyDTO);
     const minPrice =
       prices.length === 0
@@ -419,9 +429,29 @@ export class SnapshotRepository implements RealtyRepository {
   ): DeveloperDTO {
     return {
       uid: developer.uid,
-      slug: developer.slug,
+      slug: developer.slug ?? null,
       name: developer.name,
     };
+  }
+
+  private hidePriceOf(listing: PublicInventoryDto): boolean {
+    const checkedAt = listingCheckedAt(this.snapshot, listing);
+    if (!this.priceGate) {
+      return !checkedAt;
+    }
+    return evaluatePriceFreshness(
+      checkedAt,
+      this.priceGate.now ?? new Date(),
+      this.priceGate.thresholds,
+    ).hidePrice;
+  }
+
+  private geoForPrecision(precision: GeoDTO["precision"]): GeoDTO | null {
+    const geo = this.geos[0];
+    if (!geo) {
+      return null;
+    }
+    return precision ? { ...geo, precision } : geo;
   }
 
   private toAgentCard(agent: AgentRecord): AgentCardDTO {
