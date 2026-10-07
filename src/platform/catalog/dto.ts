@@ -21,6 +21,7 @@ export type GeoDTO = {
   uid: string;
   slug: string;
   name: string;
+  precision?: "exact" | "street" | "district" | "city";
 };
 
 export type PropertyCardDTO = {
@@ -33,6 +34,7 @@ export type PropertyCardDTO = {
   price: MoneyDTO | null;
   hidePrice: boolean;
   geoSlug: string | null;
+  geoPrecision: "exact" | "street" | "district" | "city" | null;
   developmentPublicUrlId: string | null;
 };
 
@@ -49,6 +51,7 @@ export type PropertyDetailsDTO = {
   hidePrice: boolean;
   description: string | null;
   geo: GeoDTO | null;
+  geoPrecision: "exact" | "street" | "district" | "city" | null;
   development: DevelopmentCardDTO | null;
   developer: DeveloperDTO | null;
   agent: AgentCardDTO | null;
@@ -77,12 +80,13 @@ export type DevelopmentDetailsDTO = {
   contact: ProjectContactDTO;
   media: MediaRefDTO[];
   properties: PropertyCardDTO[];
+  minPrice: MoneyDTO | null;
   lifecycle: string;
 };
 
 export type DeveloperDTO = {
   uid: string;
-  slug: string;
+  slug: string | null;
   name: string;
 };
 

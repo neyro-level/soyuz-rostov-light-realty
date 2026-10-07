@@ -136,7 +136,11 @@ export async function loadEntityDetailModel(
       })),
       facts,
       description: item.description,
-      minPriceDisplay: formatPrice(item.properties[0]?.price ?? null),
+      minPriceDisplay: formatPrice(
+        item.properties.find((listing) => !listing.hidePrice)?.price ??
+          item.minPrice ??
+          null,
+      ),
       relatedListings,
     };
   }

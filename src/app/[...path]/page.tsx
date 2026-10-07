@@ -39,6 +39,9 @@ export async function generateStaticParams() {
     }
   }
   for (const item of await repo.listDevelopers()) {
+    if (!item.slug) {
+      continue;
+    }
     const href = buildHref(grammar, features, "developer", {
       slug: item.slug,
     });

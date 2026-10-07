@@ -93,6 +93,13 @@ export function loadRepository(
         isAbsolute(resolved.dir) ? resolved.dir : cwd,
         isAbsolute(resolved.dir) ? "." : resolved.dir,
         resolved.ready,
+        {
+          thresholds: {
+            hideAfterDays: seo.priceHideAfterDays,
+            failAfterDays: seo.priceGateFailAfterDays,
+            developmentTextFailAfterDays: seo.developmentTextFailAfterDays,
+          },
+        },
       )
     : SnapshotRepository.empty();
   cached = { key: resolved.key, repo };

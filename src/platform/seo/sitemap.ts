@@ -95,7 +95,7 @@ export function buildSitemapEntries(
     }
     if (route.pageKey === "developer") {
       for (const developer of snapshot.developers) {
-        if (findDeveloper(snapshot, developer.slug)) {
+        if (developer.slug && findDeveloper(snapshot, developer.slug)) {
           push("developer", { slug: developer.slug });
         }
       }
