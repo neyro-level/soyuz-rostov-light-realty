@@ -16,6 +16,7 @@
       "!fixtures",
       "!docs/standards",
       "!docs/task-manager-inventory.v1.json",
+      "!docs/task-manager-inventory.v2.json",
       "!.beads",
       "!test-results"
     ]

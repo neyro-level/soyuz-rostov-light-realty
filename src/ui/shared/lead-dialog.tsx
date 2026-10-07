@@ -25,7 +25,11 @@ export function LeadDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className={className ?? "min-h-11"} type="button" variant={variant}>
+        <Button
+          className={className ?? "min-h-11"}
+          type="button"
+          variant={variant}
+        >
           {ctaLabel}
         </Button>
       </DialogTrigger>

@@ -3,7 +3,11 @@ import type {
   MoneyDTO,
   PropertyCardDTO,
 } from "@/platform/catalog";
-import { buildHref, type FeatureFlags, type GrammarConfig } from "@/platform/grammar";
+import {
+  buildHref,
+  type FeatureFlags,
+  type GrammarConfig,
+} from "@/platform/grammar";
 import type { SeoRegistryRow } from "@/platform/seo";
 import { homeContent } from "./home.config";
 import { getRealtyRepository } from "./runtime";
@@ -81,7 +85,7 @@ function resolveLink(
 }
 
 function developmentMeta(
-  item: DevelopmentCardDTO,
+  _item: DevelopmentCardDTO,
   developerName?: string,
 ): string {
   const parts = [developerName].filter(Boolean);
@@ -186,7 +190,8 @@ export async function buildHomeModel(
     heroChips,
     quickRoutes,
     developmentsTitle: homeContent.developments.title,
-    developmentsCatalogHref: buildHref(grammar, flags, "catNovostroyki") ?? undefined,
+    developmentsCatalogHref:
+      buildHref(grammar, flags, "catNovostroyki") ?? undefined,
     developments,
     selectionCard: homeContent.developments.selectionCard,
     interestTitle: homeContent.interest.title,
@@ -194,7 +199,8 @@ export async function buildHomeModel(
     interestServiceCard: homeContent.interest.serviceCard,
     servicePrimaryHref: buildHref(grammar, flags, "contacts") ?? undefined,
     serviceSecondaryHref:
-      buildHref(grammar, flags, homeContent.service.servicePageKey) ?? undefined,
+      buildHref(grammar, flags, homeContent.service.servicePageKey) ??
+      undefined,
     popularGroups,
   };
 }

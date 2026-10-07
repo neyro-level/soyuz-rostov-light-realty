@@ -18,13 +18,13 @@ import {
 import { SelectionServiceCard } from "@/ui/domain/selection-service-card";
 import { ServiceLeadCard } from "@/ui/domain/service-lead-card";
 import type { LeadFormConfig } from "@/ui/layout/header";
+import { Badge } from "@/ui/primitives/badge";
+import { Button } from "@/ui/primitives/button";
 import { Container } from "@/ui/shared/container";
 import { ImageFrame } from "@/ui/shared/image-frame";
 import { LeadDialog } from "@/ui/shared/lead-dialog";
 import { Section } from "@/ui/shared/section";
 import { SectionHeader } from "@/ui/shared/section-header";
-import { Badge } from "@/ui/primitives/badge";
-import { Button } from "@/ui/primitives/button";
 
 const quickRouteIcons = {
   building: Building2,
@@ -51,20 +51,17 @@ export function HomePage({
 
   return (
     <main className="flex-1">
-      <Section tone="primary" className="!py-[var(--sr-section-lg-mobile)] md:!py-[var(--sr-section-lg-desktop)]">
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+      <Section
+        tone="primary"
+        className="!py-[var(--sr-section-lg-mobile)] md:!py-[var(--sr-section-lg-desktop)]"
+      >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           <div className="grid items-center gap-[var(--sr-space-xl)] lg:grid-cols-2">
             <div>
-              <p
-                className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase"
-              >
+              <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
                 {hero.eyebrow}
               </p>
-              <h1
-                className="mt-[var(--sr-space-sm)] max-w-xl font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] leading-[var(--sr-text-h2-leading)] md:text-[length:var(--sr-text-h2-tablet)] lg:text-[length:var(--sr-text-h2-desktop)]"
-              >
+              <h1 className="mt-[var(--sr-space-sm)] max-w-xl font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] leading-[var(--sr-text-h2-leading)] md:text-[length:var(--sr-text-h2-tablet)] lg:text-[length:var(--sr-text-h2-desktop)]">
                 {hero.titleLine1}
                 <br />
                 {hero.titleLine2}
@@ -90,7 +87,10 @@ export function HomePage({
                 ))}
               </ul>
             </div>
-            <ImageFrame aspect="4/3" className="bg-[var(--sr-surface-primary-strong)]">
+            <ImageFrame
+              aspect="4/3"
+              className="bg-[var(--sr-surface-primary-strong)]"
+            >
               <div className="flex h-full items-center justify-center text-[var(--sr-primary)]">
                 <Building2 aria-hidden className="size-24" strokeWidth={1.25} />
               </div>
@@ -101,24 +101,22 @@ export function HomePage({
 
       {model.quickRoutes.length > 0 ? (
         <Section tone="default">
-          <Container
-            className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-          >
-            <ul
-              className="grid gap-[var(--sr-space-sm)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
-            >
+          <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
+            <ul className="grid gap-[var(--sr-space-sm)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
               {model.quickRoutes.map((route) => {
                 const Icon =
-                  quickRouteIcons[
-                    route.icon as keyof typeof quickRouteIcons
-                  ] ?? Building2;
+                  quickRouteIcons[route.icon as keyof typeof quickRouteIcons] ??
+                  Building2;
                 return (
                   <li key={route.href}>
                     <a
                       className="flex min-h-11 flex-col items-start gap-[var(--sr-space-sm)] rounded-md border border-[var(--sr-border)] bg-[var(--sr-card)] p-[var(--sr-space-md)] transition-colors hover:border-[var(--sr-border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--sr-primary)]"
                       href={route.href}
                     >
-                      <Icon aria-hidden className="size-5 text-[var(--sr-primary)]" />
+                      <Icon
+                        aria-hidden
+                        className="size-5 text-[var(--sr-primary)]"
+                      />
                       <span className="text-sm font-medium text-[var(--sr-foreground)]">
                         {route.label}
                       </span>
@@ -132,12 +130,8 @@ export function HomePage({
       ) : null}
 
       <Section tone="soft">
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
-          <SectionHeader
-            title={model.developmentsTitle}
-          />
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
+          <SectionHeader title={model.developmentsTitle} />
           {model.developmentsCatalogHref ? (
             <p className="-mt-[var(--sr-space-md)] mb-[var(--sr-space-lg)]">
               <a
@@ -160,7 +154,10 @@ export function HomePage({
             ))}
             <SelectionServiceCard
               ctaLabel={model.selectionCard.ctaLabel}
-              leadForm={{ ...leadForm, pageKey: `${leadFormPageKey}-selection` }}
+              leadForm={{
+                ...leadForm,
+                pageKey: `${leadFormPageKey}-selection`,
+              }}
               text={model.selectionCard.text}
               title={model.selectionCard.title}
             />
@@ -169,9 +166,7 @@ export function HomePage({
       </Section>
 
       <Section>
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           <SectionHeader title={model.interestTitle} />
           <CatalogGrid>
             {model.properties.slice(0, 4).map((item) => (
@@ -201,17 +196,13 @@ export function HomePage({
       </Section>
 
       <Section tone="primary">
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           <div className="grid items-center gap-[var(--sr-space-xl)] lg:grid-cols-2">
             <div>
               <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
                 {service.eyebrow}
               </p>
-              <h2
-                className="mt-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] md:text-[length:var(--sr-text-h2-tablet)]"
-              >
+              <h2 className="mt-[var(--sr-space-sm)] font-semibold text-[var(--sr-foreground)] text-[length:var(--sr-text-h2-mobile)] md:text-[length:var(--sr-text-h2-tablet)]">
                 {service.titleLine1}
                 <br />
                 {service.titleLine2}
@@ -223,12 +214,17 @@ export function HomePage({
                 {model.servicePrimaryHref ? (
                   <LeadDialog
                     ctaLabel={service.primaryCta}
-                    leadForm={{ ...leadForm, pageKey: `${leadFormPageKey}-service` }}
+                    leadForm={{
+                      ...leadForm,
+                      pageKey: `${leadFormPageKey}-service`,
+                    }}
                   />
                 ) : null}
                 {model.serviceSecondaryHref ? (
                   <Button asChild className="min-h-11" variant="outline">
-                    <a href={model.serviceSecondaryHref}>{service.secondaryCta}</a>
+                    <a href={model.serviceSecondaryHref}>
+                      {service.secondaryCta}
+                    </a>
                   </Button>
                 ) : null}
               </div>
@@ -243,11 +239,12 @@ export function HomePage({
       </Section>
 
       <Section tone="soft">
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           <div className="grid items-center gap-[var(--sr-space-xl)] lg:grid-cols-2">
-            <ImageFrame aspect="3/4" className="max-w-md bg-[var(--sr-surface-base)]">
+            <ImageFrame
+              aspect="3/4"
+              className="max-w-md bg-[var(--sr-surface-base)]"
+            >
               <div className="flex h-full flex-col justify-end p-[var(--sr-space-lg)]">
                 <p className="text-sm font-medium text-[var(--sr-foreground)]">
                   {site.director}
@@ -278,9 +275,7 @@ export function HomePage({
       </Section>
 
       <Section>
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           <div className="grid gap-[var(--sr-space-xl)] lg:grid-cols-2">
             <div>
               <p className="text-xs font-medium tracking-wide text-[var(--sr-primary)] uppercase">
@@ -305,18 +300,12 @@ export function HomePage({
       </Section>
 
       <Section tone="soft">
-        <Container
-          className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]"
-        >
+        <Container className="px-[var(--sr-container-padding-mobile)] md:px-[var(--sr-container-padding-tablet)] lg:px-[var(--sr-container-padding-desktop)]">
           <SectionHeader title={homeContent.popularSearches.title} />
-          <div
-            className="grid gap-[var(--sr-space-xl)] sm:grid-cols-2 lg:grid-cols-4"
-          >
+          <div className="grid gap-[var(--sr-space-xl)] sm:grid-cols-2 lg:grid-cols-4">
             {model.popularGroups.map((group) => (
               <section key={group.title}>
-                <h3
-                  className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[var(--sr-subtle-foreground)]"
-                >
+                <h3 className="mb-[var(--sr-space-sm)] text-xs font-medium uppercase tracking-wide text-[var(--sr-subtle-foreground)]">
                   {group.title}
                 </h3>
                 <ul className="flex flex-col gap-[var(--sr-space-xs)]">

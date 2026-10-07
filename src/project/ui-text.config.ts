@@ -17,6 +17,28 @@ export const uiText = {
     prompt: "Сбор статистики только после согласия.",
   },
   notFoundFallback: "Страница не найдена",
+  appShell: {
+    errorTitle: "Что-то пошло не так",
+    errorLead:
+      "Произошла ошибка при загрузке страницы. Попробуйте обновить или вернитесь на главную.",
+    retryLabel: "Повторить",
+    homeLinkLabel: "На главную",
+  },
+  catalog: {
+    gateFailTitle: "Раздел на проверке",
+    gateFailMessage:
+      "Каталог временно недоступен для индексации. Данные обновляются.",
+    emptyDevelopmentsTitle: "Пока нет новостроек",
+    emptyDevelopmentsMessage:
+      "Новые объекты появятся после обновления каталога.",
+    emptyListingsTitle: "Пока нет предложений",
+    emptyListingsMessage: "Объекты появятся после обновления каталога.",
+  },
+  utility: {
+    searchLabel: "Поиск",
+    searchPlaceholder: "Скоро будет доступен в каталоге",
+    favoritesEmpty: "Список избранного пуст.",
+  },
   innLabel: "ИНН",
 };
 

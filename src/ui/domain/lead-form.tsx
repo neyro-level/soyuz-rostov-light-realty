@@ -1,6 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/ui/primitives/button";
+import { Checkbox } from "@/ui/primitives/checkbox";
+import { Input } from "@/ui/primitives/input";
+import { Label } from "@/ui/primitives/label";
 
 export function LeadForm({
   actionUrl,
@@ -28,6 +32,7 @@ export function LeadForm({
   pageKey: string;
 }) {
   const [error, setError] = useState<string | null>(null);
+  const [consent, setConsent] = useState(false);
   return (
     <form
       className="flex max-w-xl flex-col gap-md border border-border bg-surface p-md"
@@ -42,7 +47,7 @@ export function LeadForm({
           body: JSON.stringify({
             name: String(data.get("name") ?? ""),
             phone: String(data.get("phone") ?? ""),
-            consent: data.get("consent") === "on",
+            consent,
             website: String(data.get("website") ?? ""),
             pageKey,
           }),
@@ -63,50 +68,39 @@ export function LeadForm({
         window.location.assign(thanksUrl);
       }}
     >
-      <label className="flex flex-col gap-sm text-fg">
+      <Label className="flex flex-col gap-sm text-fg">
         {nameLabel}
-        <input
-          className="rounded-sm border border-border bg-bg px-md py-sm text-fg"
-          name="name"
-          required
-          type="text"
-        />
-      </label>
-      <label className="flex flex-col gap-sm text-fg">
+        <Input name="name" required type="text" />
+      </Label>
+      <Label className="flex flex-col gap-sm text-fg">
         {phoneLabel}
-        <input
-          className="rounded-sm border border-border bg-bg px-md py-sm text-fg"
-          name="phone"
-          required
-          type="tel"
-        />
-      </label>
-      <input
+        <Input name="phone" required type="tel" />
+      </Label>
+      <Input
         aria-hidden="true"
         autoComplete="off"
         className="absolute -left-[9999px] h-px w-px overflow-hidden"
         name="website"
         tabIndex={-1}
       />
-      <label className="flex items-center gap-sm text-muted">
-        <input name="consent" required type="checkbox" />
+      <Label className="flex items-center gap-sm text-muted">
+        <Checkbox
+          checked={consent}
+          onCheckedChange={(value) => setConsent(value === true)}
+          required
+        />
         <span>
           {consentLabel}{" "}
           <a className="text-fg underline" href={consentHref}>
             {consentLinkLabel}
           </a>
         </span>
-      </label>
+      </Label>
       {error === "transport" ? (
         <p className="text-muted">{transportDisabledMessage}</p>
       ) : null}
       {error === "retry" ? <p className="text-muted">{retryMessage}</p> : null}
-      <button
-        className="rounded-sm bg-accent px-md py-sm text-accent-fg"
-        type="submit"
-      >
-        {submitLabel}
-      </button>
+      <Button type="submit">{submitLabel}</Button>
     </form>
   );
 }

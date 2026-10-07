@@ -24,12 +24,12 @@ import {
   loadCatalogSnapshot,
   roomsOf,
 } from "./entities";
+import { loadFixtureJson } from "./local";
 import type {
   DevelopmentListQuery,
   PropertyListQuery,
   RealtyRepository,
 } from "./repository";
-import { loadFixtureJson } from "./local";
 
 type GeoRecord = { uid: string; name: string };
 type AgentRecord = {

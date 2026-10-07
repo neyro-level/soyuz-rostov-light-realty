@@ -88,6 +88,24 @@ check(
   Boolean(packageJson.dependencies?.["class-variance-authority"]),
 );
 
+const allDeps = {
+  ...packageJson.dependencies,
+  ...(packageJson as { devDependencies?: Record<string, string> })
+    .devDependencies,
+};
+for (const pkg of [
+  "@mui/material",
+  "@chakra-ui/react",
+  "antd",
+  "react-bootstrap",
+  "@mantine/core",
+]) {
+  check(`no-second-ui-kit:${pkg}`, !allDeps?.[pkg]);
+}
+for (const pkg of ["@heroicons/react", "react-icons", "@tabler/icons-react"]) {
+  check(`no-second-icon-set:${pkg}`, !allDeps?.[pkg]);
+}
+
 for (const file of layoutComponents) {
   const full = join(root, "src/ui/layout", file);
   try {
@@ -173,6 +191,11 @@ for (const file of walk(join(root, "src/ui"))) {
       !text.includes("RealtyRepository") &&
       !text.includes("getRealtyRepository"),
   );
+  const rel = relative(root, file).replaceAll("\\", "/");
+  if (!rel.includes("src/ui/primitives/")) {
+    check(`ui-no-raw-button:${rel}`, !/<button\b/.test(text));
+    check(`ui-no-raw-input:${rel}`, !/<input\b/.test(text));
+  }
 }
 
 for (const dir of ["src/platform/ui", "src/ui"]) {

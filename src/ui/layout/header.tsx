@@ -1,9 +1,7 @@
 "use client";
 
-import type { NavGroup, NavItem } from "@/platform/nav";
+import type { NavGroup } from "@/platform/nav";
 import { MobileNavigation } from "@/ui/layout/mobile-navigation";
-import { Container } from "@/ui/shared/container";
-import { LeadDialog } from "@/ui/shared/lead-dialog";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,6 +10,9 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/ui/primitives/navigation-menu";
+import { Container } from "@/ui/shared/container";
+import { LeadDialog } from "@/ui/shared/lead-dialog";
+
 export type { NavGroup, NavItem } from "@/platform/nav";
 
 export type LeadFormConfig = {
@@ -139,4 +140,3 @@ function DesktopNav({ groups }: { groups: NavGroup[] }) {
     </NavigationMenu>
   );
 }
-

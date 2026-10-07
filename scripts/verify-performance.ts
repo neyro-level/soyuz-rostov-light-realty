@@ -15,7 +15,7 @@ function check(name: string, ok: boolean, detail = "") {
   console.error(`FAIL ${name}${detail ? `: ${detail}` : ""}`);
 }
 
-const gallery = readFileSync(join(root, "src/platform/ui/gallery.tsx"), "utf8");
+const gallery = readFileSync(join(root, "src/ui/domain/gallery.tsx"), "utf8");
 const nextConfig = readFileSync(join(root, "next.config.ts"), "utf8");
 
 check("lcp-budget-2500ms", performance.lcpMs <= 2500 && performance.lcpMs > 0);

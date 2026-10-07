@@ -8,32 +8,38 @@ import {
   PropertyCard,
   StarterPageShell,
 } from "@/platform/ui";
-import type { LeadFormConfig } from "@/ui/layout/header";
-import { site } from "@/project/site.config";
 import { buildHomeModel } from "@/project/build-home-model";
+import {
+  isDevelopmentCatalogEntry,
+  isH3CatalogEntryPageKey,
+} from "@/project/catalog-entry.config";
+import { loadEntityDetailModel } from "@/project/entity-detail-model";
+import { isH4EntityPageKey } from "@/project/entity-pages.config";
 import { features } from "@/project/features.config";
 import { grammar } from "@/project/grammar.config";
+import { navigation } from "@/project/navigation.config";
 import {
   getRealtyRepository,
   loadRegistry,
   resolveAppMetadata,
 } from "@/project/runtime";
-import {
-  isDevelopmentCatalogEntry,
-  isH3CatalogEntryPageKey,
-} from "@/project/catalog-entry.config";
-import { isH4EntityPageKey } from "@/project/entity-pages.config";
-import { navigation } from "@/project/navigation.config";
+import { site } from "@/project/site.config";
 import {
   type H2StaticPageKey,
   h2StarterBodies,
   isH2StaticPageKey,
 } from "@/project/starter-pages.config";
+import { uiText } from "@/project/ui-text.config";
+import {
+  type H5UtilityPageKey,
+  h5UtilityBodies,
+  isH5UtilityPageKey,
+} from "@/project/utility-pages.config";
+import type { LeadFormConfig } from "@/ui/layout/header";
 import { EntityDetailSlot } from "@/ui/sections/entity-detail-slot";
 import { HomePage } from "@/ui/sections/home-page";
 import { EmptyState } from "@/ui/shared/empty-state";
 import { LeadDialog } from "@/ui/shared/lead-dialog";
-import { uiText } from "@/project/ui-text.config";
 
 function formatPrice(price: MoneyDTO | null): string | undefined {
   if (!price) {
@@ -114,17 +120,9 @@ export async function SitePage({
     transportDisabledMessage: uiText.form.transportDisabledMessage,
   };
   if (pageKey === "home") {
-    const model = await buildHomeModel(
-      grammar,
-      features,
-      loadRegistry(),
-    );
+    const model = await buildHomeModel(grammar, features, loadRegistry());
     return (
-      <HomePage
-        leadForm={leadForm}
-        leadFormPageKey="home"
-        model={model}
-      />
+      <HomePage leadForm={leadForm} leadFormPageKey="home" model={model} />
     );
   }
   const homeHref = buildHref(grammar, features, "home") ?? "/";
@@ -132,14 +130,25 @@ export async function SitePage({
     { label: site.brand, href: homeHref },
     { label: contextResolved.h1 },
   ];
+  let entityDetailModel = null;
+  if (isH4EntityPageKey(pageKey)) {
+    entityDetailModel = await loadEntityDetailModel(pageKey, params);
+    if (!entityDetailModel) {
+      notFound();
+    }
+  }
   const starterContent = isH2StaticPageKey(pageKey) ? (
     <StaticStarterSlot leadForm={leadForm} pageKey={pageKey} />
-  ) : isH4EntityPageKey(pageKey) ? (
+  ) : isH4EntityPageKey(pageKey) && entityDetailModel ? (
     <EntityDetailSlot
       hidePrice={contextResolved.hidePrice}
       leadForm={leadForm}
+      model={entityDetailModel}
+    />
+  ) : isH5UtilityPageKey(pageKey) ? (
+    <UtilityStarterSlot
       pageKey={pageKey}
-      params={params}
+      registryLead={contextResolved.description}
     />
   ) : (
     <CatalogSlot
@@ -151,6 +160,7 @@ export async function SitePage({
   const hasStarterContent =
     isH2StaticPageKey(pageKey) ||
     isH4EntityPageKey(pageKey) ||
+    isH5UtilityPageKey(pageKey) ||
     isH3CatalogEntryPageKey(pageKey) ||
     pageKey === "developers" ||
     pageKey === "team";
@@ -163,6 +173,49 @@ export async function SitePage({
     >
       {hasStarterContent ? starterContent : null}
     </StarterPageShell>
+  );
+}
+
+function UtilityStarterSlot({
+  pageKey,
+  registryLead,
+}: {
+  pageKey: H5UtilityPageKey;
+  registryLead: string;
+}) {
+  return (
+    <div
+      className="flex max-w-2xl flex-col gap-[var(--sr-space-lg)]"
+      data-testid="utility-content"
+    >
+      <p className="text-[length:var(--sr-body-size)] leading-relaxed text-[var(--sr-muted-foreground)]">
+        {h5UtilityBodies[pageKey]}
+      </p>
+      {pageKey === "privacy" || pageKey === "consent" ? (
+        <p className="text-sm text-[var(--sr-muted-foreground)]">
+          {registryLead}
+        </p>
+      ) : null}
+      {pageKey === "search" ? (
+        <label className="flex flex-col gap-[var(--sr-space-xs)]">
+          <span className="text-sm text-[var(--sr-muted-foreground)]">
+            {uiText.utility.searchLabel}
+          </span>
+          <input
+            aria-disabled="true"
+            className="min-h-11 rounded-lg border border-border bg-[var(--sr-background)] px-[var(--sr-space-md)]"
+            disabled
+            placeholder={uiText.utility.searchPlaceholder}
+            type="search"
+          />
+        </label>
+      ) : null}
+      {pageKey === "favorites" ? (
+        <p className="text-sm text-[var(--sr-muted-foreground)]">
+          {uiText.utility.favoritesEmpty}
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -203,8 +256,8 @@ async function CatalogSlot({
   if (isH3CatalogEntryPageKey(pageKey) && gate === "FAIL") {
     return (
       <EmptyState
-        message="Каталог временно недоступен для индексации. Данные обновляются."
-        title="Раздел на проверке"
+        message={uiText.catalog.gateFailMessage}
+        title={uiText.catalog.gateFailTitle}
       />
     );
   }
@@ -255,8 +308,8 @@ async function CatalogSlot({
       return (
         <div data-testid="catalog-grid">
           <EmptyState
-            message="Новые объекты появятся после обновления каталога."
-            title="Пока нет новостроек"
+            message={uiText.catalog.emptyDevelopmentsMessage}
+            title={uiText.catalog.emptyDevelopmentsTitle}
           />
         </div>
       );
@@ -264,19 +317,19 @@ async function CatalogSlot({
     return (
       <div data-testid="catalog-grid">
         <CatalogGrid>
-        {developments.map((item) => {
-          const href = buildHref(grammar, features, "development", {
-            slug: item.slug,
-          });
-          return href ? (
-            <DevelopmentCard
-              href={href}
-              key={item.uid}
-              meta={item.slug}
-              title={item.name}
-            />
-          ) : null;
-        })}
+          {developments.map((item) => {
+            const href = buildHref(grammar, features, "development", {
+              slug: item.slug,
+            });
+            return href ? (
+              <DevelopmentCard
+                href={href}
+                key={item.uid}
+                meta={item.slug}
+                title={item.name}
+              />
+            ) : null;
+          })}
         </CatalogGrid>
       </div>
     );
@@ -294,8 +347,8 @@ async function CatalogSlot({
     return (
       <div data-testid="catalog-grid">
         <EmptyState
-          message="Объекты появятся после обновления каталога."
-          title="Пока нет предложений"
+          message={uiText.catalog.emptyListingsMessage}
+          title={uiText.catalog.emptyListingsTitle}
         />
       </div>
     );
@@ -303,29 +356,29 @@ async function CatalogSlot({
   return (
     <div data-testid="catalog-grid">
       <CatalogGrid>
-      {listings.map((item) => {
-        const href = buildHref(
-          grammar,
-          features,
-          "property",
-          propertyHrefParams(item),
-        );
-        const price =
-          hidePrice || item.hidePrice ? undefined : formatPrice(item.price);
-        const metaParts = [
-          item.title,
-          item.rooms === null ? undefined : String(item.rooms),
-          price,
-        ].filter(Boolean);
-        return href ? (
-          <PropertyCard
-            href={href}
-            key={item.uid}
-            meta={metaParts.join(" · ")}
-            title={item.title}
-          />
-        ) : null;
-      })}
+        {listings.map((item) => {
+          const href = buildHref(
+            grammar,
+            features,
+            "property",
+            propertyHrefParams(item),
+          );
+          const price =
+            hidePrice || item.hidePrice ? undefined : formatPrice(item.price);
+          const metaParts = [
+            item.title,
+            item.rooms === null ? undefined : String(item.rooms),
+            price,
+          ].filter(Boolean);
+          return href ? (
+            <PropertyCard
+              href={href}
+              key={item.uid}
+              meta={metaParts.join(" · ")}
+              title={item.title}
+            />
+          ) : null;
+        })}
       </CatalogGrid>
     </div>
   );

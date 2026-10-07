@@ -16,6 +16,27 @@ export default {
       from: { path: "^src/project" },
       to: { path: "^src/app" },
     },
+    {
+      name: "ui-must-not-import-snapshot-storage",
+      comment: "UI renders props; it must not reach snapshot storage.",
+      severity: "error",
+      from: { path: "^src/ui" },
+      to: {
+        path: "^src/platform/(snapshot|catalog/(snapshot-repository|local))",
+      },
+    },
+    {
+      name: "app-must-not-import-snapshot-storage",
+      comment: "App uses repository runtime, not snapshot files directly.",
+      severity: "error",
+      from: {
+        path: "^src/app",
+        pathNot: "^src/app/api/internal/sync",
+      },
+      to: {
+        path: "^src/platform/(snapshot|catalog/(snapshot-repository|local))",
+      },
+    },
   ],
   options: {
     doNotFollow: { path: "node_modules" },

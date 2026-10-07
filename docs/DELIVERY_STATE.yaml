@@ -1,14 +1,13 @@
 plan_id: SOUZ-TEMPLATE-FREEZE
 plan_version: v2
-status: IN_PROGRESS
+status: PENDING_OWNER_MERGE
 plan_status: APPROVED
 approved_by: owner
 approved_at: 2026-10-05T23:25:00+03:00
 canonical_plan: docs/ФИНАЛЬНЫЙ_МАСТЕР_ПЛАН.md
-current_epic: H4
-next_ready:
-  - H5
-current_branch: epic/H4-entities
+current_epic: K1
+next_ready: []
+current_branch: epic/K1-freeze
 delivery_mode: PR_ONLY
 delivery_profile: COMMERCIAL
 ams_profile: REALTY
@@ -35,22 +34,73 @@ closed_epics:
   - H1
   - H2
   - H3
+  - H4
+  - I1
+  - I2
+  - I3
+  - I4
+  - I5
+  - I6
+  - J1
+  - J2
+  - J3
 pending_epics:
-  - epic: H4
-    branch: epic/H4-entities
+  - epic: H5
+    pr: 33
+    branch: epic/H5-utility
     base: main
+  - epic: I1
+    pr: 34
+    branch: epic/I1-architecture
+    base: main
+  - epic: I2
+    pr: 35
+    branch: epic/I2-ui-core
+    base: epic/H5-utility
+  - epic: I3
+    pr: 36
+    branch: epic/I3-snapshot
+    base: epic/I2-ui-core
+  - epic: I4
+    pr: 37
+    branch: epic/I4-leads
+    base: epic/I3-snapshot
+  - epic: I5
+    pr: 38
+    branch: epic/I5-seo
+    base: epic/I4-leads
+  - epic: I6
+    pr: 39
+    branch: epic/I6-e2e
+    base: epic/I5-seo
+  - epic: J1
+    pr: 40
+    branch: epic/J1-fixtures
+    base: epic/I6-e2e
+  - epic: J2
+    pr: 41
+    branch: epic/J2-leakage
+    base: epic/J1-fixtures
+  - epic: J3
+    pr: 42
+    branch: epic/J3-new-project
+    base: epic/J2-leakage
+  - epic: K1
+    pr: 43
+    branch: epic/K1-freeze
+    base: epic/J3-new-project
 last_merged:
-  epic: H3
-  pr: 31
-  sha: 6a74b6f
+  epic: H4
+  pr: 32
+  sha: 47790eb
 merge_wave:
   completed: "2026-10-06"
-  prs: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+  prs: [20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
 predecessor:
   plan_id: SZ-ROSTOV-LITE-MAIN
   plan_version: v1.4
   status: archived
   beads: do_not_touch_or_reimport
 notes: >
-  H4: entity detail shells (property/development/developer), team feature DISABLED.
-  e2e/entity-detail.spec.ts. PR_ONLY. lint red on main.
+  PR #33 merge-gate green @49510e8. One-shot merge: PR #44 epic/K1-freeze→main @8d0c411.
+  Or stepwise #33→#43. After merge: tag REFERENCE BASELINE on main SHA; no production.

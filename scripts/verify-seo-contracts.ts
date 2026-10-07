@@ -158,14 +158,39 @@ check("d12-breadcrumb-clean", jsonLdHasForbiddenType(crumbs) === false);
 
 const gone = matchLegacy("/blog/old-post/", legacyRules);
 check("legacy-410-blog", gone?.status === 410);
-const moved = matchLegacy("/novostroyki-rostova/", legacyRules);
+const sample308 = legacyRules.find((rule) => rule.status === 308);
+const moved = sample308 ? matchLegacy(sample308.from, legacyRules) : null;
 const novostroykiHref = buildHref(grammar, features, "catNovostroyki");
 check(
   "legacy-308-novostroyki",
-  moved?.status === 308 &&
+  Boolean(sample308) &&
+    moved?.status === 308 &&
     Boolean(novostroykiHref) &&
     legacyLocation(moved, grammar, features) === novostroykiHref,
 );
+
+function legacyPathname(href: string): string {
+  return new URL(href, site.siteUrl).pathname;
+}
+
+for (const rule of legacyRules) {
+  if (rule.status !== 308) {
+    continue;
+  }
+  const matched = matchLegacy(rule.from, legacyRules);
+  const target = matched ? legacyLocation(matched, grammar, features) : null;
+  check(`legacy-target-resolves:${rule.from}`, Boolean(target));
+  if (!target) {
+    continue;
+  }
+  const pathname = legacyPathname(target);
+  const chain = matchLegacy(pathname, legacyRules);
+  check(
+    `legacy-no-redirect-chain:${rule.from}`,
+    !chain || chain.status === 410,
+    chain?.status === 308 ? pathname : "",
+  );
+}
 check(
   "robots-staging-disallow",
   buildRobotsTxt("staging").includes("Disallow: /"),
@@ -196,6 +221,14 @@ check(
   "home-title-not-placeholder",
   homeMeta.title !== "Realty Lite" && homeMeta.title.length >= seo.titleMin,
 );
+check(
+  "home-canonical-absolute",
+  homeMeta.canonical.startsWith("https://") && homeMeta.canonical.endsWith("/"),
+);
+check(
+  "home-single-h1",
+  typeof homeMeta.h1 === "string" && homeMeta.h1.length > 0,
+);
 
 const listing = snapshot.inventory[0];
 if (listing) {
@@ -223,12 +256,7 @@ if (listing) {
 }
 
 for (const pageKey of seo.noindexAutoPageKeys) {
-  const starterMeta = resolvePageMetadata(
-    pageKey,
-    {},
-    snapshot,
-    publicContext,
-  );
+  const starterMeta = resolvePageMetadata(pageKey, {}, snapshot, publicContext);
   check(
     `starter-noindex:${pageKey}`,
     starterMeta.robots.index === false && starterMeta.robots.follow === true,
@@ -237,6 +265,11 @@ for (const pageKey of seo.noindexAutoPageKeys) {
 
 const liveEntries = buildSitemapEntries(snapshot, publicContext);
 check("sitemap-public-not-empty", liveEntries.length > 0);
+const liveUrls = liveEntries.map((item) => String(item.url));
+check(
+  "sitemap-no-duplicate-canonicals",
+  liveUrls.length === new Set(liveUrls).size,
+);
 check(
   "sitemap-public-no-noindex-thanks",
   liveEntries.every((item) => !String(item.url).includes("/spasibo/")),

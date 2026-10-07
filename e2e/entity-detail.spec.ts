@@ -8,12 +8,10 @@ test.describe("H4 entity detail shells", () => {
 
   test("property page renders entity detail block", async ({ page }) => {
     const catalogPath =
-      buildHref(grammar, features, "catKvartiry") ?? "/rostov-na-donu/kvartiry/";
+      buildHref(grammar, features, "catKvartiry") ??
+      "/rostov-na-donu/kvartiry/";
     await page.goto(catalogPath, { waitUntil: "networkidle" });
-    const cardLink = page
-      .getByTestId("catalog-grid")
-      .getByRole("link")
-      .first();
+    const cardLink = page.getByTestId("catalog-grid").getByRole("link").first();
     await cardLink.click();
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.getByTestId("entity-detail")).toBeVisible();
@@ -29,14 +27,15 @@ test.describe("H4 entity detail shells", () => {
   });
 
   test("developer page renders entity detail block", async ({ page }) => {
-    const catalogPath = buildHref(grammar, features, "developers") ?? "/zastroyshchiki/";
+    const catalogPath =
+      buildHref(grammar, features, "developers") ?? "/zastroyshchiki/";
     await page.goto(catalogPath, { waitUntil: "networkidle" });
     await page.locator("article").first().getByRole("link").click();
     await expect(page.getByTestId("entity-detail")).toBeVisible();
   });
 
-  test("team route is hidden when team feature is disabled", async ({ page }) => {
+  test("team route resolves when team feature is enabled", async () => {
     const teamPath = buildHref(grammar, features, "team");
-    expect(teamPath).toBeNull();
+    expect(teamPath).toBe("/komanda/");
   });
 });
