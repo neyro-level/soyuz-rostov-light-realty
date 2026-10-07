@@ -1,3 +1,12 @@
-fixtures/**/*.json text eol=lf
-fixtures/**/*.csv text eol=lf
-fixtures/**/*.b64 text eol=lf
+* text=auto eol=lf
+
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
